@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/productEntryFragment">
+
+    <fragment
+        android:id="@+id/productEntryFragment"
+        android:name="org.householdgoods.product.ProductEntryFragment"
+        android:label="product_entry_fragment"
+        tools:layout="@layout/product_entry_fragment" />
+</navigation>

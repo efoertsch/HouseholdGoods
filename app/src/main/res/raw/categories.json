@@ -1,0 +1,714 @@
+{"categories":[
+  {
+    "Category": "Living Room",
+    "Subcategory": "Couches",
+    "Key": "CO",
+    "Item": "Couches",
+    "CombinedCategorey": "Living Room,Couches",
+    "Type": "simple",
+    "Description": "Couch"
+  },
+  {
+    "Category": "Living Room",
+    "Subcategory": "Couches",
+    "Key": "SB",
+    "Item": "Sofa Bed",
+    "CombinedCategorey": "Living Room,Couches",
+    "Type": "simple",
+    "Description": "Sofa Bed"
+  },
+  {
+    "Category": "Living Room",
+    "Subcategory": "Couches",
+    "Key": "FU",
+    "Item": "Futon",
+    "CombinedCategorey": "Living Room,Couches",
+    "Type": "simple",
+    "Description": "Futon"
+  },
+  {
+    "Category": "Living Room",
+    "Subcategory": "Couches",
+    "Key": "SC",
+    "Item": "Sectional",
+    "CombinedCategorey": "Living Room,Couches",
+    "Type": "simple",
+    "Description": "Sectional"
+  },
+  {
+    "Category": "Living Room",
+    "Subcategory": "Couches",
+    "Key": "OT",
+    "Item": "Ottoman",
+    "CombinedCategorey": "Living Room,Couches",
+    "Type": "simple",
+    "Description": "Ottoman"
+  },
+  {
+    "Category": "Living Room",
+    "Subcategory": "Living Room Chairs",
+    "Key": "LC",
+    "Item": "Living Room Chairs",
+    "CombinedCategorey": "Living Room,Living Room Chairs",
+    "Type": "simple",
+    "Description": "Living Room Chair"
+  },
+  {
+    "Category": "Living Room",
+    "Subcategory": "Living Room Chairs",
+    "Key": "RC",
+    "Item": "Recliner",
+    "CombinedCategorey": "Living Room,Living Room Chairs",
+    "Type": "simple",
+    "Description": "Recliner"
+  },
+  {
+    "Category": "Living Room",
+    "Subcategory": "Living Room Chairs",
+    "Key": "RK",
+    "Item": "Rocker",
+    "CombinedCategorey": "Living Room,Living Room Chairs",
+    "Type": "simple",
+    "Description": "Rocker"
+  },
+  {
+    "Category": "Dressers and Storage",
+    "Subcategory": "Dressers",
+    "Key": "DR",
+    "Item": "Dressers",
+    "CombinedCategorey": "Dressers and Storage,Dressers",
+    "Type": "simple",
+    "Description": "Dresser"
+  },
+  {
+    "Category": "Dressers and Storage",
+    "Subcategory": "Dressers",
+    "Key": "AR",
+    "Item": "Armoire",
+    "CombinedCategorey": "Dressers and Storage,Dressers",
+    "Type": "simple",
+    "Description": "Armoire"
+  },
+  {
+    "Category": "Dressers and Storage",
+    "Subcategory": "Bookcases",
+    "Key": "BC",
+    "Item": "Bookcases",
+    "CombinedCategorey": "Dressers and Storage,Bookcases",
+    "Type": "simple",
+    "Description": "Bookcases"
+  },
+  {
+    "Category": "Dressers and Storage",
+    "Subcategory": "Bookcases",
+    "Key": "SS",
+    "Item": "Standalone Shelves",
+    "CombinedCategorey": "Dressers and Storage,Bookcases",
+    "Type": "simple",
+    "Description": "Standalone Shelves"
+  },
+  {
+    "Category": "Dressers and Storage",
+    "Subcategory": "Other Storage",
+    "Key": "EC",
+    "Item": "Entertainment Center",
+    "CombinedCategorey": "Dressers and Storage,Other Storage",
+    "Type": "simple",
+    "Description": "Entertainment Center"
+  },
+  {
+    "Category": "Dressers and Storage",
+    "Subcategory": "Other Storage",
+    "Key": "HU",
+    "Item": "2 Piece Hutch",
+    "CombinedCategorey": "Dressers and Storage,Other Storage",
+    "Type": "simple",
+    "Description": "2 Piece Hutch"
+  },
+  {
+    "Category": "Dressers and Storage",
+    "Subcategory": "Other Storage",
+    "Key": "CB",
+    "Item": "Cabinet",
+    "CombinedCategorey": "Dressers and Storage,Other Storage",
+    "Type": "simple",
+    "Description": "Cabinet"
+  },
+  {
+    "Category": "Dressers and Storage",
+    "Subcategory": "Other Storage",
+    "Key": "LF",
+    "Item": "Large Furniture",
+    "CombinedCategorey": "Dressers and Storage,Other Storage",
+    "Type": "simple",
+    "Description": "Large Furniture"
+  },
+  {
+    "Category": "Kitchen and Dining Tables and Chairs",
+    "Subcategory": "Kitchen and Dining Tables",
+    "Key": "KT",
+    "Item": "",
+    "CombinedCategorey": "Kitchen and Dining Tables and Chairs,Kitchen and Dining Tables",
+    "Type": "simple",
+    "Description": "Kitchen Table"
+  },
+  {
+    "Category": "Kitchen and Dining Tables and Chairs",
+    "Subcategory": "Kitchen and Dining Chair Sets",
+    "Key": "KC",
+    "Item": "Kitchen Chairs",
+    "CombinedCategorey": "Kitchen and Dining Tables and Chairs,Kitchen and Dining Chair Sets",
+    "Type": "simple",
+    "Description": "Kitchen Chair"
+  },
+  {
+    "Category": "Kitchen and Dining Tables and Chairs",
+    "Subcategory": "Kitchen and Dining Chair Sets",
+    "Key": "K2",
+    "Item": "Set of Two Kitchen Chairs",
+    "CombinedCategorey": "Kitchen and Dining Tables and Chairs,Kitchen and Dining Chair Sets",
+    "Type": "simple",
+    "Description": "Set of Two Kitchen Chairs"
+  },
+  {
+    "Category": "Kitchen and Dining Tables and Chairs",
+    "Subcategory": "Kitchen and Dining Chair Sets",
+    "Key": "K4",
+    "Item": "Set of Four Kitchen Chairs",
+    "CombinedCategorey": "Kitchen and Dining Tables and Chairs,Kitchen and Dining Chair Sets",
+    "Type": "simple",
+    "Description": "Set of Four Kitchen Chairs"
+  },
+  {
+    "Category": "Kitchen and Dining Tables and Chairs",
+    "Subcategory": "Kitchen and Dining Chair Sets",
+    "Key": "K6",
+    "Item": "Set of Six Kitchen Chairs",
+    "CombinedCategorey": "Kitchen and Dining Tables and Chairs,Kitchen and Dining Chair Sets",
+    "Type": "simple",
+    "Description": "Set of Six Kitchen Chairs"
+  },
+  {
+    "Category": "Accent Tables and Chairs",
+    "Subcategory": "Accent Chairs",
+    "Key": "XC",
+    "Item": "Accent Chairs",
+    "CombinedCategorey": "Accent Tables and Chairs,Accent Chairs",
+    "Type": "simple",
+    "Description": "Accent Chair"
+  },
+  {
+    "Category": "Accent Tables and Chairs",
+    "Subcategory": "Accent Tables and Chairs",
+    "Key": "ST",
+    "Item": "Stools",
+    "CombinedCategorey": "Accent Tables and Chairs,Accent Tables and Chairs",
+    "Type": "simple",
+    "Description": "Stools"
+  },
+  {
+    "Category": "Accent Tables and Chairs",
+    "Subcategory": "Accent Tables and Chairs",
+    "Key": "FC",
+    "Item": "Folding Chairs",
+    "CombinedCategorey": "Accent Tables and Chairs,Accent Tables and Chairs",
+    "Type": "simple",
+    "Description": "Folding Chair"
+  },
+  {
+    "Category": "Accent Tables and Chairs",
+    "Subcategory": "Accent Tables and Chairs",
+    "Key": "XT",
+    "Item": "Accent Tables",
+    "CombinedCategorey": "Accent Tables and Chairs,Accent Tables and Chairs",
+    "Type": "simple",
+    "Description": "Accent Table"
+  },
+  {
+    "Category": "Accent Tables and Chairs",
+    "Subcategory": "Accent Tables and Chairs",
+    "Key": "BE",
+    "Item": "Bench",
+    "CombinedCategorey": "Accent Tables and Chairs,Accent Tables and Chairs",
+    "Type": "simple",
+    "Description": "Bench"
+  },
+  {
+    "Category": "Accent Tables and Chairs",
+    "Subcategory": "End Tables and Night Stands and Coffee Tables",
+    "Key": "NS",
+    "Item": "Night Stands",
+    "CombinedCategorey": "Accent Tables and Chairs,End Tables and Night Stands and Coffee Tables",
+    "Type": "simple",
+    "Description": "Night Stand"
+  },
+  {
+    "Category": "Accent Tables and Chairs",
+    "Subcategory": "End Tables and Night Stands and Coffee Tables",
+    "Key": "ET",
+    "Item": "End Tables",
+    "CombinedCategorey": "Accent Tables and Chairs,End Tables and Night Stands and Coffee Tables",
+    "Type": "simple",
+    "Description": "End Table"
+  },
+  {
+    "Category": "Accent Tables and Chairs",
+    "Subcategory": "End Tables and Night Stands and Coffee Tables",
+    "Key": "CT",
+    "Item": "Coffee Tables",
+    "CombinedCategorey": "Accent Tables and Chairs,End Tables and Night Stands and Coffee Tables",
+    "Type": "simple",
+    "Description": "Coffee Table"
+  },
+  {
+    "Category": "Accent Tables and Chairs",
+    "Subcategory": "End Tables and Night Stands and Coffee Tables",
+    "Key": "TV",
+    "Item": "TV Stand",
+    "CombinedCategorey": "Accent Tables and Chairs,End Tables and Night Stands and Coffee Tables",
+    "Type": "simple",
+    "Description": "TV Stand"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "FM",
+    "Item": "",
+    "CombinedCategorey": "Beds,Mattresses,Full Mattresses",
+    "Type": "variable",
+    "Description": "Full Mattress"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "QM",
+    "Item": "Queen Mattresses",
+    "CombinedCategorey": "Beds,Mattresses,Queen Mattresses",
+    "Type": "variable",
+    "Description": "Queen Mattress"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "XFM",
+    "Item": "XL Full Mattresses",
+    "CombinedCategorey": "Beds,Mattresses,Queen Mattresses",
+    "Type": "variable",
+    "Description": "XL Full Mattress"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "TM",
+    "Item": "Twin Mattresses",
+    "CombinedCategorey": "Beds,Mattresses,Twin Mattresses",
+    "Type": "variable",
+    "Description": "Twin Mattress"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "XTM",
+    "Item": "XL Twin Mattresses",
+    "CombinedCategorey": "Beds,Mattresses,Twin Mattresses",
+    "Type": "variable",
+    "Description": "XL Twin Mattress"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "FB",
+    "Item": "",
+    "CombinedCategorey": "Beds,Box Springs,Full Box Springs",
+    "Type": "simple",
+    "Description": "Full Box Spring"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "QB",
+    "Item": "Queen Box Springs",
+    "CombinedCategorey": "Beds,Box Springs,Queen Box Springs",
+    "Type": "simple",
+    "Description": "Queen Box Spring"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "XFB",
+    "Item": "XL Full Box Springs",
+    "CombinedCategorey": "Beds,Box Springs,Queen Box Springs",
+    "Type": "simple",
+    "Description": "XL Full Box Spring"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "TB",
+    "Item": "Twin Box Springs",
+    "CombinedCategorey": "Beds,Box Springs,Twin Box Springs",
+    "Type": "simple",
+    "Description": "Twin Box Spring"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "XTB",
+    "Item": "XL Twin Box Springs",
+    "CombinedCategorey": "Beds,Box Springs,Twin Box Springs",
+    "Type": "simple",
+    "Description": "XL Twin Box Spring"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "FF",
+    "Item": "",
+    "CombinedCategorey": "Beds,Bed Frames,Full Bed Frame",
+    "Type": "simple",
+    "Description": "Full Bed Frame"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "QF",
+    "Item": "Queen Frames",
+    "CombinedCategorey": "Beds,Bed Frames,Queen Bed Frames",
+    "Type": "simple",
+    "Description": "Queen Bed Frame"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "XFF",
+    "Item": "XL Full Frames",
+    "CombinedCategorey": "Beds,Bed Frames,Queen Bed Frames",
+    "Type": "simple",
+    "Description": "XL Full Bed Frame"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "TF",
+    "Item": "Twin Bed Frames",
+    "CombinedCategorey": "Beds,Bed Frames,Twin Bed Frames",
+    "Type": "simple",
+    "Description": "Twin Bed Frame"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "XTF",
+    "Item": "XL Twin Bed Frames",
+    "CombinedCategorey": "Beds,Bed Frames,Twin Bed Frames",
+    "Type": "simple",
+    "Description": "XL Twin Bed Frame"
+  },
+  {
+    "Category": "Beds",
+    "Subcategory": "#NAME?",
+    "Key": "BB",
+    "Item": "Bunk Beds",
+    "CombinedCategorey": "Beds,Bed Frames,Twin Bed Frames",
+    "Type": "simple",
+    "Description": "Bunk Bed"
+  },
+  {
+    "Category": "Infant and Toddlers",
+    "Subcategory": "Infant and Toddlers",
+    "Key": "IT",
+    "Item": "Items for Infants and Toddlers",
+    "CombinedCategorey": "Infant and Toddlers,Infant and Toddlers",
+    "Type": "simple",
+    "Description": "Item for Infants and Toddlers"
+  },
+  {
+    "Category": "Infant and Toddlers",
+    "Subcategory": "Infant and Toddlers",
+    "Key": "GL",
+    "Item": "Glider",
+    "CombinedCategorey": "Infant and Toddlers,Infant and Toddlers",
+    "Type": "simple",
+    "Description": "Glider"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Kitchen Items",
+    "Key": "AP",
+    "Item": "Kitchen Appliances",
+    "CombinedCategorey": "Household Items,Kitchen Items",
+    "Type": "simple",
+    "Description": "Kitchen Appliances"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Kitchen Items",
+    "Key": "DS",
+    "Item": "Dish sets",
+    "CombinedCategorey": "Household Items,Kitchen Items",
+    "Type": "simple",
+    "Description": "Dish sets"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Kitchen Items",
+    "Key": "D4",
+    "Item": "Dish Sets for Four",
+    "CombinedCategorey": "Household Items,Kitchen Items",
+    "Type": "simple",
+    "Description": "Dish Set for Four"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Kitchen Items",
+    "Key": "D6",
+    "Item": "Dish Sets for Six",
+    "CombinedCategorey": "Household Items,Kitchen Items",
+    "Type": "simple",
+    "Description": "Dish Set for Six"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Kitchen Items",
+    "Key": "D8",
+    "Item": "Dish Sets for Eight",
+    "CombinedCategorey": "Household Items,Kitchen Items",
+    "Type": "simple",
+    "Description": "Dish Set for Eight"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Kitchen Items",
+    "Key": "",
+    "Item": "Kitchen Checklist",
+    "CombinedCategorey": "Household Items,Kitchen Items",
+    "Type": "simple",
+    "Description": "Kitchen Checklist"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "",
+    "Key": "",
+    "Item": "",
+    "CombinedCategorey": "Household Items,",
+    "Type": "simple",
+    "Description": ""
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "",
+    "Key": "",
+    "Item": "",
+    "CombinedCategorey": "Household Items,",
+    "Type": "simple",
+    "Description": ""
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "",
+    "Key": "",
+    "Item": "",
+    "CombinedCategorey": "Household Items,",
+    "Type": "simple",
+    "Description": ""
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "",
+    "Key": "",
+    "Item": "",
+    "CombinedCategorey": "Household Items,",
+    "Type": "simple",
+    "Description": ""
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Other Household Items",
+    "Key": "",
+    "Item": "Towels",
+    "CombinedCategorey": "Household Items,Other Household Items",
+    "Type": "simple",
+    "Description": "Towels"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "",
+    "Key": "",
+    "Item": "Wastebaskets",
+    "CombinedCategorey": "Household Items,",
+    "Type": "simple",
+    "Description": "Wastebasket"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "",
+    "Key": "",
+    "Item": "Hangers",
+    "CombinedCategorey": "Household Items,",
+    "Type": "simple",
+    "Description": "Hangers"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "",
+    "Key": "",
+    "Item": "Extra mugs",
+    "CombinedCategorey": "Household Items,",
+    "Type": "simple",
+    "Description": "Extra mugs"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "",
+    "Key": "",
+    "Item": "Throw blankets",
+    "CombinedCategorey": "Household Items,",
+    "Type": "simple",
+    "Description": "Throw blanket"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "",
+    "Key": "",
+    "Item": "Plastic Containers",
+    "CombinedCategorey": "Household Items,",
+    "Type": "simple",
+    "Description": "Plastic Containers"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "",
+    "Key": "",
+    "Item": "Decorative glass",
+    "CombinedCategorey": "Household Items,",
+    "Type": "simple",
+    "Description": "Decorative glass"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "",
+    "Key": "",
+    "Item": "Dish rack",
+    "CombinedCategorey": "Household Items,",
+    "Type": "simple",
+    "Description": "Dish rack"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "",
+    "Key": "",
+    "Item": "Extra plates and glasses",
+    "CombinedCategorey": "Household Items,",
+    "Type": "simple",
+    "Description": "Extra plates, glasses"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Table Lamps",
+    "Key": "LM",
+    "Item": "",
+    "CombinedCategorey": "Household Items,Table Lamps",
+    "Type": "simple",
+    "Description": "Table Lamp"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Floor Lamps",
+    "Key": "FL",
+    "Item": "",
+    "CombinedCategorey": "Household Items,Floor Lamps",
+    "Type": "simple",
+    "Description": "Floor Lamp"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Other Appliances",
+    "Key": "AC",
+    "Item": "Air Conditioner",
+    "CombinedCategorey": "Household Items,Other Appliances",
+    "Type": "simple",
+    "Description": "Air Conditioner"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Other Appliances",
+    "Key": "VA",
+    "Item": "Vacuum",
+    "CombinedCategorey": "Household Items,Other Appliances",
+    "Type": "simple",
+    "Description": "Vacuum"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Other Appliances",
+    "Key": "FN",
+    "Item": "Fan",
+    "CombinedCategorey": "Household Items,Other Appliances",
+    "Type": "simple",
+    "Description": "Fan"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Other Appliances",
+    "Key": "OA",
+    "Item": "Other small appliances",
+    "CombinedCategorey": "Household Items,Other Appliances",
+    "Type": "simple",
+    "Description": "Other small appliances"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Other Appliances",
+    "Key": "SF",
+    "Item": "Small Furniture",
+    "CombinedCategorey": "Household Items,Other Appliances",
+    "Type": "simple",
+    "Description": "Small Furniture"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Rugs",
+    "Key": "RG",
+    "Item": "",
+    "CombinedCategorey": "Household Items,Rugs",
+    "Type": "simple",
+    "Description": ""
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Extra Items",
+    "Key": "EX",
+    "Item": "Extra Items",
+    "CombinedCategorey": "Household Items,Extra Items",
+    "Type": "simple",
+    "Description": "Extra Items"
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Electronics",
+    "Key": "EL",
+    "Item": "",
+    "CombinedCategorey": "Household Items,Electronics",
+    "Type": "simple",
+    "Description": ""
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Framed Art",
+    "Key": "FA",
+    "Item": "",
+    "CombinedCategorey": "Household Items,Framed Art",
+    "Type": "simple",
+    "Description": ""
+  },
+  {
+    "Category": "Household Items",
+    "Subcategory": "Mirrors",
+    "Key": "MR",
+    "Item": "",
+    "CombinedCategorey": "Household Items,Mirrors",
+    "Type": "simple",
+    "Description": ""
+  }
+]
+}
