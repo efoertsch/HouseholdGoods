@@ -10,11 +10,12 @@ import android.widget.Filter
 import android.widget.TextView
 import org.householdgoods.data.HHGCategory
 import org.householdgoods.woocommerce.Category
+import kotlin.collections.ArrayList
 
-class CategoryAdapter (val myContext: Context, val resourceId: Int, val items: ArrayList<Category>) : ArrayAdapter<Category?>(myContext, resourceId, items) {
+class HHGCategoryAdapter(val myContext: Context, val resourceId: Int, val items: ArrayList<HHGCategory>) : ArrayAdapter<HHGCategory?>(myContext, resourceId, items) {
 
-    private var masterCategories: ArrayList<Category> = ArrayList()
-    private var suggestions: ArrayList<Category> = ArrayList()
+    private var masterHHGCategories: ArrayList<HHGCategory> = ArrayList()
+    private var suggestions: ArrayList<HHGCategory> = ArrayList()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
@@ -23,22 +24,21 @@ class CategoryAdapter (val myContext: Context, val resourceId: Int, val items: A
                 val inflater = (context as Activity).layoutInflater
                 view = inflater.inflate(resourceId, parent, false)
             }
-            val category = getItem(position)
+            val lookupItem = getItem(position)
             val description = view!!.findViewById<TextView>(R.id.text1)
-            description.text = category!!.name
+            description.text = lookupItem!!.key + " " + lookupItem!!.item + " -  " + lookupItem!!.category
         } catch (e: Exception) {
             e.printStackTrace()
         }
         return view!!
     }
 
+    fun setHHGCategories(hhgCategory: ArrayList<HHGCategory>) {
+        masterHHGCategories = hhgCategory
 
-
-    fun setCategories(categories: ArrayList<Category>) {
-        masterCategories = categories
     }
 
-    override fun getItem(position: Int): Category? {
+    override fun getItem(position: Int): HHGCategory? {
         return items[position]
     }
 
@@ -51,23 +51,23 @@ class CategoryAdapter (val myContext: Context, val resourceId: Int, val items: A
     }
 
     override fun getFilter(): Filter {
-        return categoryFilter
+        return lookupItemFilter
     }
 
-    private val categoryFilter: Filter = object : Filter() {
+    private val lookupItemFilter: Filter = object : Filter() {
         override fun convertResultToString(resultValue: Any): CharSequence {
-            val category = resultValue as Category
-            return category.name!!
+            val lookupItem = resultValue as HHGCategory
+            return lookupItem.category
         }
 
         override fun performFiltering(charSequence: CharSequence?): FilterResults {
             return if (charSequence != null) {
                 suggestions.clear()
-                for (category in masterCategories) {
-                    if (category.name!!.toLowerCase().toLowerCase().startsWith(charSequence.toString().toLowerCase()) ||
-                            category.description!!.toLowerCase().startsWith(charSequence.toString().toLowerCase()) ||
-                            category.slug!!.toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                        suggestions.add(category)
+                for (lookupItem in masterHHGCategories) {
+                    if (lookupItem.key!!.toLowerCase().toLowerCase().startsWith(charSequence.toString().toLowerCase()) ||
+                            lookupItem.category!!.toLowerCase().startsWith(charSequence.toString().toLowerCase()) ||
+                            lookupItem.item!!.toLowerCase().contains(charSequence.toString().toLowerCase())) {
+                        suggestions.add(lookupItem)
                     }
                 }
                 val filterResults = FilterResults()
@@ -83,11 +83,11 @@ class CategoryAdapter (val myContext: Context, val resourceId: Int, val items: A
         }
 
         override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults?) {
-            val tempValues = filterResults?.values as ArrayList<Category>
+            val tempValues = filterResults?.values as ArrayList<HHGCategory>
             if (filterResults.count > 0) {
                 clear()
-                for (category in tempValues) {
-                    add(category)
+                for (lookupItem in tempValues) {
+                    add(lookupItem)
                 }
                 notifyDataSetChanged()
             } else {
@@ -97,3 +97,5 @@ class CategoryAdapter (val myContext: Context, val resourceId: Int, val items: A
         }
     }
 }
+
+

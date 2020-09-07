@@ -1,4 +1,4 @@
-package org.householdgoods.data.product;
+package org.householdgoods.woocommerce;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -41,7 +41,7 @@ public class Product {
     public String type;
     @SerializedName("status")
     @Expose
-    public String status;
+    public String status = "publish";
     @SerializedName("featured")
     @Expose
     public Boolean featured;
@@ -59,7 +59,7 @@ public class Product {
     public String sku;
     @SerializedName("price")
     @Expose
-    public String price;
+    public String price = "0.0";
     @SerializedName("regular_price")
     @Expose
     public String regular_price;
@@ -68,16 +68,16 @@ public class Product {
     public String sale_price;
     @SerializedName("date_on_sale_from")
     @Expose
-    public Object date_on_sale_from;
+    public String date_on_sale_from;
     @SerializedName("date_on_sale_from_gmt")
     @Expose
-    public Object date_on_sale_from_gmt;
+    public String date_on_sale_from_gmt;
     @SerializedName("date_on_sale_to")
     @Expose
-    public Object date_on_sale_to;
+    public String date_on_sale_to;
     @SerializedName("date_on_sale_to_gmt")
     @Expose
-    public Object date_on_sale_to_gmt;
+    public String date_on_sale_to_gmt;
     @SerializedName("price_html")
     @Expose
     public String price_html;
@@ -98,7 +98,7 @@ public class Product {
     public Boolean downloadable;
     @SerializedName("downloads")
     @Expose
-    public List<Object> downloads = null;
+    public List<Downloads> downloads = null;
     @SerializedName("download_limit")
     @Expose
     public Integer download_limit;
@@ -119,10 +119,10 @@ public class Product {
     public String tax_class;
     @SerializedName("manage_stock")
     @Expose
-    public Boolean manage_stock;
+    public Boolean manage_stock = true;
     @SerializedName("stock_quantity")
     @Expose
-    public Object stock_quantity;
+    public String stock_quantity;
     @SerializedName("stock_status")
     @Expose
     public String stock_status;
@@ -170,10 +170,10 @@ public class Product {
     public List<Integer> related_ids = null;
     @SerializedName("upsell_ids")
     @Expose
-    public List<Object> upsell_ids = null;
+    public List<Integer> upsell_ids = null;
     @SerializedName("cross_sell_ids")
     @Expose
-    public List<Object> cross_sell_ids = null;
+    public List<Integer> cross_sell_ids = null;
     @SerializedName("parent_id")
     @Expose
     public Integer parent_id;
@@ -185,35 +185,66 @@ public class Product {
     public List<Category> categories = null;
     @SerializedName("tags")
     @Expose
-    public List<Object> tags = null;
+    public List<Tags> tags = null;
     @SerializedName("images")
     @Expose
     public List<Image> images = null;
     @SerializedName("attributes")
     @Expose
-    public List<Object> attributes = null;
-    @SerializedName("default_attributes")
-    @Expose
-    public List<Object> default_attributes = null;
-    @SerializedName("variations")
-    @Expose
-    public List<Object> variations = null;
-    @SerializedName("grouped_products")
-    @Expose
-    public List<Object> grouped_products = null;
+    public List<Attribute> attributes = null;
+    //    @SerializedName("default_attributes")
+//    @Expose
+//    public List<Object> default_attributes = null;
+//    @SerializedName("variations")
+//    @Expose
+//    public List<Object> variations = null;
+//    @SerializedName("grouped_products")
+//    @Expose
+//    public List<Object> grouped_products = null;
     @SerializedName("menu_order")
     @Expose
     public Integer menu_order;
-    @SerializedName("meta_data")
-    @Expose
-    public List<Object> meta_data = null;
+
+    //    @SerializedName("meta_data")
+//    @Expose
+//    public List<Object> meta_data = null;
     @SerializedName("_links")
     @Expose
-    public org.householdgoods.data.product._links _links;
+    public org.householdgoods.woocommerce._links _links;
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("id", id).append("name", name).append("slug", slug).append("permalink", permalink).append("date_created", date_created).append("date_created_gmt", date_created_gmt).append("date_modified", date_modified).append("date_modified_gmt", date_modified_gmt).append("type", type).append("status", status).append("featured", featured).append("catalog_visibility", catalog_visibility).append("description", description).append("short_description", short_description).append("sku", sku).append("price", price).append("regular_price", regular_price).append("sale_price", sale_price).append("date_on_sale_from", date_on_sale_from).append("date_on_sale_from_gmt", date_on_sale_from_gmt).append("date_on_sale_to", date_on_sale_to).append("date_on_sale_to_gmt", date_on_sale_to_gmt).append("price_html", price_html).append("on_sale", on_sale).append("purchasable", purchasable).append("total_sales", total_sales).append("virtual", virtual).append("downloadable", downloadable).append("downloads", downloads).append("download_limit", download_limit).append("download_expiry", download_expiry).append("external_url", external_url).append("button_text", button_text).append("tax_status", tax_status).append("tax_class", tax_class).append("manage_stock", manage_stock).append("stock_quantity", stock_quantity).append("stock_status", stock_status).append("backorders", backorders).append("backorders_allowed", backorders_allowed).append("backordered", backordered).append("sold_individually", sold_individually).append("weight", weight).append("dimensions", dimensions).append("shipping_required", shipping_required).append("shipping_taxable", shipping_taxable).append("shipping_class", shipping_class).append("shipping_class_id", shipping_class_id).append("reviews_allowed", reviews_allowed).append("average_rating", average_rating).append("rating_count", rating_count).append("related_ids", related_ids).append("upsell_ids", upsell_ids).append("cross_sell_ids", cross_sell_ids).append("parent_id", parent_id).append("purchase_note", purchase_note).append("categories_json", categories).append("tags", tags).append("images", images).append("attributes", attributes).append("default_attributes", default_attributes).append("variations", variations).append("grouped_products", grouped_products).append("menu_order", menu_order).append("meta_data", meta_data).append("_links", _links).toString();
+        return new ToStringBuilder(this).append("id", id)
+                .append("name", name).append("slug", slug).append("permalink", permalink)
+                .append("date_created", date_created).append("date_created_gmt", date_created_gmt)
+                .append("date_modified", date_modified).append("date_modified_gmt", date_modified_gmt)
+                .append("type", type).append("status", status).append("featured", featured)
+                .append("catalog_visibility", catalog_visibility).append("description", description)
+                .append("short_description", short_description).append("sku", sku)
+                .append("price", price).append("regular_price", regular_price).append("sale_price", sale_price)
+                .append("date_on_sale_from", date_on_sale_from).append("date_on_sale_from_gmt", date_on_sale_from_gmt)
+                .append("date_on_sale_to", date_on_sale_to).append("date_on_sale_to_gmt", date_on_sale_to_gmt)
+                .append("price_html", price_html).append("on_sale", on_sale).append("purchasable", purchasable)
+                .append("total_sales", total_sales).append("virtual", virtual).append("downloadable", downloadable)
+                .append("downloads", downloads).append("download_limit", download_limit)
+                .append("download_expiry", download_expiry).append("external_url", external_url)
+                .append("button_text", button_text).append("tax_status", tax_status)
+                .append("tax_class", tax_class).append("manage_stock", manage_stock)
+                .append("stock_quantity", stock_quantity).append("stock_status", stock_status)
+                .append("backorders", backorders).append("backorders_allowed", backorders_allowed)
+                .append("backordered", backordered).append("sold_individually", sold_individually)
+                .append("weight", weight).append("dimensions", dimensions).append("shipping_required", shipping_required)
+                .append("shipping_taxable", shipping_taxable).append("shipping_class", shipping_class)
+                .append("shipping_class_id", shipping_class_id).append("reviews_allowed", reviews_allowed)
+                .append("average_rating", average_rating).append("rating_count", rating_count)
+                .append("related_ids", related_ids).append("upsell_ids", upsell_ids).append("cross_sell_ids", cross_sell_ids).append("parent_id", parent_id).append("purchase_note", purchase_note).append("categories_json", categories).append("tags", tags)
+                .append("images", images).append("attributes", attributes)
+                //.append("default_attributes", default_attributes)
+                // .append("variations", variations)
+                //.append("grouped_products", grouped_products)
+                .append("menu_order", menu_order)
+                //.append("meta_data", meta_data)
+                 .append("_links", _links).toString();
     }
 
 }

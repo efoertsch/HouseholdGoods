@@ -17,7 +17,6 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.Dispatcher;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 
 
 public class OkHttpClientModule {
@@ -28,16 +27,18 @@ public class OkHttpClientModule {
                 .connectTimeout(40, TimeUnit.SECONDS)
                 .readTimeout(40, TimeUnit.SECONDS)
                 .writeTimeout(40, TimeUnit.SECONDS)
-                .addInterceptor(chain -> {
-                    Request original = chain.request();
-                    Request request = original.newBuilder()
-                            .header("Content-Type", "application/x-www-form-urlencoded")
-                            .header("Authorization", "Basic " + key + ":" + secret)
-                            .method(original.method(), original.body())
-                            .build();
-
-                    return chain.proceed(request);
-                });
+                .addInterceptor(interceptor
+//                        chain -> {
+//                    Request original = chain.request();
+//                    Request request = original.newBuilder()
+//                            .header("Content-Type", "application/x-www-form-urlencoded")
+//                             .header("Authorization", "Basic " + key + ":" + secret)
+//                            .method(original.method(), original.body())
+//                            .build();
+//
+//                    return chain.proceed(request);
+//                }
+                );
         if (BuildConfig.DEBUG) {
             overrideSslSocketFactory(httpClient);
         }
@@ -56,7 +57,7 @@ public class OkHttpClientModule {
         return new LoggingInterceptor();
     }
 
-    public void overrideSslSocketFactory(OkHttpClient.Builder builder) throws NoSuchAlgorithmException, KeyManagementException {
+    public static void overrideSslSocketFactory(OkHttpClient.Builder builder) throws NoSuchAlgorithmException, KeyManagementException {
         // Create a trust manager that does not validate certificate chains
         final TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {

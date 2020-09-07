@@ -1,12 +1,11 @@
-package org.householdgoods.data.product;
+package org.householdgoods.woocommerce;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-
-public class Category {
+public class Tags {
 
     @SerializedName("id")
     @Expose
@@ -20,7 +19,6 @@ public class Category {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("id", id).append("name", name).append("slug", slug).toString();
+        return new ToStringBuilder(this).append("id", id).append("name", name).append("slug",slug).toString();
     }
-
 }

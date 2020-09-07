@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorAccent">#4CAF50</color>
+    <!--
     <color name="colorPrimary">#ffa812</color>
     <color name="colorPrimaryDark">#bd770f</color>
     <color name="colorAccent">#4314ff</color>
+    -->
     <color name="background">#FFFFFFFF</color>
+
+    <color name="selected">#90CAF9</color>
+
+    <color name="gray">#9E9E9E</color>
+    <color name="black_overlay">#66000000</color>
+
+    <color name="offwhite">#F5F5F5</color>
+
+    <item name="dividerColor" type="color">#2F000000</item>
 </resources>
