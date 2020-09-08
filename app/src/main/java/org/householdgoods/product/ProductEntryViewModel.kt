@@ -15,7 +15,6 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Matcher
-import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
@@ -28,7 +27,7 @@ class ProductEntryViewModel //super(application);
     var photoList: MutableLiveData<ArrayList<String>> = MutableLiveData()
     var lookupCategoryList: MutableLiveData<ArrayList<Category>> = MutableLiveData()
     var errorMessage: MutableLiveData<Throwable> = MutableLiveData()
-    var isLoading: MutableLiveData<Boolean> = MutableLiveData()
+    var isWorking: MutableLiveData<Boolean> = MutableLiveData()
     var skuDateCode : MutableLiveData<String> = MutableLiveData()
     var skuSequenceNumber : MutableLiveData<String> = MutableLiveData()
     var skuCategoryCode : MutableLiveData<String> = MutableLiveData()
@@ -37,17 +36,18 @@ class ProductEntryViewModel //super(application);
     val product: Product = Product()
     val categoryHashMap = HashMap<Int, Category>()
     val masterCategoryList: ArrayList<Category> = ArrayList()
+    val partialSku : String = ""
 
     var mmddFormat: SimpleDateFormat = SimpleDateFormat("MMdd")
 
 
     init {
-        isLoading.value = true
+        isWorking.value = true
 
     }
 
     fun getlistOfCategories() {
-        isLoading.value = true
+        isWorking.value = true
         viewModelScope.launch {
             val result = try {
                 Result.success(repository.getCategoryList())
@@ -64,7 +64,7 @@ class ProductEntryViewModel //super(application);
                 Timber.d("Could not get list of cateogories " )
                 result.exceptionOrNull()?.printStackTrace()
             }
-            isLoading.value = false
+            isWorking.value = false
         }
 
     }
@@ -87,34 +87,42 @@ class ProductEntryViewModel //super(application);
     }
 
     fun savePhoto(bitmap: Bitmap) {
-        isLoading.value = true
+        isWorking.value = true
         viewModelScope.launch {
             val result = try {
                 repository.savePhotoToFile(bitmap)
-                getListOfPhotos()
                 Result.success(true)
             } catch (exception: Exception) {
                 Result.failure<Exception>(Exception("An error occurred saving the photo"))
             }
+            if (result.isSuccess){
+                getListOfPhotos()
+            }
             if (result.isFailure) {
                 errorMessage.value = result.exceptionOrNull()
             }
-            isLoading.value = false
+            isWorking.value = false
         }
+
     }
 
 
     fun getListOfPhotos() {
-        isLoading.value = true
+       //isWorking.value = true
         viewModelScope.launch {
             val result = try {
                 Result.success(repository.getPhotoFileList())
             } catch (exception: Exception) {
-                Result.failure<Exception>(Exception("An error occurred get the list of photos"))
+                Result.failure<Exception>(Exception("An error occurred getting the list of photos"))
+            }
+            if (result.isSuccess){
+                photoList.value = result.getOrNull() as ArrayList<String>
             }
             if (result.isFailure) {
+                Timber.d(result.exceptionOrNull()?.message)
                 errorMessage.value = result.exceptionOrNull()
             }
+            isWorking.value = false
         }
     }
 
@@ -156,5 +164,65 @@ class ProductEntryViewModel //super(application);
             errorMessage.value = Exception("Oh-oh the sku category code wasn't found at the start of the slug for category ${category.name}")
             skuCategoryCode.value  = "  "
         }
+    }
+
+    fun getFirstAvailableSkuSequenceNumber(){
+        viewModelScope.launch {
+            val result = try {
+                Result.success(repository.getFirstAvailableSkuSequenceNumber(getFirstPartOfSku()))
+            } catch (exception: Exception) {
+                Result.failure<Exception>(Exception("An error occurred attempting to find the SKU the next sequence number", exception))
+            }
+            if (result.isSuccess){
+                skuSequenceNumber.value = result.getOrNull() as  String
+            }
+            if (result.isFailure) {
+                Timber.d(result.exceptionOrNull()?.message)
+                errorMessage.value = result.exceptionOrNull()
+            }
+        }
+    }
+
+    fun deleteAllPhotos(){
+        viewModelScope.launch {
+            val result = try{
+                Result.success(repository.deleteAllPhotos())
+            } catch (exception: Exception){
+                Result.failure<Exception>(Exception("An error occurred attempting to delete all photo", exception))
+            }
+            if (result.isSuccess) {
+                getListOfPhotos()
+            } else {
+                Timber.d(result.exceptionOrNull()?.message)
+                errorMessage.value = result.exceptionOrNull()
+            }
+
+        }
+    }
+
+    fun deletePhoto(filename : String) {
+        viewModelScope.launch {
+            val result = try{
+                Result.success(repository.deletePhotoFile(filename))
+            } catch (exception: Exception){
+                Result.failure<Exception>(Exception("An error occurred attempting to delete a photo", exception))
+            }
+            if (result.isSuccess) {
+                getListOfPhotos()
+            } else {
+                Timber.d(result.exceptionOrNull()?.message)
+                errorMessage.value = result.exceptionOrNull()
+            }
+        }
+    }
+
+    fun getFirstPartOfSku() : String {
+        if (skuCategoryCode.value.isNullOrBlank()) {
+            throw Exception("Can't create SKU yet as category not selected")
+        }
+        if (skuDateCode.value.isNullOrEmpty()) {
+            throw Exception("Cant' create SKU yet as don't have MMDD part of SKU yet")
+        }
+         return skuCategoryCode.value?.substring(0,2) + "-" + skuDateCode.value?.substring(0,5)
     }
 }

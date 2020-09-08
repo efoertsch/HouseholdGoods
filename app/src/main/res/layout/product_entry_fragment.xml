@@ -22,7 +22,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/main_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@android:color/white">
 
 
@@ -37,7 +37,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/photo_data_entry_layout"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 app:layout_constraintEnd_toStartOf="@id/vertical_guideline_50pct"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="parent"
@@ -261,16 +261,10 @@
                     android:layout_marginTop="@dimen/margin_double"
                     android:background="@android:drawable/ic_menu_camera"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/product_description_layout" />
+                    app:layout_constraintTop_toBottomOf="@id/product_description_layout"
+                    />
 
 
-                <ImageView
-                    android:id="@+id/product_photo_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="1000dp"
-                    app:layout_constraintHeight_percent="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/product_camera_button" />
 
                 <Button
                     android:id="@+id/product_submit"
@@ -281,7 +275,8 @@
                     android:text="Submit"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/product_photo_image" />
+                    app:layout_constraintTop_toBottomOf="@id/product_camera_button"
+                    />
 
 
                 <ProgressBar
@@ -289,7 +284,7 @@
                     style="?android:attr/progressBarStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="@{safeUnbox(viewModel.isLoading) ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{safeUnbox(viewModel.isWorking) ? View.VISIBLE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
@@ -299,9 +294,9 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

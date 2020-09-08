@@ -41,7 +41,9 @@ class ProductEntryFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         productEntryView = ProductEntryView.inflate(inflater, container, false)
 
-        productEntryView?.productPhotoImage?.setOnClickListener { goToCameraApp() }
+        setUpObservers()
+        viewModel.deleteAllPhotos()
+
         return productEntryView!!.startOptionsCoordinatorLayout.rootView
     }
 
@@ -73,12 +75,13 @@ class ProductEntryFragment : Fragment() {
         val tabLayout = productEntryView?.photoTabLayout
         if (tabLayout != null) {
             TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-                tab.text = "OBJECT ${(position + 1)}"
+                tab.text = "Photo ${(position + 1)}"
             }.attach()
         }
 
-        setUpObservers()
+
         viewModel.getlistOfCategories()
+
     }
 
     private fun setUpObservers() {
@@ -149,7 +152,6 @@ class ProductEntryFragment : Fragment() {
     private fun savePhoto(extras: Bundle?) {
         val photo = extras!!["data"] as Bitmap?
         // may need to compress image from tablet camera
-        productEntryView?.productPhotoImage?.setImageBitmap(photo)
         viewModel.savePhoto(photo!!)
     }
 

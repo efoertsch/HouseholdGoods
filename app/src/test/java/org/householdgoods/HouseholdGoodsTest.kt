@@ -47,6 +47,7 @@ class HouseholdGoodsTest {
         println("Response:" + response?.body()!!.string())
     }
 
+
     @Test
     @Throws(IOException::class)
     fun usingParmsShouldGetAllCategories() {
@@ -78,6 +79,7 @@ class HouseholdGoodsTest {
         val request = Request.Builder()
                 .url("https://staging7.online.householdgoods.org/wp-json/wc/v3/products/categories")
                 .method("GET", null)
+                .header("Content-Type", "application/x-www-form-urlencoded")
                 .addHeader("Authorization", "Basic " + getBase64UidPwd(apiKey, apiSecret))
                 .build()
         val response = client.newCall(request).execute()
@@ -107,6 +109,30 @@ class HouseholdGoodsTest {
         }
         println("Response:" + sb.toString())
     }
+
+    @Test
+    @Throws(IOException::class)
+    fun getCategoriesInResponseBodyUsingHeader() {
+        val sb: StringBuilder = StringBuilder()
+        var categoryString: String
+        var perPage = 100
+        var offset = 0
+        var response: Response<ResponseBody?>?
+        while (true) {
+            response = client!!.getAllCategoriesResponseBody( perPage, offset)!!.execute()
+            if (response != null) {
+                if (response.body()!!.string().length <= 2) {
+                    break
+                }
+                categoryString = response.body()!!.string()
+                categoryString.dropLast(1)
+                sb.append(response.body()!!.string().dropLast(1)).append(",")
+            }
+            offset += perPage
+        }
+        println("Response:" + sb.toString())
+    }
+
 
 
     private fun getBase64UidPwd(key: String, secret: String): String? {

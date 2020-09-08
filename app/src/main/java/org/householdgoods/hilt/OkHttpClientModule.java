@@ -18,6 +18,9 @@ import okhttp3.Dispatcher;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 
+import static android.util.Base64.DEFAULT;
+import static android.util.Base64.encode;
+
 
 public class OkHttpClientModule {
 
@@ -51,6 +54,15 @@ public class OkHttpClientModule {
             httpClient.addInterceptor(interceptor);
         }
         return httpClient.build();
+    }
+
+
+    private String  getBase64UidPwd( String key ,  String secret) {
+        String encoded ;
+        encoded = encode((key + ":" + secret).getBytes(), DEFAULT).toString();
+        System.out.println("Encoded : " + encoded.toString());
+        return encoded;
+
     }
 
     public Interceptor getInterceptor() {

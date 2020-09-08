@@ -70,6 +70,7 @@ dependencies {
     final ROOM_VERSION = '2.2.5'
     final ARCH_LIFE_CYCLE_VERSION = '2.2.0'
     final TIMBER = '4.7.0'
+    final GLIDE_VERSION = '4.11.0'
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.google.android.material:material:$MATERIAL_VERSION"
@@ -134,6 +135,10 @@ dependencies {
 
     //okhttp
     implementation "com.squareup.okhttp3:okhttp:$OKHTTP"
+
+    //GLide
+    implementation "com.github.bumptech.glide:glide:$GLIDE_VERSION"
+    annotationProcessor "com.github.bumptech.glide:compiler:$GLIDE_VERSION"
 
     //
     // testImplementation for pure JVM unit tests

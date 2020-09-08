@@ -12,9 +12,11 @@ import org.householdgoods.R
 import org.householdgoods.data.HHGCategory
 import org.householdgoods.retrofit.HouseholdGoodsServerApi
 import org.householdgoods.woocommerce.Category
+import org.householdgoods.woocommerce.Product
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.Arrays.asList
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.collections.ArrayList
@@ -28,16 +30,13 @@ class Repository @Inject constructor(private val appContext: Context, val apiKey
                                      val householdGoodsServerApi: HouseholdGoodsServerApi) {
 
     private var sdf: SimpleDateFormat = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SS")
-    private var sharedPreferences : SharedPreferences
+    private var sharedPreferences: SharedPreferences
     private val LATEST_SKU_MMDD = "LATEST_SKU_MMDD"
     private val LATEST_SKU_SEQ = "LATEST_SKU_SEQ"
 
-    init{
-        sharedPreferences  = appContext.getSharedPreferences("App", MODE_PRIVATE)
+    init {
+        sharedPreferences = appContext.getSharedPreferences("App", MODE_PRIVATE)
     }
-
-
-
 
     suspend fun getCategoryList(): ArrayList<Category> {
         return withContext(Dispatchers.IO) {
@@ -53,11 +52,30 @@ class Repository @Inject constructor(private val appContext: Context, val apiKey
                 allCategories.addAll(categories)
                 offset += perPage
             }
-             allCategories
+            allCategories
         }
     }
 
-    suspend fun savePhotoToFile(bitmap: Bitmap) :String  {
+    suspend fun getFirstAvailableSkuSequenceNumber(partialSku: String): String {
+        return withContext(Dispatchers.IO) {
+            var product: Product? = null
+            var sequenceNumber = 1
+            var sequenceString = "00"
+            var firstPartOfSku = partialSku.substring(0, 7)
+            var testSku: String
+            while (true) {
+                sequenceString = String.format("%02d", sequenceNumber)
+                testSku = firstPartOfSku + '-' + sequenceString
+                product = householdGoodsServerApi.getProductBySku(apiKey, apiSecret, testSku)
+                if (product == null) {
+                    break
+                }
+            }
+            sequenceString
+        }
+    }
+
+    suspend fun savePhotoToFile(bitmap: Bitmap): String {
         return withContext(Dispatchers.IO) {
             var dateTime = sdf.format(Calendar.getInstance().getTime());
             val filename = dateTime + ".jpeg"
@@ -68,28 +86,21 @@ class Repository @Inject constructor(private val appContext: Context, val apiKey
         }
     }
 
-    suspend fun getPhotoFileList(): Array<String>  {
+    suspend fun getPhotoFileList(): ArrayList<String> {
         return withContext(Dispatchers.IO) {
-            appContext.fileList()
+            val photoFileList = ArrayList<String>()
+            photoFileList.addAll(appContext.fileList())
+            photoFileList
         }
     }
 
-    suspend fun getPhotoFile(photoFile: String) : Bitmap? {
+    suspend fun getPhotoFile(photoFile: String): File? {
         return withContext(Dispatchers.IO) {
-            var bitmap: Bitmap? = null
-            val f = appContext.openFileInput(photoFile)
-            val options = BitmapFactory.Options()
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888
-            try {
-                bitmap = BitmapFactory.decodeStream(f, null, options)
-            } catch (e: FileNotFoundException) {
-                e.printStackTrace()
-            }
-            bitmap
+             File(appContext.filesDir, photoFile)
         }
     }
 
-    suspend fun deletePhotoFile(photoFile: String){
+    suspend fun deletePhotoFile(photoFile: String) {
         return withContext(Dispatchers.IO) {
             appContext.deleteFile(photoFile)
         }
@@ -99,9 +110,9 @@ class Repository @Inject constructor(private val appContext: Context, val apiKey
 //        sharedPreferences.
 //    }
 
-    suspend fun removeAllPhotoFiles(){
+    suspend fun deleteAllPhotos() {
         return withContext(Dispatchers.IO) {
-            val photoFiles: Array<String> = getPhotoFileList()
+            val photoFiles: ArrayList<String> = getPhotoFileList()
             for (photoFile in photoFiles) {
                 appContext.deleteFile(photoFile)
             }
