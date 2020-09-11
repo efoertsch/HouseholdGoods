@@ -9,7 +9,8 @@ import java.util.List;
 
 
 // Used http://www.jsonschema2pojo.org/ to create java class from Json for this and all related classes
-// Note that data types may not be correct if example value not  included in Json
+// Note that data types may not be correct if example value not  included in JSON used to generate this POJO
+// !!! Some fields assigned default values !!!!
 public class Product {
 
     @SerializedName("id")
@@ -17,7 +18,7 @@ public class Product {
     public Integer id;
     @SerializedName("name")
     @Expose
-    public String name;
+    public String name = "";
     @SerializedName("slug")
     @Expose
     public String slug;
@@ -38,7 +39,7 @@ public class Product {
     public String date_modified_gmt;
     @SerializedName("type")
     @Expose
-    public String type;
+    public String type = "simple";
     @SerializedName("status")
     @Expose
     public String status = "publish";
@@ -59,10 +60,10 @@ public class Product {
     public String sku;
     @SerializedName("price")
     @Expose
-    public String price = "0.0";
+    public String price = "0.00";
     @SerializedName("regular_price")
     @Expose
-    public String regular_price;
+    public String regular_price = "0.00";
     @SerializedName("sale_price")
     @Expose
     public String sale_price;
@@ -98,7 +99,7 @@ public class Product {
     public Boolean downloadable;
     @SerializedName("downloads")
     @Expose
-    public List<Downloads> downloads = null;
+    public List<Downloads> downloads;
     @SerializedName("download_limit")
     @Expose
     public Integer download_limit;
@@ -122,7 +123,7 @@ public class Product {
     public Boolean manage_stock = true;
     @SerializedName("stock_quantity")
     @Expose
-    public String stock_quantity;
+    public int stock_quantity = 0;
     @SerializedName("stock_status")
     @Expose
     public String stock_status;
@@ -143,7 +144,7 @@ public class Product {
     public String weight;
     @SerializedName("dimensions")
     @Expose
-    public Dimensions dimensions;
+    public Dimensions dimensions = new Dimensions() ;
     @SerializedName("shipping_required")
     @Expose
     public Boolean shipping_required;
@@ -167,22 +168,22 @@ public class Product {
     public Integer rating_count;
     @SerializedName("related_ids")
     @Expose
-    public List<Integer> related_ids = null;
+    public List<Integer> related_ids;
     @SerializedName("upsell_ids")
     @Expose
-    public List<Integer> upsell_ids = null;
+    public List<Integer> upsell_ids;
     @SerializedName("cross_sell_ids")
     @Expose
-    public List<Integer> cross_sell_ids = null;
+    public List<Integer> cross_sell_ids;
     @SerializedName("parent_id")
     @Expose
-    public Integer parent_id;
+    public Integer parent_id ;
     @SerializedName("purchase_note")
     @Expose
     public String purchase_note;
     @SerializedName("categories_json")
     @Expose
-    public List<Category> categories = null;
+    public List<Category> categories;
     @SerializedName("tags")
     @Expose
     public List<Tags> tags = null;

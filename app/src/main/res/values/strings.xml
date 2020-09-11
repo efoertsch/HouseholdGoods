@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">HouseholdGoods</string>
-    <string name="no_photo_taken">No photo taken</string>
+    <string name="no_photo_taken">No photo taken or invalid data returned from camera</string>
+    <string name="exit">Exit</string>
+    <string name="try_again">Try Again</string>
+    <string name="close_and_enter_next_product">Close and Enter Next Item</string>
 
 
 </resources>

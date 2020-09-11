@@ -65,7 +65,8 @@ class HHGCategoryAdapter(val myContext: Context, val resourceId: Int, val items:
                 suggestions.clear()
                 for (lookupItem in masterHHGCategories) {
                     if (lookupItem.key!!.toLowerCase().toLowerCase().startsWith(charSequence.toString().toLowerCase()) ||
-                            lookupItem.category!!.toLowerCase().startsWith(charSequence.toString().toLowerCase()) ||
+                           // lookupItem.category!!.toLowerCase().startsWith(charSequence.toString().toLowerCase()) ||
+                            lookupItem.subCategory!!.toLowerCase().startsWith(charSequence.toString().toLowerCase()) ||
                             lookupItem.item!!.toLowerCase().contains(charSequence.toString().toLowerCase())) {
                         suggestions.add(lookupItem)
                     }

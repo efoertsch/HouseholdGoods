@@ -10,13 +10,13 @@ public class Dimensions {
 
     @SerializedName("length")
     @Expose
-    public String length;
+    public String length = "";
     @SerializedName("width")
     @Expose
-    public String width;
+    public String width = "";
     @SerializedName("height")
     @Expose
-    public String height;
+    public String height = "";
 
     @Override
     public String toString() {
