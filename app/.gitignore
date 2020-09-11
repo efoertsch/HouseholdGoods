@@ -1,3 +1,5 @@
 /build
-/app/src/main/test
-/app/src/main/debug
+/src/test/
+/src/release
+/src/debug/res/values/server_urls.xml
+/src/test/java/org/householdgoods/HouseholdGoodsTest.kt
