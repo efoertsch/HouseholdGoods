@@ -1,6 +1,8 @@
 package org.householdgoods.hilt;
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.util.Config
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
@@ -8,8 +10,10 @@ import dagger.hilt.android.components.ApplicationComponent;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import org.householdgoods.BuildConfig
 import org.householdgoods.R
 import org.householdgoods.app.Repository
+import org.householdgoods.retrofit.HeaderInterceptor
 import org.householdgoods.retrofit.HouseholdGoodsRetrofit
 import org.householdgoods.retrofit.HouseholdGoodsServerApi
 import org.householdgoods.retrofit.LoggingInterceptor
@@ -26,10 +30,8 @@ object AppModule {
 //    }
 
     fun provideRepository(@ApplicationContext appContext: Context
-                          , @Named("apiKey") apiKey: String
-                          , @Named("apiSecret") apiSecret: String
                           , householdGoodsServerApi: HouseholdGoodsServerApi ): Repository {
-        return Repository(appContext, appContext.getString(R.string.apiKey), appContext.getString(R.string.apiSecret) , householdGoodsServerApi  )
+        return Repository(appContext , householdGoodsServerApi  )
     }
 
     @Provides
@@ -57,24 +59,26 @@ object AppModule {
     }
 
     @Provides
-//    @Singleton
-//    fun getOkHttpClient(@Named("apiKey") apiKey: String, @Named("apiSecret") apiSecret: String ) : OkHttpClient {
-//        return OkHttpClientModule().getOkHttpClient(LoggingInterceptor(), apiKey, apiSecret)
-//    }
-
-    fun getOkHttpClient(@ApplicationContext appContext: Context) : OkHttpClient {
-        return OkHttpClientModule().getOkHttpClient(LoggingInterceptor(), appContext.getString(R.string.apiKey), appContext.getString(R.string.apiSecret) )
+    @Singleton
+    fun getOkHttpClient( @Named("apiKey") apiKey: String, @Named("apiSecret") apiSecret: String) : OkHttpClient {
+        val interceptor : Interceptor
+        if (BuildConfig.DEBUG) {
+            interceptor = LoggingInterceptor( apiKey, apiSecret )
+        } else {
+            interceptor = HeaderInterceptor(apiKey, apiSecret)
+        }
+        return OkHttpClientModule().getOkHttpClient(interceptor)
     }
 
     @Provides
     @Singleton
-    fun getLoggingInterceptor() : Interceptor {
-        return LoggingInterceptor()
+    fun getLoggingInterceptor( @Named("apiKey") apiKey: String, @Named("apiSecret") apiSecret: String) : Interceptor {
+        return LoggingInterceptor(apiKey, apiSecret)
     }
 
     @Provides
     @Singleton
-    fun provideHouseholdGoosApi(householdGoodsRetrofit : HouseholdGoodsRetrofit) : HouseholdGoodsServerApi{
+    fun provideHouseholdGoodsApi(householdGoodsRetrofit : HouseholdGoodsRetrofit) : HouseholdGoodsServerApi{
         return (householdGoodsRetrofit.retrofit.create(HouseholdGoodsServerApi::class.java))
 
     }

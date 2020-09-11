@@ -6,11 +6,14 @@ public class HHGCategory {
 
     private String category;
 
+    private String subCategory;
+
     private String item;
 
-    public HHGCategory(String key, String category, String item) {
+    public HHGCategory(String key, String category, String subCategory, String item) {
         this.key = key;
         this.category = category;
+        this.subCategory = subCategory;
         this.item = item;
     }
 
@@ -20,6 +23,10 @@ public class HHGCategory {
 
     public String getCategory() {
         return category;
+    }
+
+    public String getSubCategory() {
+        return subCategory;
     }
 
     public String getItem() {

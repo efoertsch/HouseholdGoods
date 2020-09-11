@@ -126,8 +126,8 @@ dependencies {
     }
 
     // RxJava
-    implementation "io.reactivex.rxjava2:rxjava:$RX_JAVA"
-    implementation "io.reactivex.rxjava2:rxandroid:$RX_ANDROID"
+//    implementation "io.reactivex.rxjava2:rxjava:$RX_JAVA"
+//    implementation "io.reactivex.rxjava2:rxandroid:$RX_ANDROID"
 
     // GSON (JSON)
     implementation "com.google.code.gson:gson:$GSON"

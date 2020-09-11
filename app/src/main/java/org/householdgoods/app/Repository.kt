@@ -4,11 +4,9 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.widget.Toast
+import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.householdgoods.R
 import org.householdgoods.data.HHGCategory
 import org.householdgoods.retrofit.HouseholdGoodsServerApi
 import org.householdgoods.woocommerce.Category
@@ -16,7 +14,6 @@ import org.householdgoods.woocommerce.Product
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.Arrays.asList
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.collections.ArrayList
@@ -26,7 +23,7 @@ import kotlin.collections.ArrayList
 // Move the execution of the coroutine to the I/O dispatcher
 
 @Singleton
-class Repository @Inject constructor(private val appContext: Context, val apiKey: String, val apiSecret: String,
+class Repository @Inject constructor(private val appContext: Context,
                                      val householdGoodsServerApi: HouseholdGoodsServerApi) {
 
     private var sdf: SimpleDateFormat = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SS")
@@ -45,7 +42,7 @@ class Repository @Inject constructor(private val appContext: Context, val apiKey
             var categories: ArrayList<Category>?
             val allCategories = java.util.ArrayList<Category>()
             while (true) {
-                categories = householdGoodsServerApi.getAllCategories(apiKey, apiSecret, perPage, offset)
+                categories = householdGoodsServerApi.getAllCategories(perPage, offset)
                 if (categories!!.isEmpty()) {
                     break
                 }
@@ -56,20 +53,30 @@ class Repository @Inject constructor(private val appContext: Context, val apiKey
         }
     }
 
+    suspend fun createNewProduct(product: Product) : Product {
+        return withContext(Dispatchers.IO) {
+            householdGoodsServerApi.addProduct(product)
+        }
+    }
+
+    /**
+     * Partial sku should be in form e.g. 'TM-0903'
+     */
     suspend fun getFirstAvailableSkuSequenceNumber(partialSku: String): String {
         return withContext(Dispatchers.IO) {
-            var product: Product? = null
+            var productsBySku: ArrayList<Product>? = null
             var sequenceNumber = 1
-            var sequenceString = "00"
+            var sequenceString = "01"
             var firstPartOfSku = partialSku.substring(0, 7)
             var testSku: String
             while (true) {
                 sequenceString = String.format("%02d", sequenceNumber)
                 testSku = firstPartOfSku + '-' + sequenceString
-                product = householdGoodsServerApi.getProductBySku(apiKey, apiSecret, testSku)
-                if (product == null) {
+                productsBySku = householdGoodsServerApi.getProductBySku(testSku)
+                if (productsBySku == null || productsBySku.size == 0) {
                     break
                 }
+                ++sequenceNumber
             }
             sequenceString
         }
@@ -96,7 +103,7 @@ class Repository @Inject constructor(private val appContext: Context, val apiKey
 
     suspend fun getPhotoFile(photoFile: String): File? {
         return withContext(Dispatchers.IO) {
-             File(appContext.filesDir, photoFile)
+            File(appContext.filesDir, photoFile)
         }
     }
 
@@ -119,37 +126,33 @@ class Repository @Inject constructor(private val appContext: Context, val apiKey
         }
     }
 
-    suspend fun getHHGItemsFromRaw(): ArrayList<HHGCategory> {
-        return withContext(Dispatchers.IO) {
-            val inputStream = appContext.resources.openRawResource(R.raw.master_lookup);
-            getLookupItems(inputStream)
-        }
-    }
 
-    suspend fun getLookupItems(inputStream: InputStream): ArrayList<HHGCategory> {
+    suspend fun getHHGCategories(uri: Uri): ArrayList<HHGCategory> {
         return withContext(Dispatchers.IO) {
+            val contentResolver = appContext.contentResolver
             val HHGCategories: ArrayList<HHGCategory> = ArrayList()
             var itemDetails: List<String>
             var lookUpItem: HHGCategory
-            val inputreader = InputStreamReader(inputStream);
-            val buffreader = BufferedReader(inputreader)
             var line: String?
             var lineNumber = 0
-            try {
-                while (buffreader.readLine().also { line = it } != null) {
-                    ++lineNumber
-                    if (lineNumber >= 2) {
-                        itemDetails = CSVUtils.parseLine(line)
-                        lookUpItem = HHGCategory(itemDetails[0], itemDetails[1], itemDetails[2])
-                        HHGCategories.add(lookUpItem)
+            contentResolver.openInputStream(uri)?.use { inputStream ->
+                BufferedReader(InputStreamReader(inputStream)).use { reader ->
+                    line = reader.readLine()
+                    while (line != null) {
+                        ++lineNumber
+                        if (lineNumber >= 2) {
+                            itemDetails = CSVUtils.parseLine(line)
+                            if (itemDetails[0].isNotBlank()) {
+                                lookUpItem = HHGCategory(itemDetails[0], itemDetails[1], itemDetails[2], itemDetails[3])
+                                HHGCategories.add(lookUpItem)
+                            }
+                        }
+                        line = reader.readLine()
                     }
                 }
-            } catch (e: Exception) {
-                Toast.makeText(appContext, "Error occurred in reading MasterLookup file", Toast.LENGTH_LONG).show()
             }
             HHGCategories
         }
-
     }
 }
 

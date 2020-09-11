@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/product_menu_item_woocommerce"
+        android:title="WooCommerce"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/product_menu_product_reset"
+        android:title="Reset Product"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/product_menu_category_reset"
+        android:title="Reload Categories"
+        app:showAsAction="never" />
+</menu>

@@ -18,12 +18,22 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/main_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/white">
+
+            <ProgressBar
+                android:id="@+id/product_data_progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="@{safeUnbox(viewModel.isWorking) ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
 
             <androidx.constraintlayout.widget.Guideline
@@ -35,7 +45,7 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/photo_data_entry_layout"
+                android:id="@+id/product_data_entry_layout"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 app:layout_constraintEnd_toStartOf="@id/vertical_guideline_50pct"
@@ -50,16 +60,25 @@
                     android:orientation="vertical"
                     app:layout_constraintGuide_percent="0.50" />
 
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/vertical_guideline_text_25pct"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.25" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/product_category_layout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:hint="Category"
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.lookupCategoryErrorMsg}"
                     app:hintTextAppearance="@style/HintTextSizeExtraLarge"
+                    app:layout_constraintBottom_toBottomOf="@id/product_sku_category"
                     app:layout_constraintEnd_toStartOf="@id/vertical_guideline_text_50pct"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/product_sku_label"
-                    app:layout_constraintBottom_toBottomOf="@id/product_sku_category">
+                    app:layout_constraintTop_toTopOf="@+id/product_sku_label">
 
                     <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                         android:id="@+id/product_category_autoCompleteTextView"
@@ -85,46 +104,46 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_double"
-                    app:layout_constraintStart_toEndOf="@id/vertical_guideline_text_50pct"
-                    app:layout_constraintTop_toBottomOf="@id/product_sku_label"
                     android:text="@{viewModel.skuCategoryCode}"
-                      />
+                    app:layout_constraintStart_toEndOf="@id/vertical_guideline_text_50pct"
+                    app:layout_constraintTop_toBottomOf="@id/product_sku_label" />
+
                 <TextView
                     android:id="@+id/product_sku_category_dash"
                     style="@style/TextSizeExtraLargeBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="-"
                     app:layout_constraintStart_toEndOf="@id/product_sku_category"
-                    app:layout_constraintTop_toBottomOf="@id/product_sku_label"
-                    android:text="-" />
+                    app:layout_constraintTop_toBottomOf="@id/product_sku_label" />
 
                 <TextView
                     android:id="@+id/product_sku_mmdd"
                     style="@style/TextSizeExtraLargeBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@{viewModel.skuDateCode}"
                     app:layout_constraintStart_toEndOf="@id/product_sku_category_dash"
                     app:layout_constraintTop_toBottomOf="@id/product_sku_label"
-                    android:text="@{viewModel.skuDateCode}"
-                    tools:text="0903"/>
+                    tools:text="0903" />
 
                 <TextView
                     android:id="@+id/product_sku_2nd_dash"
                     style="@style/TextSizeExtraLargeBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="-"
                     app:layout_constraintStart_toEndOf="@id/product_sku_mmdd"
-                    app:layout_constraintTop_toBottomOf="@id/product_sku_label"
-                    android:text="-" />
+                    app:layout_constraintTop_toBottomOf="@id/product_sku_label" />
 
                 <TextView
                     android:id="@+id/product_sku_sequence_number"
                     style="@style/TextSizeExtraLargeBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@{viewModel.skuSequenceNumber}"
                     app:layout_constraintStart_toEndOf="@id/product_sku_2nd_dash"
                     app:layout_constraintTop_toBottomOf="@id/product_sku_label"
-                    android:text="@{viewModel.skuSequenceNumber}"
                     tools:text="01" />
 
 
@@ -133,9 +152,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:hint="Product Name"
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.productNameErrorMsg}"
                     app:hintTextAppearance="@style/HintTextSizeExtraLarge"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/product_category_layout">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -143,7 +164,8 @@
                         style="@style/HintTextSizeExtraLarge"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textCapWords" />
+                        android:inputType="textCapWords"
+                        android:text="@={viewModel.productName}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -163,6 +185,8 @@
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:hint="Len"
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.productLengthErrorMsg}"
                     app:hintTextAppearance="@style/HintTextSizeExtraLarge"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/product_dimensions">
@@ -172,7 +196,8 @@
                         style="@style/TextSizeExtraLargeBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:text="@={viewModel.productLength}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -182,6 +207,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_standard"
                     android:hint="Width"
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.productWidthErrorMsg}"
                     app:hintTextAppearance="@style/HintTextSizeExtraLarge"
                     app:layout_constraintEnd_toStartOf="@+id/product_height_layout"
                     app:layout_constraintStart_toEndOf="@+id/product_length_layout"
@@ -193,7 +220,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:baselineAligned="false"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:text="@={viewModel.productWidth}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -203,6 +231,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_standard"
                     android:hint="Height"
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.productHeightErrorMsg}"
                     app:hintTextAppearance="@style/HintTextSizeExtraLarge"
                     app:layout_constraintStart_toEndOf="@+id/product_width_layout"
                     app:layout_constraintTop_toTopOf="@id/product_length_layout">
@@ -212,26 +242,31 @@
                         style="@style/TextSizeExtraLargeBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:text="@={viewModel.productHeight}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/product_quantity_layout"
-                    android:layout_width="50dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_double"
                     android:hint="Qty"
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.productQuantityErrorMsg}"
                     app:hintTextAppearance="@style/HintTextSizeExtraLarge"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/product_length_layout">
+                    app:layout_constraintTop_toBottomOf="@id/product_length_layout"
+                    app:layout_constraintEnd_toStartOf="@id/vertical_guideline_text_50pct">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/product_quantity"
                         style="@style/TextSizeExtraLargeBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:text="@={viewModel.productQuantity}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -240,6 +275,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_double"
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.productDescriptionErrorMsg}"
                     app:hintTextAppearance="@style/HintTextSizeExtraLarge"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/product_quantity_layout">
@@ -250,7 +287,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Description"
-                        android:inputType="textAutoCorrect|textMultiLine|textCapSentences|textAutoComplete" />
+                        android:inputType="textAutoCorrect|textMultiLine|textCapSentences|textAutoComplete"
+                        android:text="@={viewModel.productDescription}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -261,9 +299,7 @@
                     android:layout_marginTop="@dimen/margin_double"
                     android:background="@android:drawable/ic_menu_camera"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/product_description_layout"
-                    />
-
+                    app:layout_constraintTop_toBottomOf="@id/product_description_layout" />
 
 
                 <Button
@@ -272,51 +308,53 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_double"
                     android:onClick="@{(v) -> viewModel.submit()}"
-                    android:text="Submit"
+                    android:text="Add Item"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/product_camera_button"
-                    />
-
-
-                <ProgressBar
-                    android:id="@+id/product_progressBar"
-                    style="?android:attr/progressBarStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="@{safeUnbox(viewModel.isWorking) ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/product_camera_button" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/vertical_guideline_50pct"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <com.google.android.material.tabs.TabLayout
-                    android:id="@+id/photo_tab_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/product_photos_label"
+                        style="@style/TextSizeExtraLargeBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_standard"
+                        android:layout_marginBottom="@dimen/margin_double"
+                        android:gravity="center"
+                        android:text="Photos"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"/>
 
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/product_photo_pager"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1">
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/photo_tab_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/product_photos_label"
+                        app:layout_constraintStart_toStartOf="parent"/>
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/product_photo_pager"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        app:layout_constraintTop_toBottomOf="@id/photo_tab_layout"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                    </androidx.viewpager2.widget.ViewPager2>
 
 
-                </androidx.viewpager2.widget.ViewPager2>
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

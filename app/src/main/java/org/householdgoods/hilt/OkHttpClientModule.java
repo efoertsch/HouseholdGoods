@@ -1,7 +1,6 @@
 package org.householdgoods.hilt;
 
 import org.householdgoods.BuildConfig;
-import org.householdgoods.retrofit.LoggingInterceptor;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -18,30 +17,16 @@ import okhttp3.Dispatcher;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 
-import static android.util.Base64.DEFAULT;
-import static android.util.Base64.encode;
-
 
 public class OkHttpClientModule {
 
 
-    public OkHttpClient getOkHttpClient(Interceptor interceptor, String key, String secret) throws Exception {
+    public OkHttpClient getOkHttpClient(Interceptor interceptor) throws Exception {
         OkHttpClient.Builder httpClient = new OkHttpClient().newBuilder()
                 .connectTimeout(40, TimeUnit.SECONDS)
                 .readTimeout(40, TimeUnit.SECONDS)
                 .writeTimeout(40, TimeUnit.SECONDS)
-                .addInterceptor(interceptor
-//                        chain -> {
-//                    Request original = chain.request();
-//                    Request request = original.newBuilder()
-//                            .header("Content-Type", "application/x-www-form-urlencoded")
-//                             .header("Authorization", "Basic " + key + ":" + secret)
-//                            .method(original.method(), original.body())
-//                            .build();
-//
-//                    return chain.proceed(request);
-//                }
-                );
+                .addInterceptor(interceptor);
         if (BuildConfig.DEBUG) {
             overrideSslSocketFactory(httpClient);
         }
@@ -50,24 +35,9 @@ public class OkHttpClientModule {
         httpClient.dispatcher(dispatcher);
         httpClient.connectTimeout(30, TimeUnit.SECONDS);
         httpClient.readTimeout(30, TimeUnit.SECONDS);
-        if (interceptor != null) {
-            httpClient.addInterceptor(interceptor);
-        }
         return httpClient.build();
     }
 
-
-    private String  getBase64UidPwd( String key ,  String secret) {
-        String encoded ;
-        encoded = encode((key + ":" + secret).getBytes(), DEFAULT).toString();
-        System.out.println("Encoded : " + encoded.toString());
-        return encoded;
-
-    }
-
-    public Interceptor getInterceptor() {
-        return new LoggingInterceptor();
-    }
 
     public static void overrideSslSocketFactory(OkHttpClient.Builder builder) throws NoSuchAlgorithmException, KeyManagementException {
         // Create a trust manager that does not validate certificate chains
