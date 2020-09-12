@@ -34,12 +34,13 @@ class ProductEntryViewModel //super(application);
     val hhgCategories: MutableLiveData<ArrayList<HHGCategory>> = MutableLiveData()
     val lookupCategoryErrorMsg = MutableLiveData<String>()
 
-    val isWorking = MutableLiveData<Boolean>().apply { value = true }
+    val isWorking = MutableLiveData<Boolean>().apply { value = false }
 
     val skuCategoryCode = MutableLiveData<String>().apply { value = questionMarks }
     val skuDateCode = MutableLiveData<String>().apply{value = "9999"}
     val skuSequenceNumber = MutableLiveData<String>().apply { value = "??" }
 
+    val productCategoryErrorMsg = MutableLiveData<String>()
     val productName: MutableLiveData<String> = MutableLiveData<String>().apply { value = "" }
     val productNameErrorMsg = MutableLiveData<String>()
     val productLength = MutableLiveData<String>().apply { value = "0" }
@@ -55,9 +56,10 @@ class ProductEntryViewModel //super(application);
     val dataEntryOK = MutableLiveData<Boolean>().apply { value = false }
     val addedSku = MutableLiveData<String>().apply { value = "" }
 
-
     // For system, api errors
     val errorMessage: MutableLiveData<Throwable> = MutableLiveData()
+    // used to strip leading zeros from dimensions
+    val removeLeadingZerosPattern = "^0+(?!$)".toRegex()
 
     var product: Product = Product()
     val categoryHashMap = HashMap<Int, Category>()
@@ -165,7 +167,7 @@ class ProductEntryViewModel //super(application);
     }
 
 
-    fun submit() {
+    fun addItem() {
         // 1. cycle thru SKU's to find the last one e.g. TM-0908-03  (01 and 02 already used)
         // 3. Post to WooCommerce
         // 4. If posted ok, upload photos
@@ -179,7 +181,8 @@ class ProductEntryViewModel //super(application);
                 val skuSequence = repository.getFirstAvailableSkuSequenceNumber(partialSku)
                 Timber.d("Available sku :  $partialSku-$skuSequence")
                 assignProductSKu(skuSequence)
-                Result.success(repository.createNewProduct(product))
+                product = repository.createNewProduct(product)
+                Result.success(product)
             } catch (exception: Exception) {
                 Result.failure<Exception>(Exception("An error occurred adding the product", exception))
             }
@@ -201,7 +204,7 @@ class ProductEntryViewModel //super(application);
     }
 
     private fun assemblePartialSku() : String {
-        return skuCategoryCode?.value.plus("-").plus(skuDateCode.value)
+        return skuCategoryCode.value.plus("-").plus(skuDateCode.value)
     }
 
     private fun assignProductSKu(skuSequence: String)  {
@@ -245,11 +248,12 @@ class ProductEntryViewModel //super(application);
     private fun createCategoryIdsForProduct(selectedHHGCategory: HHGCategory) {
         val productCategories = ArrayList<Category>()
         var categoryForId = Category()
-        var tempCategory: Category? = null
+        var wcCategory: Category? = null
         // We only care about saving the category id.
         for (category in wcCategories) {
             if (category.name.toLowerCase().equals(selectedHHGCategory.category.toLowerCase())) {
-                tempCategory = category
+                wcCategory = category
+                // we only need to send category id in the product
                 categoryForId.id = category.id
                 break
             }
@@ -261,14 +265,16 @@ class ProductEntryViewModel //super(application);
         }
         // Create categories for Product record
         productCategories.add(categoryForId)
+        Timber.d("WC Category found for selected HGG category: {${wcCategory.toString()}")
         // Walk category parent to gather all parent categories and save to product record
         while (true) {
-            if (tempCategory?.parent != null && tempCategory.parent != 0) {
-                tempCategory = categoryHashMap.get(tempCategory.parent)
-                if (tempCategory != null) {
+            if (wcCategory?.parent != null && wcCategory.parent != 0) {
+                wcCategory = categoryHashMap.get(wcCategory.parent)
+                if (wcCategory != null) {
                     categoryForId = Category()
-                    categoryForId.id = tempCategory.id
+                    categoryForId.id = wcCategory.id
                     productCategories.add(categoryForId)
+                    Timber.d("Parent WC Category found: {${wcCategory.toString()}")
                 }
             } else {
                 break
@@ -323,6 +329,14 @@ class ProductEntryViewModel //super(application);
         return skuCategoryCode.value?.substring(0, 2) + "-" + skuDateCode.value?.substring(0, 5)
     }
 
+    fun validateCategory() {
+        if (skuCategoryCode.value.isNullOrBlank()){
+            productCategoryErrorMsg.value  = "Category not selected. Select category from  dropdown."
+        } else {
+            productCategoryErrorMsg.value = null
+        }
+    }
+
     fun validateProductName() {
         val prodName = productName.value
         product.name = prodName
@@ -335,48 +349,51 @@ class ProductEntryViewModel //super(application);
     }
 
     fun validateProductLength() {
-        val length = productLength.value
+        var length = productLength.value?.replace(removeLeadingZerosPattern, "")
         if (length == null || length.isEmpty() || length.trim().length > 3
                 || length.trim().startsWith('-')) {
             productLengthErrorMsg.value = "Length invalid."
             product.dimensions.length = "0"
         } else {
-            addDimensionsTOProductIfNeeded()
+            addDimensionsToProductIfNeeded()
             product.dimensions.length = length
+            productLength.value = length
             productLengthErrorMsg.value = null
         }
         validateProductEntry()
     }
 
-    private fun addDimensionsTOProductIfNeeded() {
+    private fun addDimensionsToProductIfNeeded() {
         if (product.dimensions == null) {
             product.dimensions = Dimensions()
         }
     }
 
     fun validateProductWidth() {
-        val width = productWidth.value
-        if (width == null || width.isEmpty() || width.trim().length > 3
+        val width = productWidth.value?.replace(removeLeadingZerosPattern, "")
+            if (width == null || width.isEmpty() || width.trim().length > 3
                 || width.trim().startsWith('-')) {
             productWidthErrorMsg.value = "Width invalid."
             product.dimensions.width = "0"
         } else {
-            addDimensionsTOProductIfNeeded()
+            addDimensionsToProductIfNeeded()
             product.dimensions.width = width
+            productWidth.value = width
             productWidthErrorMsg.value = null
         }
         validateProductEntry()
     }
 
     fun validateProductHeight() {
-        val height = productHeight.value
+        val height = productHeight.value?.replace(removeLeadingZerosPattern, "")
         if (height == null || height.isEmpty() || height.trim().length > 3
                 || height.trim().startsWith('-')) {
             productHeightErrorMsg.value = "Height invalid."
             product.dimensions.height = "0"
         } else {
-            addDimensionsTOProductIfNeeded()
+            addDimensionsToProductIfNeeded()
             product.dimensions.height = height
+            productHeight.value = height
             productHeightErrorMsg.value = null
         }
         validateProductEntry()
@@ -412,6 +429,7 @@ class ProductEntryViewModel //super(application);
     }
 
     fun resetProduct() {
+        deleteAllPhotos()
         photoList.value = null
         lookupCategoryErrorMsg.value = ""
         isWorking.value = false

@@ -11,7 +11,7 @@ import android.widget.TextView
 import org.householdgoods.data.HHGCategory
 import org.householdgoods.woocommerce.Category
 
-class CategoryAdapter (val myContext: Context, val resourceId: Int, val items: ArrayList<Category>) : ArrayAdapter<Category?>(myContext, resourceId, items) {
+class CategoryAdapter (val myContext: Context, val resourceId: Int, val items: ArrayList<Category?>) : ArrayAdapter<Category?>(myContext, resourceId, items) {
 
     private var masterCategories: ArrayList<Category> = ArrayList()
     private var suggestions: ArrayList<Category> = ArrayList()

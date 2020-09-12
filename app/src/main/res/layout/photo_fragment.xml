@@ -15,9 +15,10 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/photo_constraint_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/photo_constraint_layout">
+        android:layout_margin="@dimen/margin_standard">
 
         <!-- app:srcCompat="@{viewModel.photo}"-->
         <ImageView
@@ -28,20 +29,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@tools:sample/backgrounds/scenic"
-            />
+            tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/photo_delete_button"
+            style="@style/HHGButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_double"
+            android:layout_marginTop="@dimen/margin_double"
             android:text="Delete Photo"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="@dimen/margin_standard"
-            />
+            app:layout_constraintStart_toStartOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

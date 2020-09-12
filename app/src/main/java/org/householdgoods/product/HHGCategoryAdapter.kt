@@ -12,7 +12,7 @@ import org.householdgoods.data.HHGCategory
 import org.householdgoods.woocommerce.Category
 import kotlin.collections.ArrayList
 
-class HHGCategoryAdapter(val myContext: Context, val resourceId: Int, val items: ArrayList<HHGCategory>) : ArrayAdapter<HHGCategory?>(myContext, resourceId, items) {
+class HHGCategoryAdapter(val myContext: Context, val resourceId: Int, val items: ArrayList<HHGCategory>) : ArrayAdapter<HHGCategory?>(myContext, resourceId, items as List<HHGCategory?>) {
 
     private var masterHHGCategories: ArrayList<HHGCategory> = ArrayList()
     private var suggestions: ArrayList<HHGCategory> = ArrayList()

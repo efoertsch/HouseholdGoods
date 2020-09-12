@@ -24,6 +24,10 @@ interface HouseholdGoodsServerApi {
     @POST("wp-json/wc/v3/products")
     suspend fun addProduct(@Body product: Product) : Product
 
+    //Upload photo
+    @POST("/wp-json/wc/v2/media")
+    suspend fun addPhoto()
+
 
 
     //vvvvvvv  Used for testing  vvvvvvvvvv

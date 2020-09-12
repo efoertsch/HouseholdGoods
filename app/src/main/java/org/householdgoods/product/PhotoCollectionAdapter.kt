@@ -29,7 +29,7 @@ class PhotoCollectionAdapter(fragment: Fragment) : FragmentStateAdapter(fragment
         val fragment = PhotoFragment()
         fragment.arguments = Bundle().apply {
             // Our object is just an integer :-P
-            putInt(POSITION, position + 1)
+            putInt(POSITION, position)
             putString(PHOTO_FILE_NAME, photoFileList[position])
         }
         return fragment

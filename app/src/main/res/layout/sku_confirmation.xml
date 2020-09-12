@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <data class="SkuConfirmationView">
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="org.householdgoods.product.ProductEntryViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sku_confirmation_display"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background"
+        >
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontal_guideline_25pct"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.15" />
+
+        <TextView
+            android:id="@+id/sku_great_job"
+            style="@style/TextSizeExtraLargeBold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_double"
+            android:gravity="center"
+            android:text="Great job! You have succesfully stocked this item!"
+            android:textSize="@dimen/text_size_large_48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/horizontal_guideline_25pct" />
+
+        <TextView
+            android:id="@+id/sku_please_afix"
+            style="@style/TextSizeExtraLargeBold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_double"
+            android:gravity="center"
+            android:text="Using black Sharpie pen write the sku:"
+            android:textSize="@dimen/text_size_large_48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sku_great_job" />
+
+        <TextView
+            android:id="@+id/sku_big_text"
+            style="@style/TextSizeSuperLargeBold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_double"
+            android:gravity="center"
+            android:text="@{viewModel.addedSku}"
+            android:textSize="@dimen/text_size_large_144sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sku_please_afix" />
+
+        <TextView
+            android:id="@+id/sku_put_on_tape"
+            style="@style/TextSizeExtraLargeBold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_double"
+            android:gravity="center"
+            android:text="clearly on tape and afix to item."
+            android:textSize="@dimen/text_size_large_48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sku_big_text" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sku_confirmation_close_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Close"
+            android:textSize="@dimen/text_size_large_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
+
