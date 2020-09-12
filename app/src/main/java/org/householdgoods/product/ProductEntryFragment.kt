@@ -1,5 +1,6 @@
 package org.householdgoods.product
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -9,8 +10,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView.OnItemClickListener
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -86,7 +87,7 @@ class ProductEntryFragment : Fragment() {
             }.attach()
         }
 
-        productEntryView?.productAddItem?.setOnClickListener {v ->
+        productEntryView?.productAddItem?.setOnClickListener { v ->
             productEntryView?.productAddItem?.isClickable = false
             viewModel.addItem()
         }
@@ -149,7 +150,11 @@ class ProductEntryFragment : Fragment() {
                     productEntryView?.productWidth -> viewModel.validateProductWidth()
                     productEntryView?.productHeight -> viewModel.validateProductHeight()
                     productEntryView?.productQuantity -> viewModel.validateProductQuantity()
-                    productEntryView?.productDescription -> viewModel.validateProductDescription()
+                    productEntryView?.productDescription -> {
+                        viewModel.validateProductDescription()
+                        closeKeyboard()
+                    }
+
                 }
             }
         }
@@ -160,6 +165,11 @@ class ProductEntryFragment : Fragment() {
         productEntryView?.productQuantity?.setOnFocusChangeListener(onFocusChangeListener)
         productEntryView?.productDescription?.setOnFocusChangeListener(onFocusChangeListener)
 
+    }
+
+    private fun closeKeyboard() {
+        val imm: InputMethodManager = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(productEntryView?.root!!.windowToken, 0)
 
     }
 
@@ -201,9 +211,9 @@ class ProductEntryFragment : Fragment() {
         })
 
         viewModel.isWorking.observe(viewLifecycleOwner, {
-            it?.let{
+            it?.let {
                 setWindowTouchability(it)
-        }
+            }
         })
 
     }

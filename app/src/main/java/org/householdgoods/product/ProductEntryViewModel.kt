@@ -251,7 +251,7 @@ class ProductEntryViewModel //super(application);
         var wcCategory: Category? = null
         // We only care about saving the category id.
         for (category in wcCategories) {
-            if (category.name.toLowerCase().equals(selectedHHGCategory.category.toLowerCase())) {
+            if (category.name.toLowerCase().equals(selectedHHGCategory.subCategory.toLowerCase())) {
                 wcCategory = category
                 // we only need to send category id in the product
                 categoryForId.id = category.id
@@ -426,6 +426,7 @@ class ProductEntryViewModel //super(application);
         }
         // Description allowed to be blank
         product.description = prodDescription
+
     }
 
     fun resetProduct() {

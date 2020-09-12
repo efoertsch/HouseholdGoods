@@ -378,6 +378,8 @@
             <include
                 android:id="@+id/product_sku_confirmation"
                 layout="@layout/sku_confirmation"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
                 android:visibility="gone"
                 app:viewModel="@{((org.householdgoods.product.ProductEntryViewModel) viewModel)}" />
 
