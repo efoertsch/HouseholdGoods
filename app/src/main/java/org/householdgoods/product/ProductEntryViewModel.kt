@@ -86,6 +86,10 @@ class ProductEntryViewModel //super(application);
                 if (result.getOrNull() != null) {
                     wcCategories.clear()
                     wcCategories.addAll(result.getOrNull() as ArrayList<Category>)
+                    categoryHashMap.clear()
+                    for(category in wcCategories){
+                        categoryHashMap.put(category.id, category)
+                    }
                 }
             } else {
                 val throwable = result.exceptionOrNull()
