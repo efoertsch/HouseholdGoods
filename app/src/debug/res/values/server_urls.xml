@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Staging 9 -->
+    <string name="woocommerce_url">http://staging9.online.householdgoods.org/manage-store/</string>
+    <string name="householdgoods_url">https://staging9.online.householdgoods.org</string>
+    <string name="apiKey">ck_d086b75ea55f5d1563d36d08670d5cb022ad1fb6</string>
+    <string name="apiSecret">cs_66e86a45a75a5385e4bd36464d742ee799a02d50</string>
+
+
+
+</resources>

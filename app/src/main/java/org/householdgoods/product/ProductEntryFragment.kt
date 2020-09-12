@@ -1,5 +1,6 @@
 package org.householdgoods.product
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -9,8 +10,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView.OnItemClickListener
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -38,7 +39,6 @@ class ProductEntryFragment : Fragment() {
     private lateinit var categoryAdapter: HHGCategoryAdapter
     private lateinit var photoCollectionAdapter: PhotoCollectionAdapter
     private lateinit var viewPager: ViewPager2
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,8 +69,8 @@ class ProductEntryFragment : Fragment() {
         // handle click event and set desc on textview
         categoryAutoCompleteView.onItemClickListener = OnItemClickListener { adapterView, view, i, l ->
             val category = adapterView.getItemAtPosition(i) as HHGCategory
-            categoryAutoCompleteView.setText(category.subCategory)
-            productEntryView?.productName?.setText(category.subCategory)
+            categoryAutoCompleteView.setText(category.key.plus(" - ").plus(category.item))
+            productEntryView?.productName?.setText(category.item)
             viewModel.setCategory(category)
         }
 
@@ -87,8 +87,12 @@ class ProductEntryFragment : Fragment() {
             }.attach()
         }
 
-        assignFocusChangeListenersToViews()
+        productEntryView?.productAddItem?.setOnClickListener { v ->
+            productEntryView?.productAddItem?.isClickable = false
+            viewModel.addItem()
+        }
 
+        assignFocusChangeListenersToViews()
         showHHGCategorySelectionAlertDialog()
     }
 
@@ -108,14 +112,17 @@ class ProductEntryFragment : Fragment() {
     }
 
     private fun gotoWooCommerce() {
-        val url = "http://www.example.com"
+        val url = getString(R.string.woocommerce_url)
         val i = Intent(Intent.ACTION_VIEW)
         i.data = Uri.parse(url)
         startActivity(i)
     }
 
     private fun resetProduct() {
+        productEntryView?.productSkuConfirmation?.skuConfirmationDisplay?.visibility = View.GONE
+        productEntryView?.productCategoryAutoCompleteTextView?.setText("")
         viewModel.resetProduct()
+
     }
 
     /**
@@ -125,6 +132,7 @@ class ProductEntryFragment : Fragment() {
         val onFocusChangeListener = View.OnFocusChangeListener { view: View, hasFocus: Boolean ->
             if (hasFocus) {
                 when (view) {
+                    productEntryView?.productCategoryAutoCompleteTextView -> productEntryView?.productCategoryAutoCompleteTextView?.selectAll()
                     productEntryView?.productName -> productEntryView?.productName?.selectAll()
                     productEntryView?.productLength -> productEntryView?.productLength?.selectAll()
                     productEntryView?.productWidth -> productEntryView?.productWidth?.selectAll()
@@ -136,12 +144,17 @@ class ProductEntryFragment : Fragment() {
             } else {
                 // focus lost validate input
                 when (view) {
+                    productEntryView?.productCategoryAutoCompleteTextView -> viewModel.validateCategory()
                     productEntryView?.productName -> viewModel.validateProductName()
                     productEntryView?.productLength -> viewModel.validateProductLength()
                     productEntryView?.productWidth -> viewModel.validateProductWidth()
                     productEntryView?.productHeight -> viewModel.validateProductHeight()
                     productEntryView?.productQuantity -> viewModel.validateProductQuantity()
-                    productEntryView?.productDescription -> viewModel.validateProductDescription()
+                    productEntryView?.productDescription -> {
+                        viewModel.validateProductDescription()
+                        closeKeyboard()
+                    }
+
                 }
             }
         }
@@ -152,6 +165,11 @@ class ProductEntryFragment : Fragment() {
         productEntryView?.productQuantity?.setOnFocusChangeListener(onFocusChangeListener)
         productEntryView?.productDescription?.setOnFocusChangeListener(onFocusChangeListener)
 
+    }
+
+    private fun closeKeyboard() {
+        val imm: InputMethodManager = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(productEntryView?.root!!.windowToken, 0)
 
     }
 
@@ -171,41 +189,57 @@ class ProductEntryFragment : Fragment() {
 
         viewModel.errorMessage.observe(viewLifecycleOwner, {
             it?.let {
+                viewModel.isWorking.value = false
+                setWindowTouchability(false)
                 displayErrorMessage(it)
             }
         })
 
         viewModel.dataEntryOK.observe(viewLifecycleOwner, {
             it?.let {
-                productEntryView?.productSubmit?.setEnabled(it)
-                productEntryView?.productSubmit?.setClickable(it)
+                productEntryView?.productAddItem?.setEnabled(it)
+                productEntryView?.productAddItem?.setClickable(it)
             }
         })
 
         viewModel.addedSku.observe(viewLifecycleOwner, {
             it?.let {
-                if (it != null && it.isNotBlank()) {
-                    showAddedProductDialog(it)
+                if (it.isNotBlank()) {
+                    showSkuConfirmationView()
                 }
+            }
+        })
+
+        viewModel.isWorking.observe(viewLifecycleOwner, {
+            it?.let {
+                setWindowTouchability(it)
             }
         })
 
     }
 
-    private fun showAddedProductDialog(sku: String) {
-        val alertDialog = AlertDialog.Builder(context)
-                .setTitle("Item Added")
-                .setMessage("Item added with SKU : $sku. Write this SKU on masking tape with a black Sharpie and affix tape to item"  )
-                .setPositiveButton(R.string.close_and_enter_next_product, DialogInterface.OnClickListener { dialog, which ->
-                    resetProduct()
-                    productEntryView!!.productCategoryAutoCompleteTextView.setText("")
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .create()
-        alertDialog.setCanceledOnTouchOutside(false)
-        val textView : TextView? = alertDialog.findViewById(android.R.id.message)
-        textView?.setTextSize(48f)
-        alertDialog.show()
+    private fun setWindowTouchability(working: Boolean) {
+        if (working) {
+            // For some reason setting progress bar to visible (and therefor holding frame visible)
+            // does not stop user from being able to edit text fields or press buttons so using this
+            activity?.getWindow()?.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            activity?.getWindow()?.setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+            productEntryView?.productDataProgressBar?.visibility = View.VISIBLE
+        } else {
+            activity?.getWindow()?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            activity?.getWindow()?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+            productEntryView?.productDataProgressBar?.visibility = View.GONE
+        }
+    }
+
+    private fun showSkuConfirmationView() {
+        productEntryView?.productSkuConfirmation?.skuConfirmationDisplay?.visibility = View.VISIBLE
+        productEntryView?.productSkuConfirmation?.skuConfirmationCloseButton?.setOnClickListener(View.OnClickListener {
+            productEntryView?.productSkuConfirmation?.skuConfirmationDisplay?.visibility = View.GONE
+            viewModel.resetProduct()
+        })
 
     }
 
@@ -314,7 +348,6 @@ class ProductEntryFragment : Fragment() {
     }
 
     private fun displayErrorMessage(throwable: Throwable) {
-        viewModel.isWorking.value = false
         val alertDialog = AlertDialog.Builder(context)
                 .setTitle("OOPS!")
                 .setMessage("Please show Mike or Leon the following error message before hitting the OK button \n\n"
