@@ -13,6 +13,7 @@ import org.householdgoods.app.Repository
 import org.householdgoods.data.HHGCategory
 import org.householdgoods.woocommerce.Category
 import org.householdgoods.woocommerce.Dimensions
+import org.householdgoods.woocommerce.Image
 import org.householdgoods.woocommerce.Product
 import timber.log.Timber
 import timber.log.Timber.e
@@ -26,18 +27,21 @@ class ProductEntryViewModel //super(application);
 @ViewModelInject constructor(@param:Assisted private val savedStateHandle: SavedStateHandle, private val repository: Repository) : ViewModel() {
 
     val questionMarks = "??"
+    private val photoMediaPathFormat = SimpleDateFormat("yyyy/MM")
 
     //!!!! Remember to put in something like  viewBinding?.lifecycleOwner = viewLifecycleOwner
     //!!!! so Android will pick up changes to isLoading
     val photoList: MutableLiveData<ArrayList<String>> = MutableLiveData()
+    var savedWcCategories = ArrayList<Category>()
     val wcCategories = ArrayList<Category>()
     val hhgCategories: MutableLiveData<ArrayList<HHGCategory>> = MutableLiveData()
+    val savedHhgCategories = ArrayList<HHGCategory>()
     val lookupCategoryErrorMsg = MutableLiveData<String>()
 
     val isWorking = MutableLiveData<Boolean>().apply { value = false }
 
     val skuCategoryCode = MutableLiveData<String>().apply { value = questionMarks }
-    val skuDateCode = MutableLiveData<String>().apply{value = "9999"}
+    val skuDateCode = MutableLiveData<String>().apply { value = "9999" }
     val skuSequenceNumber = MutableLiveData<String>().apply { value = "??" }
 
     val productCategoryErrorMsg = MutableLiveData<String>()
@@ -58,6 +62,7 @@ class ProductEntryViewModel //super(application);
 
     // For system, api errors
     val errorMessage: MutableLiveData<Throwable> = MutableLiveData()
+
     // used to strip leading zeros from dimensions
     val removeLeadingZerosPattern = "^0+(?!$)".toRegex()
 
@@ -87,7 +92,7 @@ class ProductEntryViewModel //super(application);
                     wcCategories.clear()
                     wcCategories.addAll(result.getOrNull() as ArrayList<Category>)
                     categoryHashMap.clear()
-                    for(category in wcCategories){
+                    for (category in wcCategories) {
                         categoryHashMap.put(category.id, category)
                     }
                 }
@@ -173,19 +178,40 @@ class ProductEntryViewModel //super(application);
 
     fun addItem() {
         // 1. cycle thru SKU's to find the last one e.g. TM-0908-03  (01 and 02 already used)
-        // 3. Post to WooCommerce
-        // 4. If posted ok, upload photos
-        // 5. Update product in WooCommecre to add photos to product
-        // 6. Delete all photos
+        // 2. Post product to WooCommerce with appropraite sku
+        // 3. If posted ok, upload photo
+        // 4. Go back and update product with photo urls (can't post product if photos not yet updated
+        // 5. Delete all photos?
+        //
         //
         isWorking.value = true
         viewModelScope.launch {
             val result = try {
+                val yyyymmBaseUrl = photoMediaPathFormat.format(Date())
+
+                // 1. find next available sku
                 val partialSku = assemblePartialSku()
                 val skuSequence = repository.getFirstAvailableSkuSequenceNumber(partialSku)
                 Timber.d("Available sku :  $partialSku-$skuSequence")
                 assignProductSKu(skuSequence)
+
+                //2. save product, note that returned product has id assigned
                 product = repository.createNewProduct(product)
+
+                //3. Save photos
+                // create paths for photos
+                val wcPhotoFileNames = createPhotoImageUrls()
+                repository.uploadPhotosToWc(wcPhotoFileNames, yyyymmBaseUrl)
+
+                // 4. Update product with photo urls
+                val wcPhotoImages = createImagesForProduct(wcPhotoFileNames, yyyymmBaseUrl)
+                var productWithUrls = Product()
+                productWithUrls.id = product.id
+                // saved product now store photos
+                productWithUrls.images = wcPhotoImages
+                productWithUrls = repository.updateProduct(productWithUrls)
+                // update originally returned product just for kicks
+                product.images = productWithUrls.images
                 Result.success(product)
             } catch (exception: Exception) {
                 Result.failure<Exception>(Exception("An error occurred adding the product", exception))
@@ -207,12 +233,47 @@ class ProductEntryViewModel //super(application);
         }
     }
 
-    private fun assemblePartialSku() : String {
+    // WC Image entities to be added to product
+    // Just put the url into Image.src
+    private fun createImagesForProduct(skuPhotoNames: ArrayList<String>, yyyymmBaseUrl: String): ArrayList<Image> {
+        val images = ArrayList<Image>()
+        val baseMediaUrl = repository.getWcBaseMedialUrl()
+        var image: Image
+        for (path in skuPhotoNames) {
+            image = Image()
+            image.src = baseMediaUrl.plus("/")
+                    .plus(yyyymmBaseUrl)
+                    .plus("/")
+                    .plus(path)
+            image.title = image.src
+            images.add(image)
+        }
+        return images
+
+    }
+
+    // Product must have full sku created by this ppint !!
+    private fun createPhotoImageUrls(): ArrayList<String> {
+        val photoFileList = repository.getListOfPhotoFiles()
+        val urlList = ArrayList<String>()
+        val numberOfPhotos = photoFileList.size
+        for (i in 0..numberOfPhotos - 1) {
+            urlList.add(product.sku
+                    .plus("-")
+                    .plus("%02d".format(i + 1))
+                    .plus(".jpg")
+            )
+
+        }
+        return urlList
+    }
+
+    private fun assemblePartialSku(): String {
         return skuCategoryCode.value.plus("-").plus(skuDateCode.value)
     }
 
-    private fun assignProductSKu(skuSequence: String)  {
-        product.sku =  skuCategoryCode.value.plus("-")
+    private fun assignProductSKu(skuSequence: String) {
+        product.sku = skuCategoryCode.value.plus("-")
                 .plus(skuDateCode.value).plus("-")
                 .plus(skuSequence)
     }
@@ -227,7 +288,7 @@ class ProductEntryViewModel //super(application);
      * photos taken?
      */
     fun validateProductEntry() {
-                dataEntryOK.value = (!skuCategoryCode.value.equals(questionMarks)
+        dataEntryOK.value = (!skuCategoryCode.value.equals(questionMarks)
                 && (product.name != null && product.name.isNotEmpty())
                 //  || product.sku.isEmpty()  create later
                 && (product.dimensions != null)
@@ -334,8 +395,8 @@ class ProductEntryViewModel //super(application);
     }
 
     fun validateCategory() {
-        if (skuCategoryCode.value.isNullOrBlank()){
-            productCategoryErrorMsg.value  = "Category not selected. Select category from  dropdown."
+        if (skuCategoryCode.value.isNullOrBlank()) {
+            productCategoryErrorMsg.value = "Category not selected. Select category from  dropdown."
         } else {
             productCategoryErrorMsg.value = null
         }
@@ -375,7 +436,7 @@ class ProductEntryViewModel //super(application);
 
     fun validateProductWidth() {
         val width = productWidth.value?.replace(removeLeadingZerosPattern, "")
-            if (width == null || width.isEmpty() || width.trim().length > 3
+        if (width == null || width.isEmpty() || width.trim().length > 3
                 || width.trim().startsWith('-')) {
             productWidthErrorMsg.value = "Width invalid."
             product.dimensions.width = "0"

@@ -327,7 +327,7 @@ class ProductEntryFragment : Fragment() {
                     requireActivity().finish()
                 })
                 .setNegativeButton(R.string.try_again, DialogInterface.OnClickListener { dialog, which ->
-                    requireActivity().finish()
+                    showHHGCategorySelectionAlertDialog()
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .create()
@@ -354,6 +354,8 @@ class ProductEntryFragment : Fragment() {
                         + throwable.message
                         + "\n" + throwable.stackTraceToString())
                 .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { dialog, which ->
+                    resetProduct()
+                    setWindowTouchability(false)
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .create()

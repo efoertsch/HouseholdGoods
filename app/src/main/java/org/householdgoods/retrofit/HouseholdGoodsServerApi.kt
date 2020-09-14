@@ -3,11 +3,9 @@ package org.householdgoods.retrofit
 import okhttp3.ResponseBody
 import org.householdgoods.woocommerce.Category
 import org.householdgoods.woocommerce.Product
+import org.householdgoods.woocommerce.WcPhoto
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface HouseholdGoodsServerApi {
 
@@ -24,9 +22,14 @@ interface HouseholdGoodsServerApi {
     @POST("wp-json/wc/v3/products")
     suspend fun addProduct(@Body product: Product) : Product
 
+    // Add a product
+    @POST("wp-json/wc/v3/products/{productId}")
+    suspend fun updateProduct(@Path("productId") productId : Int, @Body product: Product) : Product
+
     //Upload photo
+
     @POST("/wp-json/wc/v2/media")
-    suspend fun addPhoto()
+    suspend fun addPhoto(@Body wcPhoto: WcPhoto, @Header("Content-Disposition") fileName: String) : WcPhoto
 
 
 
