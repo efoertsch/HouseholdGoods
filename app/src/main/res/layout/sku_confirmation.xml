@@ -78,7 +78,8 @@
             android:textSize="@dimen/text_size_large_48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/sku_big_text" />
+            app:layout_constraintTop_toBottomOf="@id/sku_big_text"
+            app:layout_constraintBottom_toBottomOf="@id/sku_confirmation_close_button"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/sku_confirmation_close_button"
@@ -89,6 +90,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

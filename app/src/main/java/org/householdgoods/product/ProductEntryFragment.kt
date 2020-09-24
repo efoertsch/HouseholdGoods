@@ -2,9 +2,7 @@ package org.householdgoods.product
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
+import android.content.*
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -13,6 +11,8 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -39,6 +39,7 @@ class ProductEntryFragment : Fragment() {
     private lateinit var categoryAdapter: HHGCategoryAdapter
     private lateinit var photoCollectionAdapter: PhotoCollectionAdapter
     private lateinit var viewPager: ViewPager2
+    private lateinit var categoryAutoCompleteView: AppCompatAutoCompleteTextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +61,7 @@ class ProductEntryFragment : Fragment() {
         productEntryView?.lifecycleOwner = viewLifecycleOwner
         productEntryView?.viewModel = viewModel
 
-        val categoryAutoCompleteView = productEntryView!!.productCategoryAutoCompleteTextView
+        categoryAutoCompleteView = productEntryView!!.productCategoryAutoCompleteTextView
 
         categoryAdapter = HHGCategoryAdapter(activity as Context, android.R.layout.simple_dropdown_item_1line, categoryList)
         categoryAutoCompleteView.threshold = 1
@@ -87,9 +88,9 @@ class ProductEntryFragment : Fragment() {
             }.attach()
         }
 
-        productEntryView?.productAddItem?.setOnClickListener { v ->
-            productEntryView?.productAddItem?.isClickable = false
-            viewModel.addItem()
+        productEntryView?.productAddUpdateButton?.setOnClickListener { v ->
+            productEntryView?.productAddUpdateButton?.isClickable = false
+            viewModel.addOrUpdateItem()
         }
 
         assignFocusChangeListenersToViews()
@@ -197,8 +198,8 @@ class ProductEntryFragment : Fragment() {
 
         viewModel.dataEntryOK.observe(viewLifecycleOwner, {
             it?.let {
-                productEntryView?.productAddItem?.setEnabled(it)
-                productEntryView?.productAddItem?.setClickable(it)
+                productEntryView?.productAddUpdateButton?.setEnabled(it)
+                productEntryView?.productAddUpdateButton?.setClickable(it)
             }
         })
 
@@ -213,6 +214,37 @@ class ProductEntryFragment : Fragment() {
         viewModel.isWorking.observe(viewLifecycleOwner, {
             it?.let {
                 setWindowTouchability(it)
+            }
+        })
+
+        viewModel.productId.observe(viewLifecycleOwner, {
+            it?.let {
+                if (it == 0) {
+                    productEntryView?.productAddUpdateButton?.text = getString(R.string.add_item)
+                    productEntryView?.productCategoryLayout?.isEnabled = true
+                } else {
+                    productEntryView?.productAddUpdateButton?.text = getString(R.string.update_item)
+                    productEntryView?.productCategoryLayout?.isEnabled = false
+                }
+            }
+        })
+
+        viewModel.statusMessage.observe(viewLifecycleOwner, {
+            it?.let {
+                displayStatusMessage(it)
+            }
+        })
+
+
+        viewModel.clipboardLinkToProduct.observe(viewLifecycleOwner, {
+            it?.let {
+                if (it.isNotBlank()) {
+                    val clipboard: ClipboardManager? = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+                    val clip = ClipData.newPlainText("WooCommerce Product Link", it)
+                    if (clipboard != null && clip != null) {
+                        clipboard.setPrimaryClip(clip)
+                    }
+                }
             }
         })
 
@@ -238,7 +270,7 @@ class ProductEntryFragment : Fragment() {
         productEntryView?.productSkuConfirmation?.skuConfirmationDisplay?.visibility = View.VISIBLE
         productEntryView?.productSkuConfirmation?.skuConfirmationCloseButton?.setOnClickListener(View.OnClickListener {
             productEntryView?.productSkuConfirmation?.skuConfirmationDisplay?.visibility = View.GONE
-            viewModel.resetProduct()
+            //viewModel.resetProduct()
         })
 
     }
@@ -347,6 +379,12 @@ class ProductEntryFragment : Fragment() {
         startActivityForResult(intent, REQUEST_CSV_FILE)
     }
 
+    private fun displayStatusMessage(message: String) {
+        if (message.isNotBlank()) {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun displayErrorMessage(throwable: Throwable) {
         val alertDialog = AlertDialog.Builder(context)
                 .setTitle("OOPS!")
@@ -354,7 +392,7 @@ class ProductEntryFragment : Fragment() {
                         + throwable.message
                         + "\n" + throwable.stackTraceToString())
                 .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { dialog, which ->
-                    resetProduct()
+                    //   resetProduct()
                     setWindowTouchability(false)
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)

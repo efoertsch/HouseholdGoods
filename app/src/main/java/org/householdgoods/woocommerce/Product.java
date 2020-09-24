@@ -15,7 +15,7 @@ public class Product {
 
     @SerializedName("id")
     @Expose
-    public Integer id;
+    public Integer id = 0;
     @SerializedName("name")
     @Expose
     public String name = "";
@@ -96,7 +96,7 @@ public class Product {
     public Boolean virtual;
     @SerializedName("downloadable")
     @Expose
-    public Boolean downloadable;
+    public Boolean downloadable = false;
     @SerializedName("downloads")
     @Expose
     public List<Downloads> downloads;

@@ -1,9 +1,7 @@
 package org.householdgoods
 
 import com.google.gson.Gson
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.ResponseBody
+import okhttp3.*
 import org.householdgoods.hilt.OkHttpClientModule
 import org.householdgoods.retrofit.HouseholdGoodsRetrofit
 import org.householdgoods.retrofit.HouseholdGoodsServerApi
@@ -14,8 +12,10 @@ import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
 import retrofit2.Retrofit
+import java.io.File
 import java.io.IOException
 import java.util.*
+
 
 class HouseholdGoodsTest {
 
@@ -41,8 +41,7 @@ class HouseholdGoodsTest {
     @Before
     @Throws(Exception::class)
     fun createRetrofit() {
-        retrofit = HouseholdGoodsRetrofit(OkHttpClientModule().getOkHttpClient(LoggingInterceptor(apiKey, apiSecret))
-                , householdGoodsUrl).retrofit
+        retrofit = HouseholdGoodsRetrofit(OkHttpClientModule().getOkHttpClient(LoggingInterceptor(apiKey, apiSecret)), householdGoodsUrl).retrofit
         client = retrofit?.create(HouseholdGoodsServerApi::class.java)
     }
 
@@ -64,7 +63,7 @@ class HouseholdGoodsTest {
         var categories: List<Category>?
         val allCategories = ArrayList<Category>()
         while (true) {
-            response = client!!.getAllCategoriesTest( perPage, offset).execute()
+            response = client!!.getAllCategoriesTest(perPage, offset).execute()
             categories = response.body()
             if (categories != null) {
                 if (categories.isEmpty()) {
@@ -80,7 +79,7 @@ class HouseholdGoodsTest {
     @Test
     @Throws(Exception::class)
     fun shouldGetSomething() {
-        val httpClient = OkHttpClient().newBuilder().addInterceptor( LoggingInterceptor(apiKey, apiSecret))
+        val httpClient = OkHttpClient().newBuilder().addInterceptor(LoggingInterceptor(apiKey, apiSecret))
         OkHttpClientModule.overrideSslSocketFactory(httpClient)
         val client = httpClient.build()
         val request = Request.Builder()
@@ -124,7 +123,7 @@ class HouseholdGoodsTest {
         var offset = 0
         var response: Response<ResponseBody?>?
         while (true) {
-            response = client!!.getAllCategoriesResponseBody( perPage, offset)!!.execute()
+            response = client!!.getAllCategoriesResponseBody(perPage, offset)!!.execute()
             if (response != null) {
                 if (response.body()!!.string().length <= 2) {
                     break
@@ -145,6 +144,30 @@ class HouseholdGoodsTest {
         println("Encoded :$encoded")
         return encoded
 
+    }
+
+
+
+    @Test
+    @Throws(Exception::class)
+    fun testToFIS() {
+        val MEDIA_TYPE_JPG = MediaType.parse("image/jpg")
+
+        val file = File("/Users/ericfoertsch/Downloads/2020_09_13_16_48_26_19.jpg")
+       // val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
+        val body = RequestBody.create(MEDIA_TYPE_JPG ,file)
+
+        val httpClient = OkHttpClient().newBuilder().addInterceptor(LoggingInterceptor("x3rqb8eGROaP", "f1JlirUR83HFyeXOgHLfMDpR"))
+        OkHttpClientModule.overrideSslSocketFactory(httpClient)
+        val client = httpClient.build()
+        val request = Request.Builder()
+                .url("http://fisincorporated.com/wp-json/wp/v2/media")
+                .addHeader("Content-Disposition", "attachment;filename=2020_09_13_16_48_26_19.jpg.jpg")
+                .addHeader("Content-Type", "image/jpeg")
+                .post(body)
+                .build()
+        val response = client.newCall(request).execute()
+        println(response.body()!!.string())
     }
 
 }

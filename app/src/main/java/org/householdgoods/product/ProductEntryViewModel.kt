@@ -4,10 +4,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 import org.householdgoods.app.Repository
 import org.householdgoods.data.HHGCategory
@@ -37,13 +34,10 @@ class ProductEntryViewModel //super(application);
     val hhgCategories: MutableLiveData<ArrayList<HHGCategory>> = MutableLiveData()
     val savedHhgCategories = ArrayList<HHGCategory>()
     val lookupCategoryErrorMsg = MutableLiveData<String>()
-
     val isWorking = MutableLiveData<Boolean>().apply { value = false }
-
     val skuCategoryCode = MutableLiveData<String>().apply { value = questionMarks }
     val skuDateCode = MutableLiveData<String>().apply { value = "9999" }
     val skuSequenceNumber = MutableLiveData<String>().apply { value = "??" }
-
     val productCategoryErrorMsg = MutableLiveData<String>()
     val productName: MutableLiveData<String> = MutableLiveData<String>().apply { value = "" }
     val productNameErrorMsg = MutableLiveData<String>()
@@ -59,6 +53,9 @@ class ProductEntryViewModel //super(application);
     val productDescriptionErrorMsg = MutableLiveData<String>()
     val dataEntryOK = MutableLiveData<Boolean>().apply { value = false }
     val addedSku = MutableLiveData<String>().apply { value = "" }
+    val productId = MutableLiveData<Int>().apply { value = 0 }
+    val statusMessage = MutableLiveData<String>().apply { value = "" }
+    val clipboardLinkToProduct = MutableLiveData<String>().apply{value = ""}
 
     // For system, api errors
     val errorMessage: MutableLiveData<Throwable> = MutableLiveData()
@@ -76,6 +73,7 @@ class ProductEntryViewModel //super(application);
         isWorking.value = true
         loadWcCategories()
         loadHHGCategoryFile(uri)
+
     }
 
     private fun loadWcCategories() {
@@ -176,9 +174,18 @@ class ProductEntryViewModel //super(application);
     }
 
 
-    fun addItem() {
+    fun addOrUpdateItem() {
+        if (product.id == 0) {
+            addItem()
+        } else {
+            updateItem()
+        }
+    }
+
+
+    private fun addItem() {
         // 1. cycle thru SKU's to find the last one e.g. TM-0908-03  (01 and 02 already used)
-        // 2. Post product to WooCommerce with appropraite sku
+        // 2. Post product to WooCommerce with appropriate sku
         // 3. If posted ok, upload photo
         // 4. Go back and update product with photo urls (can't post product if photos not yet updated
         // 5. Delete all photos?
@@ -191,14 +198,16 @@ class ProductEntryViewModel //super(application);
 
                 // 1. find next available sku
                 val partialSku = assemblePartialSku()
-                val skuSequence = repository.getFirstAvailableSkuSequenceNumber(partialSku)
+
+                val lastSkuSeq = repository.getStartingSkuSequence(skuCategoryCode.value!!, skuDateCode.value!!)
+                val skuSequence = repository.getFirstAvailableSkuSequenceNumber(partialSku, lastSkuSeq)
                 Timber.d("Available sku :  $partialSku-$skuSequence")
                 assignProductSKu(skuSequence)
 
                 //2. save product, note that returned product has id assigned
                 product = repository.createNewProduct(product)
 
-                //3. Save photos
+                // 3. Save photos
                 // create paths for photos
                 val wcPhotoFileNames = createPhotoImageUrls()
                 repository.uploadPhotosToWc(wcPhotoFileNames, yyyymmBaseUrl)
@@ -212,12 +221,23 @@ class ProductEntryViewModel //super(application);
                 productWithUrls = repository.updateProduct(productWithUrls)
                 // update originally returned product just for kicks
                 product.images = productWithUrls.images
+                // add WCurl to product
+               createClipboardUrl()
+
+                // Plan B put photos in download directory
+//                //3. For now copy photos from app directory to download directory
+//                repository.copyPhotosToDownloadDirectory(product.sku)
+//                //4. Delete photos in app directory.
+//                repository.deleteAllPhotos()
+
+
                 Result.success(product)
             } catch (exception: Exception) {
                 Result.failure<Exception>(Exception("An error occurred adding the product", exception))
             }
             if (result.isSuccess) {
                 product = result.getOrNull() as Product
+                checkProductId()
                 if (product.sku.length >= 10) {
                     skuSequenceNumber.value = product.sku?.substringAfterLast('-', "??")
                     addedSku.value = product.sku
@@ -231,6 +251,43 @@ class ProductEntryViewModel //super(application);
             isWorking.value = false
 
         }
+    }
+
+    private fun createClipboardUrl() {
+        // force an update
+        clipboardLinkToProduct.value = ""
+        clipboardLinkToProduct.value = repository.getWCProductUrl(product.id )
+    }
+
+    private fun updateItem() {
+        isWorking.value = true
+        viewModelScope.launch {
+            val result = try {
+                //1. Update product
+                product = repository.updateProduct(product)
+                Result.success(product)
+            } catch (exception: Exception) {
+                Result.failure<Exception>(Exception("An error occurred updating the product", exception))
+            }
+            if (result.isSuccess) {
+                product = result.getOrNull() as Product
+                checkProductId()
+                updateStatusMessage("OK. Item updated.")
+            }
+            if (result.isFailure) {
+                Timber.d(result.exceptionOrNull()?.message)
+                errorMessage.value = result.exceptionOrNull()
+
+            }
+            isWorking.value = false
+
+        }
+    }
+
+    private fun updateStatusMessage(statusMsg: String) {
+        // Just to make sure any observers fire if statusMsg same as prior msgs.
+        statusMessage.value = ""
+        statusMessage.value = statusMsg
     }
 
     // WC Image entities to be added to product
@@ -268,14 +325,18 @@ class ProductEntryViewModel //super(application);
         return urlList
     }
 
+    /**
+     * Return string like CO-0920
+     */
     private fun assemblePartialSku(): String {
         return skuCategoryCode.value.plus("-").plus(skuDateCode.value)
     }
 
-    private fun assignProductSKu(skuSequence: String) {
+    private fun assignProductSKu(skuSequence: Int) {
         product.sku = skuCategoryCode.value.plus("-")
                 .plus(skuDateCode.value).plus("-")
-                .plus(skuSequence)
+                .plus("%02d".format(skuSequence))
+        repository.saveLastSkuAdded(skuCategoryCode.value!!, skuDateCode.value!!, skuSequence)
     }
 
     /**
@@ -520,7 +581,11 @@ class ProductEntryViewModel //super(application);
         errorMessage.value = null
 
         product = Product()
+        checkProductId()
     }
 
+    private fun checkProductId() {
+        productId.value = product.id
+    }
 
 }

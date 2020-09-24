@@ -15,6 +15,7 @@
             type="org.householdgoods.product.ProductEntryViewModel" />
     </data>
 
+    <!-- TODO move literals to strings.xml -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/start_options_coordinator_layout"
         android:layout_width="match_parent"
@@ -29,14 +30,12 @@
             android:layout_margin="@dimen/margin_standard"
             >
 
-
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/vertical_guideline_50pct"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.50" />
-
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/product_data_entry_layout"
@@ -247,6 +246,17 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <ImageButton
+                    android:id="@+id/product_camera_button"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="@dimen/margin_standard"
+                    android:src="@drawable/ic_photo_camera"
+                    android:layout_marginStart="@dimen/margin_triple"
+                    app:layout_constraintStart_toEndOf="@+id/product_height_layout"
+                    app:layout_constraintTop_toTopOf="@+id/product_height_layout"
+                    app:layout_constraintBottom_toBottomOf="@+id/product_height_layout" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/product_quantity_layout"
                     android:layout_width="0dp"
@@ -279,7 +289,8 @@
                     app:errorText="@{viewModel.productDescriptionErrorMsg}"
                     app:hintTextAppearance="@style/HintTextSizeExtraLarge"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/product_quantity_layout">
+                    app:layout_constraintTop_toBottomOf="@+id/product_quantity_layout"
+                    app:layout_constraintBottom_toTopOf="@id/product_add_update_button">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/product_description"
@@ -288,30 +299,21 @@
                         android:layout_height="wrap_content"
                         android:hint="Description"
                         android:inputType="textAutoCorrect|textMultiLine|textCapSentences|textAutoComplete"
+                        android:maxLines="3"
                         android:text="@={viewModel.productDescription}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
 
-                <ImageButton
-                    android:id="@+id/product_camera_button"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="@dimen/margin_standard"
-                    android:src="@drawable/ic_photo_camera"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/product_description_layout" />
-
-
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/product_add_item"
+                    android:id="@+id/product_add_update_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_double"
-                    android:text="Add Item"
+                    android:text="@string/add_item"
                     style="@style/HHGButton"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/product_camera_button" />
+                    />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
