@@ -4,6 +4,8 @@
     <string name="exit">Exit</string>
     <string name="try_again">Try Again</string>
     <string name="close_and_enter_next_product">Close and Enter Next Item</string>
+    <string name="add_item">Add Item</string>
+    <string name="update_item">Update Item</string>
 
 
 </resources>

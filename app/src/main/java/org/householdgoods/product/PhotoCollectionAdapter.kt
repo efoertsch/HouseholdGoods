@@ -73,6 +73,7 @@ class PhotoFragment : Fragment() {
         requestOptions.skipMemoryCache(true)
         requestOptions.fitCenter()
 
+
         return photoImageView!!.photoConstraintLayout.rootView
     }
 

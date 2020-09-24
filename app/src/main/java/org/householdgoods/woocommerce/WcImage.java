@@ -5,8 +5,8 @@ import com.google.gson.annotations.SerializedName;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+public class WcImage {
 
-public class Image {
 
     @SerializedName("id")
     @Expose
@@ -38,6 +38,16 @@ public class Image {
     @Expose
     public String title;
 
+    // relative path folder (under wp-content/uploads) of the file to create. eg: 2018/05/department/brand
+    @SerializedName("media_path")
+    @Expose
+    public String media_path;
+
+    // WooCommerce specific Base64 string of media binary file
+    @SerializedName("media_attachment")
+    @Expose
+    public String media_attachment;
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -52,5 +62,4 @@ public class Image {
                 .append("title", title)
                 .toString();
     }
-
 }
