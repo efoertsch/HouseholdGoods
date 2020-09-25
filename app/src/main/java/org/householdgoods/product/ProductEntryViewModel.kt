@@ -177,9 +177,10 @@ class ProductEntryViewModel //super(application);
     fun addOrUpdateItem() {
         if (product.id == 0) {
             addItem()
-        } else {
-            updateItem()
         }
+//        else {
+//            updateItem()
+//        }
     }
 
 
@@ -207,20 +208,20 @@ class ProductEntryViewModel //super(application);
                 //2. save product, note that returned product has id assigned
                 product = repository.createNewProduct(product)
 
-                // 3. Save photos
-                // create paths for photos
-                val wcPhotoFileNames = createPhotoImageUrls()
-                repository.uploadPhotosToWc(wcPhotoFileNames, yyyymmBaseUrl)
-
-                // 4. Update product with photo urls
-                val wcPhotoImages = createImagesForProduct(wcPhotoFileNames, yyyymmBaseUrl)
-                var productWithUrls = Product()
-                productWithUrls.id = product.id
-                // saved product now store photos
-                productWithUrls.images = wcPhotoImages
-                productWithUrls = repository.updateProduct(productWithUrls)
-                // update originally returned product just for kicks
-                product.images = productWithUrls.images
+//                // 3. Save photos
+//                // create paths for photos
+//                val wcPhotoFileNames = createPhotoImageUrls()
+//                repository.uploadPhotosToWc(wcPhotoFileNames, yyyymmBaseUrl)
+//
+//                // 4. Update product with photo urls
+//                val wcPhotoImages = createImagesForProduct(wcPhotoFileNames, yyyymmBaseUrl)
+//                var productWithUrls = Product()
+//                productWithUrls.id = product.id
+//                // saved product now store photos
+//                productWithUrls.images = wcPhotoImages
+//                productWithUrls = repository.updateProduct(productWithUrls)
+//                // update originally returned product just for kicks
+//                product.images = productWithUrls.images
                 // add WCurl to product
                createClipboardUrl()
 
@@ -466,6 +467,7 @@ class ProductEntryViewModel //super(application);
     fun validateProductName() {
         val prodName = productName.value
         product.name = prodName
+        product.short_description = prodName
         if (prodName == null || prodName.isBlank() || prodName.length < 3) {
             productNameErrorMsg.value = "Product name missing or too short."
         } else {

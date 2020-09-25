@@ -17,7 +17,7 @@ class LoggingInterceptor(private val apiKey: String, private val apiSecret: Stri
         }
         val request = chain.request()
                 .newBuilder()
-                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("Content-Type", "application/json")
                 .header("Authorization",  getBase64UidPwd(apiKey, apiSecret))
                 .build()
         val t1 = System.nanoTime()

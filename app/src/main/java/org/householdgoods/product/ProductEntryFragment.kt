@@ -122,6 +122,7 @@ class ProductEntryFragment : Fragment() {
     private fun resetProduct() {
         productEntryView?.productSkuConfirmation?.skuConfirmationDisplay?.visibility = View.GONE
         productEntryView?.productCategoryAutoCompleteTextView?.setText("")
+        productEntryView?.productAddUpdateButton?.isEnabled = false
         viewModel.resetProduct()
 
     }
@@ -223,7 +224,8 @@ class ProductEntryFragment : Fragment() {
                     productEntryView?.productAddUpdateButton?.text = getString(R.string.add_item)
                     productEntryView?.productCategoryLayout?.isEnabled = true
                 } else {
-                    productEntryView?.productAddUpdateButton?.text = getString(R.string.update_item)
+                   //productEntryView?.productAddUpdateButton?.text = getString(R.string.update_item)
+                    productEntryView?.productAddUpdateButton?.isEnabled = false
                     productEntryView?.productCategoryLayout?.isEnabled = false
                 }
             }
