@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/start_activity_coordinator_layout"
@@ -8,37 +7,30 @@
     android:layout_height="match_parent"
     tools:context="org.householdgoods.start.StartActivity">
 
-    <LinearLayout
-        android:id="@+id/app_drawer_toolbar_layout"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.NoActionBar.AppBarOverlay">
 
-        <include layout="@layout/appbar_toolbar" />
 
-        <RelativeLayout
-            android:id="@+id/app_frame_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <fragment
-            android:id="@+id/start_options_fragment_container"
-            android:name="androidx.navigation.fragment.NavHostFragment"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_graph"
-            />
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            app:popupTheme="@style/AppTheme.NoActionBar.PopupOverlay"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <fragment
+        android:id="@+id/start_options_fragment_container"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
