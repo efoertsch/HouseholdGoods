@@ -83,13 +83,15 @@ class HHGCategoryAdapter(val myContext: Context, val resourceId: Int, val items:
             }
         }
 
-        override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults?) {
+        override fun publishResults(charSequence: CharSequence?,  filterResults: FilterResults?) {
             val tempValues = filterResults?.values as ArrayList<HHGCategory>
+            val filteredCategories = ArrayList<HHGCategory>()
             if (filterResults.count > 0) {
                 clear()
                 for (lookupItem in tempValues) {
-                    add(lookupItem)
+                    filteredCategories.add(lookupItem)
                 }
+                addAll(filteredCategories)
                 notifyDataSetChanged()
             } else {
                 clear()

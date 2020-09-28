@@ -2,18 +2,24 @@ package org.householdgoods
 
 import com.google.gson.Gson
 import okhttp3.*
+import org.apache.commons.codec.binary.Base64OutputStream
+import org.apache.commons.io.FileUtils
 import org.householdgoods.hilt.OkHttpClientModule
 import org.householdgoods.retrofit.HouseholdGoodsRetrofit
 import org.householdgoods.retrofit.HouseholdGoodsServerApi
 import org.householdgoods.retrofit.LoggingInterceptor
 import org.householdgoods.woocommerce.Category
+import org.householdgoods.woocommerce.WcPhoto
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
 import retrofit2.Retrofit
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.IOException
+import java.time.Instant
 import java.util.*
 
 
@@ -155,7 +161,7 @@ class HouseholdGoodsTest {
 
         val file = File("/Users/ericfoertsch/Downloads/2020_09_13_16_48_26_19.jpg")
        // val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
-        val body = RequestBody.create(MEDIA_TYPE_JPG ,file)
+        val body = RequestBody.create(MEDIA_TYPE_JPG, file)
 
         val httpClient = OkHttpClient().newBuilder().addInterceptor(LoggingInterceptor("x3rqb8eGROaP", "f1JlirUR83HFyeXOgHLfMDpR"))
         OkHttpClientModule.overrideSslSocketFactory(httpClient)
@@ -168,6 +174,50 @@ class HouseholdGoodsTest {
                 .build()
         val response = client.newCall(request).execute()
         println(response.body()!!.string())
+    }
+
+
+    @Test
+    @Throws(Exception::class)
+    fun testUploadPhotoToWC() {
+        val file = File("/Users/ericfoertsch/Downloads/IMG_20200924_082548183.jpg")
+        val decodedImageFileName = "/Users/ericfoertsch/Downloads/decodedBase64.jpg"
+        val base64String = convertImageFileToBase64(file)
+        convertBase64StringToFile(base64String, decodedImageFileName )
+        val wcPhoto = WcPhoto()
+        wcPhoto.media_attachment = base64String
+        wcPhoto.media_path = "2020/09"
+        wcPhoto.date = Instant.now().toString()
+        var fileName = "CO-0925-01.jpg"
+        wcPhoto.title = fileName
+        wcPhoto.description =fileName
+        wcPhoto.slug = fileName
+        wcPhoto.media_type = "image"
+        wcPhoto.mime_type = "image/jpeg"
+        val headerContent = "attachment;filename=".plus(fileName)
+        wcPhoto.author = "HHG"
+
+        val response = client?.addWcPhotoTest(wcPhoto, headerContent)?.execute()
+        println(response?.body()?.string())
+    }
+
+
+    fun convertImageFileToBase64(imageFile: File): String {
+        return FileInputStream(imageFile).use { inputStream ->
+            ByteArrayOutputStream().use { outputStream ->
+                Base64OutputStream(outputStream, true, -1, null).use { base64FilterStream ->
+                    inputStream.copyTo(base64FilterStream)
+                    base64FilterStream.close() // This line is required, see comments
+                    outputStream.toString()
+                }
+            }
+        }
+    }
+
+    fun convertBase64StringToFile(base64String: String, outputFileName: String) {
+        val decodedBytes: ByteArray = Base64.getDecoder().decode(base64String)
+        FileUtils.writeByteArrayToFile(File(outputFileName), decodedBytes)
+
     }
 
 }

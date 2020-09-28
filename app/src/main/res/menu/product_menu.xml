@@ -5,7 +5,7 @@
     <item
         android:id="@+id/product_menu_item_woocommerce"
         android:title="WooCommerce"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
     <item
         android:id="@+id/product_menu_product_reset"
         android:title="Reset Product"

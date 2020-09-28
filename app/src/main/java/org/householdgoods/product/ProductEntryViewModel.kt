@@ -75,6 +75,9 @@ class ProductEntryViewModel //super(application);
         loadHHGCategoryFile(uri)
 
     }
+    fun hasCategories(): Boolean {
+        return (wcCategories.size > 0 && hhgCategories.value != null && hhgCategories.value!!.size > 0)
+    }
 
     private fun loadWcCategories() {
         wcCategories.clear()
@@ -257,7 +260,8 @@ class ProductEntryViewModel //super(application);
     private fun createClipboardUrl() {
         // force an update
         clipboardLinkToProduct.value = ""
-        clipboardLinkToProduct.value = repository.getWCProductUrl(product.id )
+      //  clipboardLinkToProduct.value = repository.getWCProductUrl(product.id )
+        clipboardLinkToProduct.value = product.sku
     }
 
     private fun updateItem() {

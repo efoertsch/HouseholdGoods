@@ -41,6 +41,12 @@ interface HouseholdGoodsServerApi {
 
     //vvvvvvv  Used for testing  vvvvvvvvvv
 
+    //Upload photo - may get http ahead of json response
+
+    @POST("/wp-json/wc/v2/media")
+    fun addWcPhotoTest(@Body wcPhoto: WcPhoto, @Header("Content-Disposition") fileName: String) : Call<ResponseBody>?
+
+
     @Multipart
     @POST("/wp-json/wp/v2/media")
     fun updateProfile(@Part image: MultipartBody.Part?): Call<ResponseBody?>?

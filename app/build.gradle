@@ -148,10 +148,10 @@ dependencies {
     //androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$KOTLIN_COROUTINES"
 
 
-    //Room
-//    implementation "androidx.room:room-runtime:$ROOM_VERSION"
-//    implementation "androidx.room:room-rxjava2:$ROOM_VERSION"
-//    kapt "androidx.room:room-compiler:$ROOM_VERSION"
+    // For unit testing WC photo upload
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'commons-net:commons-net:3.7'
+    implementation 'commons-codec:commons-codec:1.15'
 
     implementation 'org.apache.commons:commons-text:1.7'
 

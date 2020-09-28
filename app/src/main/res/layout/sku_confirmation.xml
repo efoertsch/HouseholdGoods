@@ -74,12 +74,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_double"
             android:gravity="center"
-            android:text="clearly on tape and afix to item."
+            android:text="clearly on tape and affix to item."
             android:textSize="@dimen/text_size_large_48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/sku_big_text"
-           />
+            app:layout_constraintTop_toBottomOf="@id/sku_big_text" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/sku_confirmation_close_button"
