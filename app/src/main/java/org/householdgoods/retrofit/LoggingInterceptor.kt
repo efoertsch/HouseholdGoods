@@ -13,7 +13,7 @@ class LoggingInterceptor(private val apiKey: String, private val apiSecret: Stri
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         if (BuildConfig.DEBUG) {
-            Timber.d("inside intercept callback")
+            System.out.println("inside intercept callback")
         }
         val request = chain.request()
                 .newBuilder()
@@ -31,7 +31,7 @@ class LoggingInterceptor(private val apiKey: String, private val apiSecret: Stri
                 """.trimIndent()
         }
         if (BuildConfig.DEBUG) {
-            Timber.d("request\n$requestLog")
+            System.out.println("request\n" + requestLog)
         }
         val response = chain.proceed(request)
         val t2 = System.nanoTime()
@@ -41,8 +41,8 @@ class LoggingInterceptor(private val apiKey: String, private val apiSecret: Stri
         return if (contentType != null && !contentType.startsWith("image")) {
             val bodyString = response.body()!!.string()
             if (BuildConfig.DEBUG) {
-                //    Timber.d("response only" + "\n" + bodyString);
-                Timber.d("response\n$responseLog\n$bodyString")
+                //    System.out.println("response only" + "\n" + bodyString);
+                System.out.println("response\n" + responseLog + "\n" +bodyString)
             }
             response.newBuilder()
                     .body(ResponseBody.create(response.body()!!.contentType(), bodyString))
@@ -55,7 +55,7 @@ class LoggingInterceptor(private val apiKey: String, private val apiSecret: Stri
     // Following encode ONLY WORKS in Android (part of Android library), not in JUnit!
     private fun getBase64UidPwd(key: String, secret: String): String {
         val encoded = Credentials.basic(key, secret)
-        Timber.d("Encoded : $encoded")
+        System.out.println("Encoded : $encoded")
         return encoded
     }
 

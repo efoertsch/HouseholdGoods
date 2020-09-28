@@ -75,7 +75,7 @@ class ProductEntryFragment : Fragment() {
             viewModel.setCategory(category)
         }
 
-        productEntryView?.productCameraButton?.setOnClickListener { v -> goToCameraApp() }
+        //productEntryView?.productCameraButton?.setOnClickListener { v -> goToCameraApp() }
 
         photoCollectionAdapter = PhotoCollectionAdapter(this)
         viewPager = productEntryView?.productPhotoPager!!
@@ -94,7 +94,9 @@ class ProductEntryFragment : Fragment() {
         }
 
         assignFocusChangeListenersToViews()
-        showHHGCategorySelectionAlertDialog()
+        if (!viewModel.hasCategories()) {
+            showHHGCategorySelectionAlertDialog()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -123,6 +125,7 @@ class ProductEntryFragment : Fragment() {
         productEntryView?.productSkuConfirmation?.skuConfirmationDisplay?.visibility = View.GONE
         productEntryView?.productCategoryAutoCompleteTextView?.setText("")
         productEntryView?.productAddUpdateButton?.isEnabled = false
+        productEntryView?.productAddUpdateButton?.visibility = View.VISIBLE
         viewModel.resetProduct()
 
     }
@@ -270,9 +273,11 @@ class ProductEntryFragment : Fragment() {
 
     private fun showSkuConfirmationView() {
         productEntryView?.productSkuConfirmation?.skuConfirmationDisplay?.visibility = View.VISIBLE
+        productEntryView?.productAddUpdateButton?.visibility = View.GONE
+        productEntryView?.productAddUpdateButton?.isEnabled = false
         productEntryView?.productSkuConfirmation?.skuConfirmationCloseButton?.setOnClickListener(View.OnClickListener {
             productEntryView?.productSkuConfirmation?.skuConfirmationDisplay?.visibility = View.GONE
-            //viewModel.resetProduct()
+            productEntryView?.productAddUpdateButton?.visibility = View.VISIBLE
         })
 
     }

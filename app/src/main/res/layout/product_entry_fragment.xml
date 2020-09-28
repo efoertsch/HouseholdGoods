@@ -31,315 +31,328 @@
             android:layout_margin="@dimen/margin_standard">
 
 
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/vertical_guideline_50pct"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/vertical_guideline_50pct"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.50" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/vertical_guideline_25pct"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.25" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/product_category_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_double"
+                android:enabled="@{viewModel.productId == 0}"
+                android:hint="Category"
+
+                app:errorEnabled="true"
+                app:errorText="@{viewModel.lookupCategoryErrorMsg}"
+                app:hintTextAppearance="@style/HintTextSizeExtraLarge"
+                app:layout_constraintBottom_toBottomOf="@id/product_sku_category"
+                app:layout_constraintEnd_toEndOf="@id/product_sku_label"
+                app:layout_constraintEnd_toStartOf="@id/vertical_guideline_25pct"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/product_sku_label">
+
+                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                    android:id="@+id/product_category_autoCompleteTextView"
+                    style="@style/TextSizeExtraLargeBold"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.50" />
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    tools:text="Twin Mattress"
+                    android:nextFocusDown="@id/product_name_layout"
 
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/vertical_guideline_25pct"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/product_sku_label"
+                style="@style/TextSizeExtraLargeBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_double"
+                android:text="SKU"
+                app:layout_constraintStart_toStartOf="@id/vertical_guideline_25pct"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/product_sku_category"
+                style="@style/TextSizeExtraLargeBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_double"
+                android:text="@{viewModel.skuCategoryCode}"
+                app:layout_constraintStart_toStartOf="@id/vertical_guideline_25pct"
+                app:layout_constraintTop_toBottomOf="@id/product_sku_label" />
+
+            <TextView
+                android:id="@+id/product_sku_category_dash"
+                style="@style/TextSizeExtraLargeBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                app:layout_constraintStart_toEndOf="@id/product_sku_category"
+                app:layout_constraintTop_toBottomOf="@id/product_sku_label" />
+
+            <TextView
+                android:id="@+id/product_sku_mmdd"
+                style="@style/TextSizeExtraLargeBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.skuDateCode}"
+                app:layout_constraintStart_toEndOf="@id/product_sku_category_dash"
+                app:layout_constraintTop_toBottomOf="@id/product_sku_label"
+                tools:text="0903" />
+
+            <TextView
+                android:id="@+id/product_sku_2nd_dash"
+                style="@style/TextSizeExtraLargeBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                app:layout_constraintStart_toEndOf="@id/product_sku_mmdd"
+                app:layout_constraintTop_toBottomOf="@id/product_sku_label" />
+
+            <TextView
+                android:id="@+id/product_sku_sequence_number"
+                style="@style/TextSizeExtraLargeBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.skuSequenceNumber}"
+                app:layout_constraintStart_toEndOf="@id/product_sku_2nd_dash"
+                app:layout_constraintTop_toBottomOf="@id/product_sku_label"
+                tools:text="01" />
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/product_name_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:enabled="@{viewModel.productId == 0}"
+                android:hint="Product Name"
+                app:errorEnabled="true"
+                app:errorText="@{viewModel.productNameErrorMsg}"
+                app:hintTextAppearance="@style/HintTextSizeExtraLarge"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/vertical_guideline_50pct"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/product_category_layout"
+                android:imeOptions="actionNext"
+                android:nextFocusDown="@id/product_length_layout"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/product_name"
+                    style="@style/HintTextSizeExtraLarge"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.25" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/product_category_layout"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_double"
-                    android:hint="Category"
-                    app:errorEnabled="true"
-                    android:enabled="@{viewModel.productId == 0}"
-                    app:errorText="@{viewModel.lookupCategoryErrorMsg}"
-                    app:hintTextAppearance="@style/HintTextSizeExtraLarge"
-                    app:layout_constraintBottom_toBottomOf="@id/product_sku_category"
-                    app:layout_constraintEnd_toStartOf="@id/vertical_guideline_25pct"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="@id/product_sku_label"
-                    app:layout_constraintTop_toTopOf="@+id/product_sku_label">
+                    android:inputType="textCapWords"
+                    android:text="@={viewModel.productName}"
+                    />
 
-                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                        android:id="@+id/product_category_autoCompleteTextView"
-                        style="@style/TextSizeExtraLargeBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:maxLines="1"
-                        tools:text="Twin Mattress"
-                        />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:id="@+id/product_dimensions"
+                style="@style/TextSizeExtraLargeBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_standard"
+                android:text="Dimensions"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/product_name_layout" />
 
-                <TextView
-                    android:id="@+id/product_sku_label"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/product_length_layout"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:enabled="@{viewModel.productId == 0}"
+                android:hint="Len"
+                app:errorEnabled="true"
+                app:errorText="@{viewModel.productLengthErrorMsg}"
+                app:hintTextAppearance="@style/HintTextSizeExtraLarge"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/product_dimensions">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/product_length"
                     style="@style/TextSizeExtraLargeBold"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_double"
-                    android:text="SKU"
-                    app:layout_constraintStart_toStartOf="@id/vertical_guideline_25pct"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:inputType="number"
+                    android:nextFocusRight="@id/product_width"
+                    android:text="@={viewModel.productLength}" />
 
-                <TextView
-                    android:id="@+id/product_sku_category"
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/product_width_layout"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_standard"
+                android:enabled="@{viewModel.productId == 0}"
+                android:hint="Width"
+                app:errorEnabled="true"
+                app:errorText="@{viewModel.productWidthErrorMsg}"
+                app:hintTextAppearance="@style/HintTextSizeExtraLarge"
+                app:layout_constraintEnd_toStartOf="@+id/product_height_layout"
+                app:layout_constraintStart_toEndOf="@+id/product_length_layout"
+                app:layout_constraintTop_toTopOf="@id/product_length_layout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/product_width"
                     style="@style/TextSizeExtraLargeBold"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_double"
-                    android:text="@{viewModel.skuCategoryCode}"
-                    app:layout_constraintStart_toStartOf="@id/vertical_guideline_25pct"
-                    app:layout_constraintTop_toBottomOf="@id/product_sku_label" />
+                    android:baselineAligned="false"
+                    android:inputType="number"
+                    android:nextFocusRight="@id/product_height"
+                    android:text="@={viewModel.productWidth}" />
 
-                <TextView
-                    android:id="@+id/product_sku_category_dash"
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/product_height_layout"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_standard"
+                android:enabled="@{viewModel.productId == 0}"
+                android:hint="Height"
+                app:errorEnabled="true"
+                app:errorText="@{viewModel.productHeightErrorMsg}"
+                app:hintTextAppearance="@style/HintTextSizeExtraLarge"
+                app:layout_constraintStart_toEndOf="@+id/product_width_layout"
+                app:layout_constraintTop_toTopOf="@id/product_length_layout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/product_height"
                     style="@style/TextSizeExtraLargeBold"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="-"
-                    app:layout_constraintStart_toEndOf="@id/product_sku_category"
-                    app:layout_constraintTop_toBottomOf="@id/product_sku_label" />
+                    android:inputType="number"
+                    android:nextFocusDown="@id/product_quantity"
+                    android:text="@={viewModel.productHeight}" />
 
-                <TextView
-                    android:id="@+id/product_sku_mmdd"
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--
+            <ImageButton
+                android:id="@+id/product_camera_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="@dimen/margin_triple"
+                android:layout_marginTop="@dimen/margin_standard"
+                android:enabled="@{viewModel.productId == 0}"
+                android:src="@drawable/ic_photo_camera"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/product_height_layout"
+                app:layout_constraintStart_toEndOf="@+id/product_height_layout"
+                app:layout_constraintTop_toTopOf="@+id/product_height_layout" />
+                -->
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/product_quantity_layout"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_standard"
+                android:enabled="@{viewModel.productId == 0}"
+                android:hint="Qty"
+                app:errorEnabled="true"
+                app:errorText="@{viewModel.productQuantityErrorMsg}"
+                app:hintTextAppearance="@style/HintTextSizeExtraLarge"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/product_length_layout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/product_quantity"
                     style="@style/TextSizeExtraLargeBold"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{viewModel.skuDateCode}"
-                    app:layout_constraintStart_toEndOf="@id/product_sku_category_dash"
-                    app:layout_constraintTop_toBottomOf="@id/product_sku_label"
-                    tools:text="0903" />
+                    android:inputType="number"
+                    android:nextFocusDown="@id/product_description"
+                    android:text="@={viewModel.productQuantity}" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                <TextView
-                    android:id="@+id/product_sku_2nd_dash"
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/product_description_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_standard"
+                android:enabled="@{viewModel.productId == 0}"
+                app:errorEnabled="true"
+                app:errorText="@{viewModel.productDescriptionErrorMsg}"
+                app:hintTextAppearance="@style/HintTextSizeExtraLarge"
+                app:layout_constraintEnd_toStartOf="@id/vertical_guideline_50pct"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_quantity_layout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/product_description"
                     style="@style/TextSizeExtraLargeBold"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="-"
-                    app:layout_constraintStart_toEndOf="@id/product_sku_mmdd"
-                    app:layout_constraintTop_toBottomOf="@id/product_sku_label" />
-
-                <TextView
-                    android:id="@+id/product_sku_sequence_number"
-                    style="@style/TextSizeExtraLargeBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{viewModel.skuSequenceNumber}"
-                    app:layout_constraintStart_toEndOf="@id/product_sku_2nd_dash"
-                    app:layout_constraintTop_toBottomOf="@id/product_sku_label"
-                    tools:text="01" />
+                    android:hint="Description"
+                    android:imeOptions="actionNext"
+                    android:inputType="textAutoCorrect|textMultiLine|textCapSentences|textAutoComplete"
+                    android:maxLines="3"
+                    android:text="@={viewModel.productDescription}" />
+            </com.google.android.material.textfield.TextInputLayout>
 
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/product_name_layout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:hint="Product Name"
-                    app:errorEnabled="true"
-                    android:enabled="@{viewModel.productId == 0}"
-                    app:errorText="@{viewModel.productNameErrorMsg}"
-                    app:hintTextAppearance="@style/HintTextSizeExtraLarge"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/vertical_guideline_50pct"
-                    app:layout_constraintTop_toBottomOf="@id/product_category_layout">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/product_add_update_button"
+                style="@style/HHGButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_double"
+                android:text="@string/add_item"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/vertical_guideline_50pct"
+                app:layout_constraintStart_toStartOf="parent" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/product_name"
-                        style="@style/HintTextSizeExtraLarge"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textCapWords"
-                        android:text="@={viewModel.productName}" />
+            <TextView
+                android:id="@+id/product_photos_label"
+                style="@style/TextSizeExtraLargeBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_standard"
+                android:layout_marginBottom="@dimen/margin_double"
+                android:gravity="center"
+                android:text="Photos"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/vertical_guideline_50pct"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/photo_tab_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/vertical_guideline_50pct"
+                app:layout_constraintTop_toBottomOf="@id/product_photos_label" />
 
-                <TextView
-                    android:id="@+id/product_dimensions"
-                    style="@style/TextSizeExtraLargeBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_standard"
-                    android:text="Dimensions"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/product_name_layout" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/product_length_layout"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:hint="Len"
-                    app:errorEnabled="true"
-                    android:enabled="@{viewModel.productId == 0}"
-                    app:errorText="@{viewModel.productLengthErrorMsg}"
-                    app:hintTextAppearance="@style/HintTextSizeExtraLarge"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/product_dimensions">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/product_length"
-                        style="@style/TextSizeExtraLargeBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:text="@={viewModel.productLength}" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/product_width_layout"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_standard"
-                    android:hint="Width"
-                    app:errorEnabled="true"
-                    android:enabled="@{viewModel.productId == 0}"
-                    app:errorText="@{viewModel.productWidthErrorMsg}"
-                    app:hintTextAppearance="@style/HintTextSizeExtraLarge"
-                    app:layout_constraintEnd_toStartOf="@+id/product_height_layout"
-                    app:layout_constraintStart_toEndOf="@+id/product_length_layout"
-                    app:layout_constraintTop_toTopOf="@id/product_length_layout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/product_width"
-                        style="@style/TextSizeExtraLargeBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:baselineAligned="false"
-                        android:inputType="number"
-                        android:text="@={viewModel.productWidth}" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/product_height_layout"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_standard"
-                    android:hint="Height"
-                    app:errorEnabled="true"
-                    android:enabled="@{viewModel.productId == 0}"
-                    app:errorText="@{viewModel.productHeightErrorMsg}"
-                    app:hintTextAppearance="@style/HintTextSizeExtraLarge"
-                    app:layout_constraintStart_toEndOf="@+id/product_width_layout"
-                    app:layout_constraintTop_toTopOf="@id/product_length_layout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/product_height"
-                        style="@style/TextSizeExtraLargeBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:text="@={viewModel.productHeight}" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <ImageButton
-                    android:id="@+id/product_camera_button"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="@dimen/margin_triple"
-                    android:layout_marginTop="@dimen/margin_standard"
-                    android:src="@drawable/ic_photo_camera"
-                    android:visibility="gone"
-                    android:enabled="@{viewModel.productId == 0}"
-                    app:layout_constraintBottom_toBottomOf="@+id/product_height_layout"
-                    app:layout_constraintStart_toEndOf="@+id/product_height_layout"
-                    app:layout_constraintTop_toTopOf="@+id/product_height_layout" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/product_quantity_layout"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_standard"
-                    android:hint="Qty"
-                    app:errorEnabled="true"
-                    android:enabled="@{viewModel.productId == 0}"
-                    app:errorText="@{viewModel.productQuantityErrorMsg}"
-                    app:hintTextAppearance="@style/HintTextSizeExtraLarge"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/product_length_layout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/product_quantity"
-                        style="@style/TextSizeExtraLargeBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:text="@={viewModel.productQuantity}" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/product_description_layout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_standard"
-                    app:errorEnabled="true"
-                    android:enabled="@{viewModel.productId == 0}"
-                    app:errorText="@{viewModel.productDescriptionErrorMsg}"
-                    app:hintTextAppearance="@style/HintTextSizeExtraLarge"
-                    app:layout_constraintEnd_toStartOf="@id/vertical_guideline_50pct"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/product_quantity_layout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/product_description"
-                        style="@style/TextSizeExtraLargeBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Description"
-                        android:inputType="textAutoCorrect|textMultiLine|textCapSentences|textAutoComplete"
-                        android:maxLines="3"
-                        android:text="@={viewModel.productDescription}" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/product_add_update_button"
-                    style="@style/HHGButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_double"
-                    android:text="@string/add_item"
-                    app:layout_constraintEnd_toStartOf="@id/vertical_guideline_50pct"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <TextView
-                    android:id="@+id/product_photos_label"
-                    style="@style/TextSizeExtraLargeBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_standard"
-                    android:layout_marginBottom="@dimen/margin_double"
-                    android:gravity="center"
-                    android:text="Photos"
-                    android:visibility="gone"
-                    app:layout_constraintStart_toEndOf="@id/vertical_guideline_50pct"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.google.android.material.tabs.TabLayout
-                    android:id="@+id/photo_tab_layout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:layout_constraintStart_toEndOf="@id/vertical_guideline_50pct"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/product_photos_label" />
-
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/product_photo_pager"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:visibility="gone"
-                    app:layout_constraintStart_toEndOf="@id/vertical_guideline_50pct"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/photo_tab_layout">
-                </androidx.viewpager2.widget.ViewPager2>
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/product_photo_pager"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/vertical_guideline_50pct"
+                app:layout_constraintTop_toBottomOf="@id/photo_tab_layout"></androidx.viewpager2.widget.ViewPager2>
 
 
             <FrameLayout
@@ -372,10 +385,9 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:viewModel="@{((org.householdgoods.product.ProductEntryViewModel) viewModel)}"
-                />
+                app:viewModel="@{((org.householdgoods.product.ProductEntryViewModel) viewModel)}" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -297,7 +297,9 @@ class Repository @Inject constructor(private val appContext: Context,
 
     fun getWCProductUrl(productId : Int) : String{
         // create link like http://staging9.online.householdgoods.org/wp-admin/post.php?post=14364&action=edit
-        return appContext.getString(R.string.householdgoods_url).plus(appContext.getString(R.string.product_edit_link, productId));
+        val clipboardLink = appContext.getString(R.string.householdgoods_clipboad_url).plus(appContext.getString(R.string.product_edit_link, productId))
+        Timber.d("Clipboard link :  $clipboardLink" )
+        return clipboardLink
     }
 }
 

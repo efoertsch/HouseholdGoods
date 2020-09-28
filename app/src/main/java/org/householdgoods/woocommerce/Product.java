@@ -22,9 +22,9 @@ public class Product {
 //    @SerializedName("slug")
 //    @Expose
 //    public String slug;
-//    @SerializedName("permalink")
-//    @Expose
-//    public String permalink;
+    @SerializedName("permalink")
+    @Expose
+    public String permalink;
 //    @SerializedName("date_created")
 //    @Expose
 //    public String date_created;
@@ -217,7 +217,7 @@ public class Product {
         return new ToStringBuilder(this).append("id", id)
                 .append("name", name)
 //                .append("slug", slug)
-//                .append("permalink", permalink)
+               .append("permalink", permalink)
 //                .append("date_created", date_created)
 //                .append("date_created_gmt", date_created_gmt)
 //                .append("date_modified", date_modified)

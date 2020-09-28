@@ -4,6 +4,8 @@
     <!-- Staging 9 -->
     <string name="woocommerce_url">http://staging9.online.householdgoods.org/manage-store/</string>
     <string name="householdgoods_url">https://staging9.online.householdgoods.org</string>
+    <!-- following link must be http not https for staging as staging is not secure -->
+    <string name="householdgoods_clipboad_url">http://staging9.online.householdgoods.org</string>
     <string name="product_base_link">/wp-json/wc/v3/products/</string>
     <string name="product_edit_link">/wp-admin/post.php?post=%1$d\&amp;action=edit</string>
 
