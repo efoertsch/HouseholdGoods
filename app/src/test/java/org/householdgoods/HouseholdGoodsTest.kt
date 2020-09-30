@@ -8,8 +8,8 @@ import org.householdgoods.hilt.OkHttpClientModule
 import org.householdgoods.retrofit.HouseholdGoodsRetrofit
 import org.householdgoods.retrofit.HouseholdGoodsServerApi
 import org.householdgoods.retrofit.LoggingInterceptor
-import org.householdgoods.woocommerce.Category
-import org.householdgoods.woocommerce.WcPhoto
+import org.householdgoods.woocommerce.category.Category
+import org.householdgoods.woocommerce.photo.WcPhoto
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -19,21 +19,12 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
+import java.nio.charset.Charset
 import java.time.Instant
 import java.util.*
 
 
 class HouseholdGoodsTest {
-
-    // Staging 5
-//    var householdGoodsUrl = "https://staging5.online.householdgoods.org"
-//    var apiKey = "ck_96be3dfef67a29ef6b8a5e92d77c3cd8082ab154"
-//    var apiSecret = "cs_1dd007b26dab4686e96e075c1866e066997c1e86"
-
-    // Staging7 keys
-//    var householdGoodsUrl = "https://staging7.online.householdgoods.org"
-//     var apiKey = "ck_10409f5fc5d2a4a27c9dec959084b78cfd0d363a"
-//     var apiSecret = "cs_79c203153c176c4005bc18c85b7011ea09fa4835"
 
     // Staging 9
     var householdGoodsUrl = "https://staging9.online.householdgoods.org"
@@ -182,22 +173,25 @@ class HouseholdGoodsTest {
     fun testUploadPhotoToWC() {
         val file = File("/Users/ericfoertsch/Downloads/IMG_20200924_082548183.jpg")
         val decodedImageFileName = "/Users/ericfoertsch/Downloads/decodedBase64.jpg"
+        val base64StringFile = "/Users/ericfoertsch/Downloads/base64_jpg_encoded.txt"
         val base64String = convertImageFileToBase64(file)
-        convertBase64StringToFile(base64String, decodedImageFileName )
+        // decode it back to original to check that encode/decode still produces valid jpg
+        convertBase64StringToFile(base64String, decodedImageFileName)
+        // write the base64 string to a file for later use in curl/postman testing
+        writeBase64StringToFile(base64String ,base64StringFile)
         val wcPhoto = WcPhoto()
         wcPhoto.media_attachment = base64String
-        wcPhoto.media_path = "2020/09"
-        wcPhoto.date = Instant.now().toString()
-        var fileName = "CO-0925-01.jpg"
+        var fileName = "CO-0928-01.jpg"
         wcPhoto.title = fileName
         wcPhoto.description =fileName
         wcPhoto.slug = fileName
+        wcPhoto.media_path = "2020/09"
+        wcPhoto.date = Instant.now().toString()
         wcPhoto.media_type = "image"
         wcPhoto.mime_type = "image/jpeg"
         val headerContent = "attachment;filename=".plus(fileName)
         wcPhoto.author = "HHG"
-
-        val response = client?.addWcPhotoTest(wcPhoto, headerContent)?.execute()
+        val response = client?.addWcPhotoTest(wcPhoto)?.execute()
         println(response?.body()?.string())
     }
 
@@ -214,10 +208,19 @@ class HouseholdGoodsTest {
         }
     }
 
+
+    // This decodes base64 string and writes it back to file
+    // So if you have in jpg as Base64 string, the file should contain the original jpg
     fun convertBase64StringToFile(base64String: String, outputFileName: String) {
         val decodedBytes: ByteArray = Base64.getDecoder().decode(base64String)
         FileUtils.writeByteArrayToFile(File(outputFileName), decodedBytes)
 
+    }
+
+    // This is meant to write a base64 encoded string to a file for later use in
+    // using postman or curl to test photo uploads to the WooCommerce media API
+    fun writeBase64StringToFile(base64String: String, outputFileName: String) {
+        FileUtils.writeStringToFile(File(outputFileName), base64String, Charset.defaultCharset())
     }
 
 }

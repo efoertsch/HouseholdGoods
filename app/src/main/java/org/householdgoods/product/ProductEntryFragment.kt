@@ -2,20 +2,23 @@ package org.householdgoods.product
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.*
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView.OnItemClickListener
+import android.widget.TextView.OnEditorActionListener
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
@@ -73,9 +76,10 @@ class ProductEntryFragment : Fragment() {
             categoryAutoCompleteView.setText(category.key.plus(" - ").plus(category.item))
             productEntryView?.productName?.setText(category.item)
             viewModel.setCategory(category)
+            productEntryView?.productName?.requestFocus()
         }
 
-        //productEntryView?.productCameraButton?.setOnClickListener { v -> goToCameraApp() }
+        productEntryView?.productCameraButton?.setOnClickListener { v -> goToCameraApp() }
 
         photoCollectionAdapter = PhotoCollectionAdapter(this)
         viewPager = productEntryView?.productPhotoPager!!
@@ -97,11 +101,26 @@ class ProductEntryFragment : Fragment() {
         if (!viewModel.hasCategories()) {
             showHHGCategorySelectionAlertDialog()
         }
+        productEntryView?.productDescription?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                productEntryView?.productQuantity?.requestFocus()
+                return@OnEditorActionListener true
+            }
+            false
+        })
+
+        productEntryView?.productQuantity?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                productEntryView?.productLength?.requestFocus()
+                return@OnEditorActionListener true
+            }
+            false
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.product_menu, menu)
-        super.onCreateOptionsMenu(menu, inflater);
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
 
@@ -175,18 +194,22 @@ class ProductEntryFragment : Fragment() {
     private fun closeKeyboard() {
         val imm: InputMethodManager = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(productEntryView?.root!!.windowToken, 0)
-
+    }
+    private fun openKeyboard(){
+        val imm = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
     }
 
     private fun setUpObservers() {
-        viewModel.hhgCategories.observe(viewLifecycleOwner, Observer {
+        viewModel.hhgCategories.observe(viewLifecycleOwner, {
             it?.let {
                 assignHHGCategories(it)
+                productEntryView?.productCategoryAutoCompleteTextView?.requestFocus()
+                openKeyboard()
             }
         })
 
-        viewModel.photoList.observe(viewLifecycleOwner, Observer
-        {
+        viewModel.photoList.observe(viewLifecycleOwner, {
             it?.let {
                 updatePhotoList(it)
             }
@@ -202,8 +225,11 @@ class ProductEntryFragment : Fragment() {
 
         viewModel.dataEntryOK.observe(viewLifecycleOwner, {
             it?.let {
-                productEntryView?.productAddUpdateButton?.setEnabled(it)
-                productEntryView?.productAddUpdateButton?.setClickable(it)
+                productEntryView?.productAddUpdateButton?.isEnabled = it
+                productEntryView?.productAddUpdateButton?.isClickable = it
+                productEntryView?.productAddUpdateButton?.isFocusable = it
+
+
             }
         })
 
@@ -227,7 +253,7 @@ class ProductEntryFragment : Fragment() {
                     productEntryView?.productAddUpdateButton?.text = getString(R.string.add_item)
                     productEntryView?.productCategoryLayout?.isEnabled = true
                 } else {
-                   //productEntryView?.productAddUpdateButton?.text = getString(R.string.update_item)
+                    //productEntryView?.productAddUpdateButton?.text = getString(R.string.update_item)
                     productEntryView?.productAddUpdateButton?.isEnabled = false
                     productEntryView?.productCategoryLayout?.isEnabled = false
                 }
@@ -257,17 +283,19 @@ class ProductEntryFragment : Fragment() {
 
     private fun setWindowTouchability(working: Boolean) {
         if (working) {
+            productEntryView?.productDataProgressBar?.visibility = View.VISIBLE
             // For some reason setting progress bar to visible (and therefor holding frame visible)
             // does not stop user from being able to edit text fields or press buttons so using this
             activity?.getWindow()?.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
             activity?.getWindow()?.setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-            productEntryView?.productDataProgressBar?.visibility = View.VISIBLE
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+
         } else {
-            activity?.getWindow()?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-            activity?.getWindow()?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
             productEntryView?.productDataProgressBar?.visibility = View.GONE
+            activity?.getWindow()?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            activity?.getWindow()?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+
         }
     }
 
@@ -275,10 +303,10 @@ class ProductEntryFragment : Fragment() {
         productEntryView?.productSkuConfirmation?.skuConfirmationDisplay?.visibility = View.VISIBLE
         productEntryView?.productAddUpdateButton?.visibility = View.GONE
         productEntryView?.productAddUpdateButton?.isEnabled = false
-        productEntryView?.productSkuConfirmation?.skuConfirmationCloseButton?.setOnClickListener(View.OnClickListener {
+        productEntryView?.productSkuConfirmation?.skuConfirmationCloseButton?.setOnClickListener {
             productEntryView?.productSkuConfirmation?.skuConfirmationDisplay?.visibility = View.GONE
             productEntryView?.productAddUpdateButton?.visibility = View.VISIBLE
-        })
+        }
 
     }
 
@@ -347,9 +375,9 @@ class ProductEntryFragment : Fragment() {
         val alertDialog = AlertDialog.Builder(context)
                 .setTitle("First Things First")
                 .setMessage("When you click OK you will be shown a file selection screen.\n\nYou must select the HouseholdGoods category csv file for loading into this app.")
-                .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { dialog, which ->
+                .setPositiveButton(android.R.string.ok) { dialog, which ->
                     selectHHGCategoryFile()
-                })
+                }
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .create()
         alertDialog.setCanceledOnTouchOutside(false)
@@ -362,12 +390,12 @@ class ProductEntryFragment : Fragment() {
                 .setTitle("Houston. We have a problem!")
                 .setMessage("A HouseholdGoods category csv file must be selected to use this app." +
                         "\nIf you don't see one, see Mike or the powers that be to resolve the problem.")
-                .setPositiveButton(R.string.exit, DialogInterface.OnClickListener { dialog, which ->
+                .setPositiveButton(R.string.exit) { dialog, which ->
                     requireActivity().finish()
-                })
-                .setNegativeButton(R.string.try_again, DialogInterface.OnClickListener { dialog, which ->
+                }
+                .setNegativeButton(R.string.try_again) { dialog, which ->
                     showHHGCategorySelectionAlertDialog()
-                })
+                }
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .create()
         alertDialog.setCanceledOnTouchOutside(false)
@@ -398,10 +426,10 @@ class ProductEntryFragment : Fragment() {
                 .setMessage("Please show Mike or Leon the following error message before hitting the OK button \n\n"
                         + throwable.message
                         + "\n" + throwable.stackTraceToString())
-                .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { dialog, which ->
+                .setPositiveButton(android.R.string.ok) { dialog, which ->
                     //   resetProduct()
                     setWindowTouchability(false)
-                })
+                }
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .create()
         alertDialog.setCanceledOnTouchOutside(false)

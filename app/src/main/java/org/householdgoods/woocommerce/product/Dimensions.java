@@ -1,4 +1,4 @@
-package org.householdgoods.woocommerce;
+package org.householdgoods.woocommerce.product;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

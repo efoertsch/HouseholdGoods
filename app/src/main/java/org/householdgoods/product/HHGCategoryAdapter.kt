@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.TextView
 import org.householdgoods.data.HHGCategory
-import org.householdgoods.woocommerce.Category
+import org.householdgoods.woocommerce.category.Category
 import kotlin.collections.ArrayList
 
 class HHGCategoryAdapter(val myContext: Context, val resourceId: Int, val items: ArrayList<HHGCategory>) : ArrayAdapter<HHGCategory?>(myContext, resourceId, items as List<HHGCategory?>) {

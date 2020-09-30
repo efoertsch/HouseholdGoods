@@ -1,4 +1,4 @@
-package org.householdgoods.woocommerce;
+package org.householdgoods.woocommerce.photo;
 
 
 import com.google.gson.annotations.Expose;
@@ -9,6 +9,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.ArrayList;
 
 // see https://wordpress.org/plugins/woo-media-api/#description
+// and https://developer.wordpress.org/rest-api/reference/media/#arguments-2
+// This class starts with Wordpress media fields and adds in Wc media_path  and media_attachment
+// Take the guid.rendered url and then update the product with the associated rendered urls
 public class WcPhoto {
 
     @SerializedName("id")
@@ -25,7 +28,7 @@ public class WcPhoto {
 
     @SerializedName("guid")
     @Expose
-    public String guid;
+    public Guid guid;
 
     // Read only
     @SerializedName("link")

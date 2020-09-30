@@ -8,10 +8,10 @@ import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 import org.householdgoods.app.Repository
 import org.householdgoods.data.HHGCategory
-import org.householdgoods.woocommerce.Category
-import org.householdgoods.woocommerce.Dimensions
+import org.householdgoods.woocommerce.category.Category
+import org.householdgoods.woocommerce.product.Dimensions
 import org.householdgoods.woocommerce.Image
-import org.householdgoods.woocommerce.Product
+import org.householdgoods.woocommerce.product.Product
 import timber.log.Timber
 import timber.log.Timber.e
 import java.text.SimpleDateFormat
@@ -131,6 +131,7 @@ class ProductEntryViewModel //super(application);
 
     private fun checkForBothCategoriesLoaded() {
         isWorking.value = !(wcCategories.size > 0 && hhgCategories.value != null && hhgCategories.value!!.size > 0)
+
     }
 
     fun savePhoto(bitmap: Bitmap) {
@@ -211,20 +212,20 @@ class ProductEntryViewModel //super(application);
                 //2. save product, note that returned product has id assigned
                 product = repository.createNewProduct(product)
 
-//                // 3. Save photos
-//                // create paths for photos
-//                val wcPhotoFileNames = createPhotoImageUrls()
-//                repository.uploadPhotosToWc(wcPhotoFileNames, yyyymmBaseUrl)
-//
-//                // 4. Update product with photo urls
-//                val wcPhotoImages = createImagesForProduct(wcPhotoFileNames, yyyymmBaseUrl)
-//                var productWithUrls = Product()
-//                productWithUrls.id = product.id
-//                // saved product now store photos
-//                productWithUrls.images = wcPhotoImages
-//                productWithUrls = repository.updateProduct(productWithUrls)
-//                // update originally returned product just for kicks
-//                product.images = productWithUrls.images
+                // 3. Save photos
+                // create paths for photos
+                val wcPhotoFSkuNames = createPhotoImageIds()
+                repository.uploadPhotosToWc(wcPhotoFSkuNames, yyyymmBaseUrl)
+
+                // 4. Update product with photo urls
+                val wcPhotoImages = createImagesForProduct(wcPhotoFSkuNames, yyyymmBaseUrl)
+                var productWithUrls = Product()
+                productWithUrls.id = product.id
+                // saved product now store photos
+                productWithUrls.images = wcPhotoImages
+                productWithUrls = repository.updateProduct(productWithUrls)
+                // update originally returned product just for kicks
+                product.images = productWithUrls.images
                 // add WCurl to product
                createClipboardUrl()
 
@@ -314,20 +315,22 @@ class ProductEntryViewModel //super(application);
 
     }
 
-    // Product must have full sku created by this ppint !!
-    private fun createPhotoImageUrls(): ArrayList<String> {
+    // Product must have full sku created by this point !!
+    private fun createPhotoImageIds(): ArrayList<String> {
+        // this list has mobile device photo names
         val photoFileList = repository.getListOfPhotoFiles()
-        val urlList = ArrayList<String>()
+        val photoIdList = ArrayList<String>()
         val numberOfPhotos = photoFileList.size
+        // but we want to use sku names
         for (i in 0..numberOfPhotos - 1) {
-            urlList.add(product.sku
+            photoIdList.add(product.sku
                     .plus("-")
                     .plus("%02d".format(i + 1))
                     .plus(".jpg")
             )
 
         }
-        return urlList
+        return photoIdList
     }
 
     /**
