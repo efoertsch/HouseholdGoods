@@ -2,7 +2,6 @@ package org.householdgoods.app
 
 import android.app.DownloadManager
 import android.content.Context
-import android.content.Context.DOWNLOAD_SERVICE
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.graphics.Bitmap
@@ -11,15 +10,14 @@ import android.os.Environment
 import android.util.Base64.DEFAULT
 import android.util.Base64.NO_WRAP
 import android.util.Base64OutputStream
-import androidx.core.content.ContextCompat.getSystemService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.householdgoods.R
 import org.householdgoods.data.HHGCategory
 import org.householdgoods.retrofit.HouseholdGoodsServerApi
-import org.householdgoods.woocommerce.Category
-import org.householdgoods.woocommerce.Product
-import org.householdgoods.woocommerce.WcPhoto
+import org.householdgoods.woocommerce.category.Category
+import org.householdgoods.woocommerce.product.Product
+import org.householdgoods.woocommerce.photo.WcPhoto
 import org.json.JSONObject
 import timber.log.Timber
 import java.io.*
@@ -145,6 +143,7 @@ class Repository @Inject constructor(private val appContext: Context,
 
                     //wcPhoto = householdGoodsServerApi.addPhoto(wcPhoto, "filename=$photoFileNames[i]")
                     val responseBody  = householdGoodsServerApi.addPhotoGetResponseBody(wcPhoto, "filename=$photoFileNames[i]")
+                    responseBody?.string()
                     Timber.d("Photo $i added: $wcPhoto")
                 }
             }

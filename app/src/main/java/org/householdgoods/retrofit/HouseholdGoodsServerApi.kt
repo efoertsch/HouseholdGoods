@@ -1,12 +1,10 @@
 package org.householdgoods.retrofit
 
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.Response
 import okhttp3.ResponseBody
-import org.householdgoods.woocommerce.Category
-import org.householdgoods.woocommerce.Product
-import org.householdgoods.woocommerce.WcPhoto
+import org.householdgoods.woocommerce.category.Category
+import org.householdgoods.woocommerce.product.Product
+import org.householdgoods.woocommerce.photo.WcPhoto
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -44,7 +42,10 @@ interface HouseholdGoodsServerApi {
     //Upload photo - may get http ahead of json response
 
     @POST("/wp-json/wc/v2/media")
-    fun addWcPhotoTest(@Body wcPhoto: WcPhoto, @Header("Content-Disposition") fileName: String) : Call<ResponseBody>?
+    fun addWcPhotoTestWithContentDisposition(@Body wcPhoto: WcPhoto, @Header("Content-Disposition") fileName: String) : Call<ResponseBody>?
+
+    @POST("/wp-json/wc/v2/media")
+    fun addWcPhotoTest(@Body wcPhoto: WcPhoto) : Call<ResponseBody>?
 
 
     @Multipart

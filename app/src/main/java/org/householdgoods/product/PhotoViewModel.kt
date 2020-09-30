@@ -1,6 +1,5 @@
 package org.householdgoods.product
 
-import android.graphics.Bitmap
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
@@ -9,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.householdgoods.app.Repository
-import org.householdgoods.woocommerce.Product
 import java.io.File
 
 class PhotoViewModel @ViewModelInject constructor(@param:Assisted private val savedStateHandle: SavedStateHandle, private val repository: Repository) : ViewModel() {

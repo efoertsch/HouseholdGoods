@@ -62,7 +62,7 @@ dependencies {
 
     final RX_ANDROID = '2.0.2'
     final RX_JAVA = '2.2.9'
-    final RETROFIT = '2.6.0'
+    final RETROFIT = '2.8.1'
     final GSON = '2.8.5'
     final GSON_CONVERTER = '2.3.0'
     final GLIDE = '4.9.0'
