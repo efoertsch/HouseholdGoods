@@ -10,7 +10,6 @@ class HeaderInterceptor(val apiKey: String, val apiSecret: String) : Interceptor
         proceed(
                 request()
                         .newBuilder()
-                        .header("Content-Type", "application/x-www-form-urlencoded")
                         .header("Authorization", getBase64UidPwd(apiKey , apiSecret))
                         .build()
         )

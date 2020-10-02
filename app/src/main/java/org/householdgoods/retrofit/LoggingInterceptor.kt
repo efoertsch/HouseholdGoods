@@ -17,18 +17,15 @@ class LoggingInterceptor(private val apiKey: String, private val apiSecret: Stri
         }
         val request = chain.request()
                 .newBuilder()
-                .header("Content-Type", "application/json")
-                .header("Authorization",  getBase64UidPwd(apiKey, apiSecret))
+                .header("Cache-Control", "no-cache")
+             //  .header("Content-Type", "application/x-www-form-urlencoded")
+                .addHeader("Authorization",  getBase64UidPwd(apiKey, apiSecret))
                 .build()
         val t1 = System.nanoTime()
         var requestLog = String.format("Sending request %s on %s %s",
                 request.url(), chain.connection(), request.headers())
         if (request.method().compareTo("post", ignoreCase = true) == 0) {
-            requestLog = """
-
-                $requestLog
-                ${bodyToString(request)}
-                """.trimIndent()
+            requestLog = """$requestLog${bodyToString(request)}""".trimIndent()
         }
         if (BuildConfig.DEBUG) {
             System.out.println("request\n" + requestLog)
@@ -39,7 +36,8 @@ class LoggingInterceptor(private val apiKey: String, private val apiSecret: Stri
                 response.request().url(), (t2 - t1) / 1e6, response.headers())
         val contentType = response.header("Content-Type")
         return if (contentType != null && !contentType.startsWith("image")) {
-            val bodyString = response.body()!!.string()
+            // !!!! substring afterLast is hack for WooCommerce sening html warning msg ahead of json
+            val bodyString = response.body()!!.string().substringAfterLast("<br />\n")
             if (BuildConfig.DEBUG) {
                 //    System.out.println("response only" + "\n" + bodyString);
                 System.out.println("response\n" + responseLog + "\n" +bodyString)
