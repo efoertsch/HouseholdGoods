@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.householdgoods.R
 import org.householdgoods.data.HHGCategory
+import org.householdgoods.networkresponse.NetworkResponse
 import org.householdgoods.retrofit.HouseholdGoodsServerApi
 import org.householdgoods.woocommerce.category.Category
 import org.householdgoods.woocommerce.product.Product
@@ -73,7 +74,7 @@ class Repository @Inject constructor(private val appContext: Context,
     /**
      * Partial sku should be in form e.g. 'TM-0903'
      */
-    suspend fun getFirstAvailableSkuSequenceNumber(partialSku: String, startingSeq: Int): Int{
+    suspend fun getFirstAvailableSkuSequenceNumber(partialSku: String, startingSeq: Int): Int {
         return withContext(Dispatchers.IO) {
             var productsBySku: ArrayList<Product>?
             var sequenceNumber = startingSeq
@@ -81,7 +82,7 @@ class Repository @Inject constructor(private val appContext: Context,
             var testSku: String
             while (true) {
                 sequenceString = String.format("%02d", sequenceNumber)
-                testSku = partialSku .plus('-').plus(sequenceString)
+                testSku = partialSku.plus('-').plus(sequenceString)
                 productsBySku = householdGoodsServerApi.getProductBySku(testSku)
                 if (productsBySku == null || productsBySku.size == 0) {
                     break
@@ -116,51 +117,74 @@ class Repository @Inject constructor(private val appContext: Context,
     }
 
     // Partial sku e.g. 'XC-0902'
-    suspend fun uploadPhotosToWc(photoFileNames: ArrayList<String>, yyyymmBaseUrl: String?) {
-        val baseUrl = getWcBaseMedialUrl()
+    suspend fun uploadPhotosToWc(wcPhotoSkuNames: ArrayList<String>, mediaPath: String?): ArrayList<WcPhoto> {
         return withContext(Dispatchers.IO) {
             val photoFileList = getListOfPhotoFiles()
-            if (photoFileList.size != photoFileNames.size) {
+            if (photoFileList.size != wcPhotoSkuNames.size) {
                 throw Exception("Oh-oh!!! Mismatch between number of photos stored and generated URL list")
             }
-            var photoFile: File?
-            var base64String: String
-            var wcPhoto: WcPhoto
-            photoFileList.addAll(appContext.fileList())
-            for ((i, photoFileName) in photoFileList.withIndex()) {
-                photoFile = getPhotoFile(photoFileName)
-                if (photoFile != null) {
-                    base64String = convertImageFileToBase64(photoFile)
-                    wcPhoto = WcPhoto()
-                    wcPhoto.media_attachment = base64String
-                    wcPhoto.date = Instant.now().toString()
-                    wcPhoto.title = photoFileNames[i]
-                    wcPhoto.slug = photoFileNames[i]
-                    wcPhoto.author = "HHG"
-                    //wcPhoto.media_path = baseUrl + yyyymmBaseUrl + photoFileNames[i]
-                    wcPhoto.media_path = yyyymmBaseUrl
-                    Timber.d("Photo media path $wcPhoto.media_path")
 
-                    //wcPhoto = householdGoodsServerApi.addPhoto(wcPhoto, "filename=$photoFileNames[i]")
-                    val responseBody  = householdGoodsServerApi.addPhotoGetResponseBody(wcPhoto, "filename=$photoFileNames[i]")
-                    responseBody?.string()
-                    Timber.d("Photo $i added: $wcPhoto")
+            val headersMap = HashMap<String, String>()
+            val wcPhotoList = ArrayList<WcPhoto>()
+            for ((i, photoFileName) in photoFileList.withIndex()) {
+                var wcPhoto = createWcPhoto(photoFileName, wcPhotoSkuNames[i], mediaPath)
+                if (wcPhoto == null) {
+                    throw   Exception("Oh-oh!!! Error occurred create wcPhoto upload object!")
                 }
+                //headersMap.put("Content-Type", "application/x-www-form-urlencoded")
+//                    val networkResponse = householdGoodsServerApi.uploadWcPhotoWithNetworkResponse(
+//                            headersMap, Instant.now().toString(), "image"
+//                            , "image/jpeg", "publish"
+//                            , photoFileNames[i], "image", mediaPath!!, base64String)
+//                    val networkResponse = householdGoodsServerApi.uploadWcPhotoUsingBodyNetworkResponse(wcPhoto)
+//                    when (networkResponse) {
+//                        is NetworkResponse.Success -> wcPhotoList.add(networkResponse.body.body)
+//                        is NetworkResponse.ApiError -> throw Exception((networkResponse.body).toString())
+//                        is NetworkResponse.NetworkError -> throw Exception(networkResponse.error)
+//                        is NetworkResponse.UnknownError -> throw Exception(networkResponse.error)
+//                    }
+                wcPhoto = householdGoodsServerApi.addPhoto(wcPhoto, wcPhoto.title.raw)
+                wcPhotoList.add(wcPhoto)
             }
+
+            wcPhotoList
         }
+
     }
+
+    suspend fun createWcPhoto(photoFileName: String, wcPhotoSkuName: String, mediaPath: String?): WcPhoto? {
+        val photoFile = getPhotoFile(photoFileName)
+        val base64String = convertImageFileToBase64(photoFile!!)
+        if (base64String == null) {
+            return null
+        }
+        val wcPhoto = WcPhoto()
+        wcPhoto.date = Instant.now().toString()
+        wcPhoto.media_attachment = base64String
+        wcPhoto.media_path = mediaPath
+        wcPhoto.media_type = "image"
+        wcPhoto.mime_type = "image/jpeg"
+        wcPhoto.status = "publish"
+        wcPhoto.title.raw = wcPhotoSkuName
+        wcPhoto.title.rendered = wcPhotoSkuName
+        wcPhoto.type = "attachment"
+        wcPhoto.author = "HHG"
+        return wcPhoto
+    }
+
 
     suspend fun copyPhotosToDownloadDirectory(sku: String) {
-       val photoFiles = getListOfPhotoFiles()
+        val photoFiles = getListOfPhotoFiles()
         for (i in 0..photoFiles.size - 1) {
-           val request = DownloadManager.Request(Uri.parse(photoFiles[i]))
-           request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, sku.plus("-").plus("%02d".format(i)))
-           request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED) // to notify when download is complete
-           val manager = appContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
-           manager!!.enqueue(request)
+            val request = DownloadManager.Request(Uri.parse(photoFiles[i]))
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, sku.plus("-").plus("%02d".format(i)))
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED) // to notify when download is complete
+            val manager = appContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
+            manager!!.enqueue(request)
         }
 
     }
+
 
     suspend fun updateProduct(product: Product): Product {
         return householdGoodsServerApi.updateProduct(product.id, product)
@@ -294,10 +318,10 @@ class Repository @Inject constructor(private val appContext: Context,
 
     }
 
-    fun getWCProductUrl(productId : Int) : String{
+    fun getWCProductUrl(productId: Int): String {
         // create link like http://staging9.online.householdgoods.org/wp-admin/post.php?post=14364&action=edit
         val clipboardLink = appContext.getString(R.string.householdgoods_clipboad_url).plus(appContext.getString(R.string.product_edit_link, productId))
-        Timber.d("Clipboard link :  $clipboardLink" )
+        Timber.d("Clipboard link :  $clipboardLink")
         return clipboardLink
     }
 }

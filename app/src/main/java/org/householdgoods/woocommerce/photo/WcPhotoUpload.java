@@ -1,6 +1,5 @@
 package org.householdgoods.woocommerce.photo;
 
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -8,12 +7,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.ArrayList;
 
-// see https://wordpress.org/plugins/woo-media-api/#description
-// and https://developer.wordpress.org/rest-api/reference/media/#arguments-2
-// This class starts with Wordpress media fields and adds in Wc media_path  and media_attachment
-// A number of fields not relevant to the app have been removed
-// Take the source_url? url and then update the product with the associated rendered urls
-public class WcPhoto {
+public class WcPhotoUpload
+{
 
     @SerializedName("id")
     @Expose
@@ -66,7 +61,7 @@ public class WcPhoto {
 
     @SerializedName("title")
     @Expose
-    public Title title = new Title();
+    public String title ;
 
     @SerializedName("author")
     @Expose

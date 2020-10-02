@@ -1,18 +1,25 @@
 package org.householdgoods
 
 import com.google.gson.Gson
+import kotlinx.coroutines.*
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.setMain
 import okhttp3.*
 import org.apache.commons.codec.binary.Base64OutputStream
 import org.apache.commons.io.FileUtils
 import org.householdgoods.hilt.OkHttpClientModule
+import org.householdgoods.networkresponse.NetworkResponse
 import org.householdgoods.retrofit.HouseholdGoodsRetrofit
 import org.householdgoods.retrofit.HouseholdGoodsServerApi
 import org.householdgoods.retrofit.LoggingInterceptor
 import org.householdgoods.woocommerce.category.Category
 import org.householdgoods.woocommerce.photo.WcPhoto
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.householdgoods.woocommerce.photo.WcPhotoUpload
+import org.junit.*
+import org.junit.rules.TestWatcher
+import org.junit.runner.Description
 import retrofit2.Response
 import retrofit2.Retrofit
 import java.io.ByteArrayOutputStream
@@ -22,6 +29,7 @@ import java.io.IOException
 import java.nio.charset.Charset
 import java.time.Instant
 import java.util.*
+import kotlin.collections.HashMap
 
 
 class HouseholdGoodsTest {
@@ -67,7 +75,7 @@ class HouseholdGoodsTest {
                     break
                 }
                 allCategories.addAll(categories)
-                offset +=perPage
+                offset += perPage
             }
         }
         System.out.println(Gson().toJson(allCategories))
@@ -135,7 +143,6 @@ class HouseholdGoodsTest {
     }
 
 
-
     private fun getBase64UidPwd(key: String, secret: String): String? {
         val encoded = Base64.getEncoder().encodeToString((key + ":" + secret).toByteArray())
         println("Encoded :$encoded")
@@ -144,14 +151,13 @@ class HouseholdGoodsTest {
     }
 
 
-
     @Test
     @Throws(Exception::class)
     fun testToFIS() {
         val MEDIA_TYPE_JPG = MediaType.parse("image/jpg")
 
         val file = File("/Users/ericfoertsch/Downloads/2020_09_13_16_48_26_19.jpg")
-       // val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
+        // val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
         val body = RequestBody.create(MEDIA_TYPE_JPG, file)
 
         val httpClient = OkHttpClient().newBuilder().addInterceptor(LoggingInterceptor("x3rqb8eGROaP", "f1JlirUR83HFyeXOgHLfMDpR"))
@@ -171,35 +177,80 @@ class HouseholdGoodsTest {
     @Test
     @Throws(Exception::class)
     fun testUploadPhotoToWC() {
-        val file = File("/Users/ericfoertsch/Downloads/IMG_20200924_082548183.jpg")
+        //val file = File("/Users/ericfoertsch/Downloads/IMG_20200924_082548183.jpg")
+        val file = File("/Users/ericfoertsch/Downloads/2020_09_13_16_48_26_19.jpg")
         val decodedImageFileName = "/Users/ericfoertsch/Downloads/decodedBase64.jpg"
         val base64StringFile = "/Users/ericfoertsch/Downloads/base64_jpg_encoded.txt"
         val base64String = convertImageFileToBase64(file)
         // decode it back to original to check that encode/decode still produces valid jpg
         convertBase64StringToFile(base64String, decodedImageFileName)
         // write the base64 string to a file for later use in curl/postman testing
-        writeBase64StringToFile(base64String ,base64StringFile)
+        writeBase64StringToFile(base64String, base64StringFile)
         val wcPhoto = WcPhoto()
-        wcPhoto.media_attachment = base64String
-        var fileName = "CO-0928-01.jpg"
-        wcPhoto.title = fileName
-        wcPhoto.description =fileName
-        wcPhoto.slug = fileName
-        wcPhoto.media_path = "2020/09"
+
         wcPhoto.date = Instant.now().toString()
+        wcPhoto.media_attachment = base64String
+        wcPhoto.media_path = "2020/10"
         wcPhoto.media_type = "image"
         wcPhoto.mime_type = "image/jpeg"
-        val headerContent = "attachment;filename=".plus(fileName)
+        wcPhoto.status = "publish"
+
+        val fileName = "TM-1002-01-02-1000000.jpg"
+        wcPhoto.title.rendered = fileName
+        wcPhoto.title.raw = fileName
+        wcPhoto.type = "attachment"
         wcPhoto.author = "HHG"
-        val response = client?.addWcPhotoTest(wcPhoto)?.execute()
-        println(response?.body()?.string())
+        //wcPhoto.description = fileName
+        //wcPhoto.slug = fileName
+       // val headerContent = "attachment;filename=".plus(fileName)
+        val headersMap = HashMap<String, String>()
+        //headersMap.put("attachment", "filename=".plus(fileName))
+        //headersMap.put("Content-Type", "application/x-www-form-urlencoded")
+
+       // uploadPhotoGetNetworkResponse(headersMap, wcPhoto)
+        uploadPhotoReturnResponseBody(wcPhoto)
+    }
+
+    private fun uploadPhotoReturnResponseBody(wcPhoto : WcPhoto ) {
+        runBlocking {
+            val job: Job = launch(context = Dispatchers.IO) {
+                val addedPhoto = client?.addPhoto(wcPhoto , wcPhoto.title.rendered)
+                System.out.println(addedPhoto?.toString())
+            }
+            job.join()
+        }
+
+
+    }
+
+    private fun uploadPhotoGetNetworkResponse(headersMap: HashMap<String, String>, wcPhoto: WcPhoto) {
+        runBlocking {
+            val job: Job = launch(context = Dispatchers.IO) {
+                //val networkResponse = client?.uploadWcPhotoWithNetworkResponse(wcPhoto)
+                val networkResponse = client?.uploadWcPhotoWithNetworkResponse(
+                        headersMap, wcPhoto.date, wcPhoto.media_type, wcPhoto.mime_type, wcPhoto.status, wcPhoto.title.raw, wcPhoto.type, wcPhoto.media_path, wcPhoto.media_attachment
+    //                ,wcPhoto.slug
+    //                ,wcPhoto.description
+                )
+                networkResponse.apply {
+                    when (this) {
+                        is NetworkResponse.Success -> System.out.println("Success: ${this}")
+                        is NetworkResponse.ApiError -> System.out.println("ApiError: ${this}")
+                        is NetworkResponse.NetworkError -> System.out.println("NetworkError: ${this}")
+                        is NetworkResponse.UnknownError -> System.out.println("UnknownError: ${this}")
+                    }
+                }
+            }
+
+            job.join()
+        }
     }
 
 
     fun convertImageFileToBase64(imageFile: File): String {
         return FileInputStream(imageFile).use { inputStream ->
             ByteArrayOutputStream().use { outputStream ->
-                Base64OutputStream(outputStream, true, -1, null).use { base64FilterStream ->
+                Base64OutputStream(outputStream, true, 0, null).use { base64FilterStream ->
                     inputStream.copyTo(base64FilterStream)
                     base64FilterStream.close() // This line is required, see comments
                     outputStream.toString()
@@ -210,7 +261,7 @@ class HouseholdGoodsTest {
 
 
     // This decodes base64 string and writes it back to file
-    // So if you have in jpg as Base64 string, the file should contain the original jpg
+// So if you have in jpg as Base64 string, the file should contain the original jpg
     fun convertBase64StringToFile(base64String: String, outputFileName: String) {
         val decodedBytes: ByteArray = Base64.getDecoder().decode(base64String)
         FileUtils.writeByteArrayToFile(File(outputFileName), decodedBytes)
@@ -218,9 +269,22 @@ class HouseholdGoodsTest {
     }
 
     // This is meant to write a base64 encoded string to a file for later use in
-    // using postman or curl to test photo uploads to the WooCommerce media API
+// using postman or curl to test photo uploads to the WooCommerce media API
     fun writeBase64StringToFile(base64String: String, outputFileName: String) {
         FileUtils.writeStringToFile(File(outputFileName), base64String, Charset.defaultCharset())
     }
 
+}
+
+class CoroutineTestRule(val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()) : TestWatcher() {
+    override fun starting(description: Description?) {
+        super.starting(description)
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    override fun finished(description: Description?) {
+        super.finished(description)
+        Dispatchers.resetMain()
+        testDispatcher.cleanupTestCoroutines()
+    }
 }

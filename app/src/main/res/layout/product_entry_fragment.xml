@@ -327,6 +327,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_double"
                 android:text="@string/add_item"
+                android:layout_marginEnd="@dimen/margin_standard"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/vertical_guideline_50pct"
                 app:layout_constraintStart_toStartOf="parent" />

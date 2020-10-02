@@ -11,6 +11,7 @@ import org.householdgoods.data.HHGCategory
 import org.householdgoods.woocommerce.category.Category
 import org.householdgoods.woocommerce.product.Dimensions
 import org.householdgoods.woocommerce.Image
+import org.householdgoods.woocommerce.photo.WcPhoto
 import org.householdgoods.woocommerce.product.Product
 import timber.log.Timber
 import timber.log.Timber.e
@@ -211,23 +212,22 @@ class ProductEntryViewModel //super(application);
 
                 //2. save product, note that returned product has id assigned
                 product = repository.createNewProduct(product)
+                // copy sku to clipboard
+                createClipboardUrl(product)
 
                 // 3. Save photos
                 // create paths for photos
-                val wcPhotoFSkuNames = createPhotoImageIds()
-                repository.uploadPhotosToWc(wcPhotoFSkuNames, yyyymmBaseUrl)
+                val wcPhotoSkuNames = createPhotoImageIds()
+                val wcPhotoList = repository.uploadPhotosToWc(wcPhotoSkuNames, yyyymmBaseUrl)
 
                 // 4. Update product with photo urls
-                val wcPhotoImages = createImagesForProduct(wcPhotoFSkuNames, yyyymmBaseUrl)
-                var productWithUrls = Product()
-                productWithUrls.id = product.id
+                val wcMediaList = createImagesForProduct(wcPhotoList)
+//                var productWithUrls = Product()
+//                productWithUrls.id = product.id
                 // saved product now store photos
-                productWithUrls.images = wcPhotoImages
-                productWithUrls = repository.updateProduct(productWithUrls)
-                // update originally returned product just for kicks
-                product.images = productWithUrls.images
-                // add WCurl to product
-               createClipboardUrl()
+//                productWithUrls.images = wcMediaList
+                product.images = wcMediaList
+                product = repository.updateProduct(product)
 
                 // Plan B put photos in download directory
 //                //3. For now copy photos from app directory to download directory
@@ -258,7 +258,7 @@ class ProductEntryViewModel //super(application);
         }
     }
 
-    private fun createClipboardUrl() {
+    private fun createClipboardUrl(product: Product) {
         // force an update
         clipboardLinkToProduct.value = ""
       //  clipboardLinkToProduct.value = repository.getWCProductUrl(product.id )
@@ -297,18 +297,13 @@ class ProductEntryViewModel //super(application);
     }
 
     // WC Image entities to be added to product
-    // Just put the url into Image.src
-    private fun createImagesForProduct(skuPhotoNames: ArrayList<String>, yyyymmBaseUrl: String): ArrayList<Image> {
+    private fun createImagesForProduct(wcPhotoList: ArrayList<WcPhoto>): ArrayList<Image> {
         val images = ArrayList<Image>()
-        val baseMediaUrl = repository.getWcBaseMedialUrl()
         var image: Image
-        for (path in skuPhotoNames) {
+        for (wcPhoto in wcPhotoList) {
             image = Image()
-            image.src = baseMediaUrl.plus("/")
-                    .plus(yyyymmBaseUrl)
-                    .plus("/")
-                    .plus(path)
-            image.title = image.src
+            image.src = wcPhoto.source_url.replace("https", "http")
+            //image.title = image.src
             images.add(image)
         }
         return images
@@ -586,9 +581,7 @@ class ProductEntryViewModel //super(application);
         productDescriptionErrorMsg.value = null
         dataEntryOK.value = false
         addedSku.value = ""
-
         errorMessage.value = null
-
         product = Product()
         checkProductId()
     }

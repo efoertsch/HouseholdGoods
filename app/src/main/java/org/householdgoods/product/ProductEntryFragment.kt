@@ -101,21 +101,22 @@ class ProductEntryFragment : Fragment() {
         if (!viewModel.hasCategories()) {
             showHHGCategorySelectionAlertDialog()
         }
-        productEntryView?.productDescription?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                productEntryView?.productQuantity?.requestFocus()
-                return@OnEditorActionListener true
-            }
-            false
-        })
 
-        productEntryView?.productQuantity?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                productEntryView?.productLength?.requestFocus()
-                return@OnEditorActionListener true
-            }
-            false
-        })
+//        productEntryView?.productDescription?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
+//            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+//                productEntryView?.productQuantity?.requestFocus()
+//                return@OnEditorActionListener true
+//            }
+//            false
+//        })
+//
+//        productEntryView?.productQuantity?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
+//            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+//                productEntryView?.productLength?.requestFocus()
+//                return@OnEditorActionListener true
+//            }
+//            false
+//       })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
