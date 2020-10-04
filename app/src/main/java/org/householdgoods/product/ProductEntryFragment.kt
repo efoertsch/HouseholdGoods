@@ -11,10 +11,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView.OnItemClickListener
-import android.widget.TextView.OnEditorActionListener
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import androidx.fragment.app.Fragment
@@ -94,6 +92,7 @@ class ProductEntryFragment : Fragment() {
 
         productEntryView?.productAddUpdateButton?.setOnClickListener { v ->
             productEntryView?.productAddUpdateButton?.isClickable = false
+            disablePhotoDeleteButtons()
             viewModel.addOrUpdateItem()
         }
 
@@ -101,22 +100,16 @@ class ProductEntryFragment : Fragment() {
         if (!viewModel.hasCategories()) {
             showHHGCategorySelectionAlertDialog()
         }
+    }
 
-//        productEntryView?.productDescription?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
-//            if (actionId == EditorInfo.IME_ACTION_NEXT) {
-//                productEntryView?.productQuantity?.requestFocus()
-//                return@OnEditorActionListener true
-//            }
-//            false
-//        })
-//
-//        productEntryView?.productQuantity?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
-//            if (actionId == EditorInfo.IME_ACTION_NEXT) {
-//                productEntryView?.productLength?.requestFocus()
-//                return@OnEditorActionListener true
-//            }
-//            false
-//       })
+    // Depends on Android naming convention for viewpage fragment tags of f0, f1, ...
+    private fun disablePhotoDeleteButtons() {
+        for (i in 0 until viewPager.adapter!!.itemCount ) {
+            val photoFragment: Fragment? = childFragmentManager.findFragmentByTag("f" + i)
+            if ( photoFragment != null) {
+                (photoFragment as PhotoFragment).disableDeletePhotoButton()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

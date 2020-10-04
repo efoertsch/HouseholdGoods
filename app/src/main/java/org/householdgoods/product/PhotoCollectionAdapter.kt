@@ -22,7 +22,9 @@ class PhotoCollectionAdapter(fragment: Fragment) : FragmentStateAdapter(fragment
 
     private val photoFileList = ArrayList<String>()
 
-    override fun getItemCount(): Int = photoFileList.size
+    override fun getItemCount(): Int {
+        return photoFileList.size
+    }
 
     override fun createFragment(position: Int): Fragment {
         // Return a NEW fragment instance in createFragment(int)
@@ -32,6 +34,7 @@ class PhotoCollectionAdapter(fragment: Fragment) : FragmentStateAdapter(fragment
             putInt(POSITION, position)
             putString(PHOTO_FILE_NAME, photoFileList[position])
         }
+
         return fragment
     }
 
@@ -55,7 +58,7 @@ class PhotoFragment : Fragment() {
     private val productEntryViewModel: ProductEntryViewModel by activityViewModels()
     private var photoImageView: PhotoImageView? = null
 
-    private lateinit var circularProgressDrawable : CircularProgressDrawable
+    private lateinit var circularProgressDrawable: CircularProgressDrawable
     private val requestOptions = RequestOptions()
 
     @SuppressLint("CheckResult")
@@ -96,20 +99,27 @@ class PhotoFragment : Fragment() {
         }
     }
 
-     private fun deletePhoto() {
+    private fun deletePhoto() {
         arguments?.takeIf { it.containsKey(PHOTO_FILE_NAME) }?.apply {
             productEntryViewModel.deletePhoto(getString(PHOTO_FILE_NAME)!!)
         }
     }
 
+    fun disableDeletePhotoButton(){
+       // photoImageView?.photoDeleteButton?.visibility = View.GONE
+        photoImageView?.photoDeleteButton?.isEnabled = false
+        photoImageView?.photoDeleteButton?.isClickable = false
+
+    }
+
     private fun loadPhoto(file: File) {
-        val context = photoImageView?.photoImageView?.getContext()
+        val context = photoImageView?.photoItemView?.getContext()
         if (context != null) {
             Glide.with(context)
                     .asBitmap()
                     .load(file)
                     .apply(requestOptions)
-                    .into(photoImageView?.photoImageView!!)
+                    .into(photoImageView?.photoItemView!!)
         }
     }
 }
