@@ -8,14 +8,11 @@ import org.householdgoods.woocommerce.Image;
 
 import java.util.List;
 
-public class ProductWithPhotoUrls {
+public class ProductWithPhotos {
 
     @SerializedName("id")
     @Expose
     public Integer id = 0;
-    @SerializedName("name")
-    @Expose
-    public String name = "";
 
     @SerializedName("images")
     @Expose
@@ -25,7 +22,6 @@ public class ProductWithPhotoUrls {
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("id", id)
-                .append("name", name)
                 .append("images", images)
                 .toString();
     }

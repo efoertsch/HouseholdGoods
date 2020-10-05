@@ -13,6 +13,7 @@ import org.householdgoods.woocommerce.product.Dimensions
 import org.householdgoods.woocommerce.Image
 import org.householdgoods.woocommerce.photo.WcPhoto
 import org.householdgoods.woocommerce.product.Product
+import org.householdgoods.woocommerce.product.ProductWithPhotos
 import timber.log.Timber
 import timber.log.Timber.e
 import java.text.SimpleDateFormat
@@ -204,7 +205,6 @@ class ProductEntryViewModel //super(application);
 
                 // 1. find next available sku
                 val partialSku = assemblePartialSku()
-
                 val lastSkuSeq = repository.getStartingSkuSequence(skuCategoryCode.value!!, skuDateCode.value!!)
                 val skuSequence = repository.getFirstAvailableSkuSequenceNumber(partialSku, lastSkuSeq)
                 Timber.d("Available sku :  $partialSku-$skuSequence")
@@ -220,14 +220,13 @@ class ProductEntryViewModel //super(application);
                 val wcPhotoSkuNames = createPhotoImageIds()
                 val wcPhotoList = repository.uploadPhotosToWc(wcPhotoSkuNames, yyyymmBaseUrl)
 
-                // 4. Update product with photo urls
+                // 4. Update product with photo urls. Only
                 val wcMediaList = createImagesForProduct(wcPhotoList)
-//                var productWithUrls = Product()
-//                productWithUrls.id = product.id
+                 var productWithPhotos = ProductWithPhotos()
+                 productWithPhotos.id = product.id
                 // saved product now store photos
-//                productWithUrls.images = wcMediaList
-                product.images = wcMediaList
-                product = repository.updateProduct(product)
+                productWithPhotos.images = wcMediaList
+                productWithPhotos = repository.updateProduct(productWithPhotos)
 
                 // Plan B put photos in download directory
 //                //3. For now copy photos from app directory to download directory
@@ -265,30 +264,30 @@ class ProductEntryViewModel //super(application);
         clipboardLinkToProduct.value = product.sku
     }
 
-    private fun updateItem() {
-        isWorking.value = true
-        viewModelScope.launch {
-            val result = try {
-                //1. Update product
-                product = repository.updateProduct(product)
-                Result.success(product)
-            } catch (exception: Exception) {
-                Result.failure<Exception>(Exception("An error occurred updating the product", exception))
-            }
-            if (result.isSuccess) {
-                product = result.getOrNull() as Product
-                checkProductId()
-                updateStatusMessage("OK. Item updated.")
-            }
-            if (result.isFailure) {
-                Timber.d(result.exceptionOrNull()?.message)
-                errorMessage.value = result.exceptionOrNull()
-
-            }
-            isWorking.value = false
-
-        }
-    }
+//    private fun updateItem() {
+//        isWorking.value = true
+//        viewModelScope.launch {
+//            val result = try {
+//                //1. Update product
+//                product = repository.updateProduct(product)
+//                Result.success(product)
+//            } catch (exception: Exception) {
+//                Result.failure<Exception>(Exception("An error occurred updating the product", exception))
+//            }
+//            if (result.isSuccess) {
+//                product = result.getOrNull() as Product
+//                checkProductId()
+//                updateStatusMessage("OK. Item updated.")
+//            }
+//            if (result.isFailure) {
+//                Timber.d(result.exceptionOrNull()?.message)
+//                errorMessage.value = result.exceptionOrNull()
+//
+//            }
+//            isWorking.value = false
+//
+//        }
+//    }
 
     private fun updateStatusMessage(statusMsg: String) {
         // Just to make sure any observers fire if statusMsg same as prior msgs.

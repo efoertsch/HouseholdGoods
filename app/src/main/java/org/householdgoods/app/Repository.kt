@@ -19,6 +19,7 @@ import org.householdgoods.retrofit.HouseholdGoodsServerApi
 import org.householdgoods.woocommerce.category.Category
 import org.householdgoods.woocommerce.product.Product
 import org.householdgoods.woocommerce.photo.WcPhoto
+import org.householdgoods.woocommerce.product.ProductWithPhotos
 import org.json.JSONObject
 import timber.log.Timber
 import java.io.*
@@ -186,8 +187,8 @@ class Repository @Inject constructor(private val appContext: Context,
     }
 
 
-    suspend fun updateProduct(product: Product): Product {
-        return householdGoodsServerApi.updateProduct(product.id, product)
+    suspend fun updateProduct(productWithPhotos: ProductWithPhotos): ProductWithPhotos {
+        return householdGoodsServerApi.updateProduct(productWithPhotos.id, productWithPhotos)
     }
 
     suspend fun getPhotoFile(photoFile: String): File? {

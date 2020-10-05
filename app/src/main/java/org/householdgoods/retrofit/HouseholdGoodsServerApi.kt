@@ -7,7 +7,7 @@ import org.householdgoods.woocommerce.category.Category
 import org.householdgoods.woocommerce.error.WcError
 import org.householdgoods.woocommerce.product.Product
 import org.householdgoods.woocommerce.photo.WcPhoto
-import org.householdgoods.woocommerce.photo.WcPhotoUpload
+import org.householdgoods.woocommerce.product.ProductWithPhotos
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -32,7 +32,7 @@ interface HouseholdGoodsServerApi {
     // Update a product
     @Headers("Content-Type: application/json")
     @PUT("wp-json/wc/v3/products/{productId}")
-    suspend fun updateProduct(@Path("productId") productId: Int, @Body product: Product): Product
+    suspend fun updateProduct(@Path("productId") productId: Int, @Body productWithPhotos: ProductWithPhotos): ProductWithPhotos
 
     //Upload photo
     @POST("/wp-json/wc/v2/media")
