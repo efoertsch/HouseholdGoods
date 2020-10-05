@@ -36,7 +36,8 @@ interface HouseholdGoodsServerApi {
 
     //Upload photo
     @POST("/wp-json/wc/v2/media")
-    suspend fun addPhoto(@Body wcPhoto: WcPhoto , @Header("Content-Disposition") fileName: String): WcPhoto
+   // suspend fun addPhoto(@Body wcPhoto: WcPhoto , @Header("Content-Disposition") fileName: String): WcPhoto
+    suspend fun addPhoto(@Body wcPhoto: WcPhoto ): WcPhoto
 
     //Upload photo
     @POST("/wp-json/wc/v2/media")

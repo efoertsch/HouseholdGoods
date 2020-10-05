@@ -144,7 +144,8 @@ class Repository @Inject constructor(private val appContext: Context,
 //                        is NetworkResponse.NetworkError -> throw Exception(networkResponse.error)
 //                        is NetworkResponse.UnknownError -> throw Exception(networkResponse.error)
 //                    }
-                wcPhoto = householdGoodsServerApi.addPhoto(wcPhoto, wcPhoto.title.raw)
+               // wcPhoto = householdGoodsServerApi.addPhoto(wcPhoto, wcPhoto.title.raw)
+                wcPhoto = householdGoodsServerApi.addPhoto(wcPhoto)
                 wcPhotoList.add(wcPhoto)
             }
 

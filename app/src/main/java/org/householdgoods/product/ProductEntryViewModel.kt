@@ -210,23 +210,30 @@ class ProductEntryViewModel //super(application);
                 Timber.d("Available sku :  $partialSku-$skuSequence")
                 assignProductSKu(skuSequence)
 
-                //2. save product, note that returned product has id assigned
-                product = repository.createNewProduct(product)
-                // copy sku to clipboard
-                createClipboardUrl(product)
-
-                // 3. Save photos
+                // 1. Save photos
                 // create paths for photos
                 val wcPhotoSkuNames = createPhotoImageIds()
                 val wcPhotoList = repository.uploadPhotosToWc(wcPhotoSkuNames, yyyymmBaseUrl)
 
-                // 4. Update product with photo urls. Only
+                //2. Add image urls to product
+
                 val wcMediaList = createImagesForProduct(wcPhotoList)
-                 var productWithPhotos = ProductWithPhotos()
-                 productWithPhotos.id = product.id
-                // saved product now store photos
-                productWithPhotos.images = wcMediaList
-                productWithPhotos = repository.updateProduct(productWithPhotos)
+                product.images = wcMediaList
+
+                //3. Save product, note that returned product has id assigned
+                product = repository.createNewProduct(product)
+                // copy sku to clipboard
+                createClipboardUrl(product)
+
+
+
+                // 4. Update product with photo urls. Only
+               // val wcMediaList = createImagesForProduct(wcPhotoList)
+//                 var productWithPhotos = ProductWithPhotos()
+//                 productWithPhotos.id = product.id
+//                // saved product now store photos
+//                productWithPhotos.images = wcMediaList
+//                productWithPhotos = repository.updateProduct(productWithPhotos)
 
                 // Plan B put photos in download directory
 //                //3. For now copy photos from app directory to download directory
@@ -334,7 +341,7 @@ class ProductEntryViewModel //super(application);
         return skuCategoryCode.value.plus("-").plus(skuDateCode.value)
     }
 
-    private fun assignProductSKu(skuSequence: Int) {
+    private fun assignProductSKu(skuSequence: Int)  {
         product.sku = skuCategoryCode.value.plus("-")
                 .plus(skuDateCode.value).plus("-")
                 .plus("%02d".format(skuSequence))
