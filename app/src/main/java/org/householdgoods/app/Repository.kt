@@ -12,9 +12,9 @@ import android.util.Base64.NO_WRAP
 import android.util.Base64OutputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.Credentials
 import org.householdgoods.R
 import org.householdgoods.data.HHGCategory
-import org.householdgoods.networkresponse.NetworkResponse
 import org.householdgoods.retrofit.HouseholdGoodsServerApi
 import org.householdgoods.woocommerce.category.Category
 import org.householdgoods.woocommerce.product.Product
@@ -43,9 +43,17 @@ class Repository @Inject constructor(private val appContext: Context,
     private var sharedPreferences: SharedPreferences = appContext.getSharedPreferences("App", MODE_PRIVATE)
     private val LAST_SKU_PREF_KEY = "LAST_SKU_PREF_KEY"
     private var lastSkuHashMap: HashMap<String, String>
+    lateinit var wcBase64Authorization : String
+    lateinit var wpBase64Authorization : String
 
     init {
         lastSkuHashMap = loadLastSkuHashMap()
+        wcBase64Authorization = createBase64BaseAuthorizationValue(appContext.getString(R.string.apiKey),
+        appContext.getString(R.string.apiSecret))
+
+        wpBase64Authorization = createBase64BaseAuthorizationValue(appContext.getString(R.string.wp_uid),
+                appContext.getString(R.string.wp_pwd))
+
     }
 
     suspend fun getCategoryList(): ArrayList<Category> {
@@ -55,7 +63,7 @@ class Repository @Inject constructor(private val appContext: Context,
             var categories: ArrayList<Category>?
             val allCategories = java.util.ArrayList<Category>()
             while (true) {
-                categories = householdGoodsServerApi.getAllCategories(perPage, offset)
+                categories = householdGoodsServerApi.getAllCategories(wcBase64Authorization,perPage, offset)
                 if (categories!!.isEmpty()) {
                     break
                 }
@@ -68,7 +76,7 @@ class Repository @Inject constructor(private val appContext: Context,
 
     suspend fun createNewProduct(product: Product): Product {
         return withContext(Dispatchers.IO) {
-            householdGoodsServerApi.addProduct(product)
+            householdGoodsServerApi.addProduct(wcBase64Authorization, product)
         }
     }
 
@@ -84,7 +92,7 @@ class Repository @Inject constructor(private val appContext: Context,
             while (true) {
                 sequenceString = String.format("%02d", sequenceNumber)
                 testSku = partialSku.plus('-').plus(sequenceString)
-                productsBySku = householdGoodsServerApi.getProductBySku(testSku)
+                productsBySku = householdGoodsServerApi.getProductBySku(wcBase64Authorization, testSku)
                 if (productsBySku == null || productsBySku.size == 0) {
                     break
                 }
@@ -125,30 +133,26 @@ class Repository @Inject constructor(private val appContext: Context,
                 throw Exception("Oh-oh!!! Mismatch between number of photos stored and generated URL list")
             }
 
-            val headersMap = HashMap<String, String>()
             val wcPhotoList = ArrayList<WcPhoto>()
             for ((i, photoFileName) in photoFileList.withIndex()) {
                 var wcPhoto = createWcPhoto(photoFileName, wcPhotoSkuNames[i], mediaPath)
                 if (wcPhoto == null) {
                     throw   Exception("Oh-oh!!! Error occurred create wcPhoto upload object!")
                 }
-                //headersMap.put("Content-Type", "application/x-www-form-urlencoded")
-//                    val networkResponse = householdGoodsServerApi.uploadWcPhotoWithNetworkResponse(
-//                            headersMap, Instant.now().toString(), "image"
-//                            , "image/jpeg", "publish"
-//                            , photoFileNames[i], "image", mediaPath!!, base64String)
-//                    val networkResponse = householdGoodsServerApi.uploadWcPhotoUsingBodyNetworkResponse(wcPhoto)
-//                    when (networkResponse) {
-//                        is NetworkResponse.Success -> wcPhotoList.add(networkResponse.body.body)
-//                        is NetworkResponse.ApiError -> throw Exception((networkResponse.body).toString())
-//                        is NetworkResponse.NetworkError -> throw Exception(networkResponse.error)
-//                        is NetworkResponse.UnknownError -> throw Exception(networkResponse.error)
-//                    }
-                wcPhoto = householdGoodsServerApi.addPhoto(wcPhoto, wcPhoto.title.raw)
+                wcPhoto = householdGoodsServerApi.addMedia(wcBase64Authorization, wcPhoto, wcPhoto.title.raw)
                 wcPhotoList.add(wcPhoto)
             }
 
             wcPhotoList
+        }
+
+    }
+
+    suspend fun deleteOriginalPhotosFromWc( wcPhotos : ArrayList<WcPhoto>)  {
+        return withContext(Dispatchers.IO) {
+            for (wcPhoto in wcPhotos) {
+                 householdGoodsServerApi.deleteMedia(wpBase64Authorization, wcPhoto.id, true)
+            }
         }
 
     }
@@ -188,7 +192,7 @@ class Repository @Inject constructor(private val appContext: Context,
 
 
     suspend fun updateProduct(productWithPhotos: ProductWithPhotos): ProductWithPhotos {
-        return householdGoodsServerApi.updateProduct(productWithPhotos.id, productWithPhotos)
+        return householdGoodsServerApi.updateProduct(wcBase64Authorization, productWithPhotos.id, productWithPhotos)
     }
 
     suspend fun getPhotoFile(photoFile: String): File? {
@@ -319,11 +323,12 @@ class Repository @Inject constructor(private val appContext: Context,
 
     }
 
-    fun getWCProductUrl(productId: Int): String {
-        // create link like http://staging9.online.householdgoods.org/wp-admin/post.php?post=14364&action=edit
-        val clipboardLink = appContext.getString(R.string.householdgoods_clipboad_url).plus(appContext.getString(R.string.product_edit_link, productId))
-        Timber.d("Clipboard link :  $clipboardLink")
-        return clipboardLink
+
+    // Following encode ONLY WORKS in Android (part of Android library), not in JUnit!
+    private fun createBase64BaseAuthorizationValue(key: String, secret: String): String {
+        val encoded = Credentials.basic(key, secret)
+        System.out.println("Encoded : $encoded")
+        return encoded
     }
 }
 

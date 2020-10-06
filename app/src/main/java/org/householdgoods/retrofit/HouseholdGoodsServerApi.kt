@@ -17,53 +17,43 @@ interface HouseholdGoodsServerApi {
     // Get an arraylist of all categories
     @Headers("Content-Type: application/json")
     @GET("/wp-json/wc/v3/products/categories")
-    suspend fun getAllCategories(@Query("per_page") perPage: Int, @Query("offset") offset: Int): ArrayList<Category>?
+    suspend fun getAllCategories(@Header("Authorization") base64AuthorizationString : String,
+                                 @Query("per_page") perPage: Int, @Query("offset") offset: Int): ArrayList<Category>?
 
     // Use to find if sku already exists - sku's are supposedly unique but call returns JSON array
     @Headers("Content-Type: application/json")
     @GET("/wp-json/wc/v3/products/")
-    suspend fun getProductBySku(@Query("sku") sku: String): ArrayList<Product>?
+    suspend fun getProductBySku(@Header("Authorization") base64AuthorizationString : String,
+                                @Query("sku") sku: String): ArrayList<Product>?
 
     // Add a product
     @Headers("Content-Type: application/json")
     @POST("wp-json/wc/v3/products")
-    suspend fun addProduct(@Body product: Product): Product
+    suspend fun addProduct(@Header("Authorization") base64AuthorizationString : String,
+                           @Body product: Product): Product
 
     // Update a product
     @Headers("Content-Type: application/json")
     @PUT("wp-json/wc/v3/products/{productId}")
-    suspend fun updateProduct(@Path("productId") productId: Int, @Body productWithPhotos: ProductWithPhotos): ProductWithPhotos
+    suspend fun updateProduct(@Header("Authorization") base64AuthorizationString : String,
+                              @Path("productId") productId: Int
+                              , @Body productWithPhotos: ProductWithPhotos): ProductWithPhotos
 
     //Upload photo
     @POST("/wp-json/wc/v2/media")
-    suspend fun addPhoto(@Body wcPhoto: WcPhoto , @Header("Content-Disposition") fileName: String): WcPhoto
-
-    //Upload photo
-    @POST("/wp-json/wc/v2/media")
-    suspend fun addPhotoGetResponseBody(@Body wcPhoto: WcPhoto, @Header("Content-Disposition") fileName: String): ResponseBody?
+    suspend fun addMedia(@Header("Authorization") base64AuthorizationString : String,
+                         @Body wcPhoto: WcPhoto,
+                         @Header("Content-Disposition") fileName: String): WcPhoto
 
 
     @POST("/wp-json/wc/v2/media")
     suspend fun uploadWcPhotoUsingBodyNetworkResponse(@Body wcPhoto: WcPhoto) : NetworkResponse<NetworkResponse.Success<WcPhoto>, WcError>
 
-
-    @FormUrlEncoded
-    @POST("/wp-json/wc/v2/media")
-    //suspend fun uploadWcPhotoWithNetworkResponse(@Body wcPhoto: WcPhoto) : NetworkResponse<NetworkResponse.Success<WcPhoto>, WcError>
-    suspend fun uploadWcPhotoWithNetworkResponse(
-            @HeaderMap headers: Map<String, String>
-            , @Field("date") date: String
-            , @Field("media_type") media_type: String
-            , @Field("mime_type") mime_type: String
-            , @Field("status") status: String
-            , @Field("title") title: String
-            , @Field("type") type: String
-            , @Field("media_path") media_path: String
-            , @Field("media_attachment") media_attachment: String
-            //   , @Field("slug") slug: String
-            // , @Field("description") description : String
-    )
-            : NetworkResponse<NetworkResponse.Success<WcPhoto>, WcError>
+    @DELETE("/wp-json/wp/v2/media/{mediaId}")
+    suspend fun deleteMedia(@Header("Authorization") base64AuthorizationString : String,
+                            @Path("mediaId") mediaId: Int,
+                            @Query("force") force : Boolean
+                            )
 
     //vvvvvvv  Used for testing  vvvvvvvvvv
 

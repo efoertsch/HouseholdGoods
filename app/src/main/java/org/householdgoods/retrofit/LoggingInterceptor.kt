@@ -9,7 +9,7 @@ import timber.log.Timber
 import java.io.IOException
 
 //http://stackoverflow.com/questions/32965790/retrofit-2-0-how-to-print-the-full-json-response
-class LoggingInterceptor(private val apiKey: String, private val apiSecret: String) : Interceptor {
+class LoggingInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         if (BuildConfig.DEBUG) {
@@ -18,8 +18,6 @@ class LoggingInterceptor(private val apiKey: String, private val apiSecret: Stri
         val request = chain.request()
                 .newBuilder()
                 .header("Cache-Control", "no-cache")
-             //  .header("Content-Type", "application/x-www-form-urlencoded")
-                .addHeader("Authorization",  getBase64UidPwd(apiKey, apiSecret))
                 .build()
         val t1 = System.nanoTime()
         var requestLog = String.format("Sending request %s on %s %s",
@@ -36,8 +34,12 @@ class LoggingInterceptor(private val apiKey: String, private val apiSecret: Stri
                 response.request().url(), (t2 - t1) / 1e6, response.headers())
         val contentType = response.header("Content-Type")
         return if (contentType != null && !contentType.startsWith("image")) {
-            // !!!! substring afterLast is hack for WooCommerce sening html warning msg ahead of json
-            val bodyString = response.body()!!.string().substringAfterLast("<br />\n")
+            // !!!! substring afterLast is hack for WooCommerce sending html warning msg ahead of json
+            var bodyString = response.body()!!.string()
+            if (bodyString.contains("<br />\n")){
+                System.out.print("found html. Will strip out from:\n{$bodyString}")
+                bodyString = bodyString.substringAfterLast("<br />\n")
+            }
             if (BuildConfig.DEBUG) {
                 //    System.out.println("response only" + "\n" + bodyString);
                 System.out.println("response\n" + responseLog + "\n" +bodyString)

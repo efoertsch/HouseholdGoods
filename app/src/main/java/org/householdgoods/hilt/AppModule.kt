@@ -23,12 +23,8 @@ import javax.inject.Singleton
 @Module
 @InstallIn(ApplicationComponent::class)
 object AppModule {
-    @Provides
-//    fun provideRepository(@ApplicationContext appContext: Context,  apiHelper :ApiHelper
-//                          , @Named("apiKey") apiKey: String, @Named("apiSecret") apiSecret: String, householdGoodsServerApi: HouseholdGoodsServerApi ): Repository {
-//        return Repository(appContext, apiHelper, apiKey, apiSecret , householdGoodsServerApi  )
-//    }
 
+    @Provides
     fun provideRepository(@ApplicationContext appContext: Context
                           , householdGoodsServerApi: HouseholdGoodsServerApi ): Repository {
         return Repository(appContext , householdGoodsServerApi  )
@@ -40,17 +36,6 @@ object AppModule {
         return appContext.getString(R.string.householdgoods_url)
     }
 
-    @Provides
-    @Named("apiKey")
-    fun provideApiKey(@ApplicationContext appContext: Context) :String {
-        return appContext.getString(R.string.apiKey)
-    }
-
-    @Provides
-    @Named("apiSecret")
-    fun provideApiSecret(@ApplicationContext appContext: Context) :String {
-        return appContext.getString(R.string.apiSecret)
-    }
 
     @Provides
     @Singleton
@@ -60,27 +45,20 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun getOkHttpClient( @Named("apiKey") apiKey: String, @Named("apiSecret") apiSecret: String) : OkHttpClient {
+    fun getOkHttpClient() : OkHttpClient {
         val interceptor : Interceptor
         if (BuildConfig.DEBUG) {
-            interceptor = LoggingInterceptor( apiKey, apiSecret )
+            interceptor = LoggingInterceptor()
         } else {
-            interceptor = HeaderInterceptor(apiKey, apiSecret)
+            interceptor = HeaderInterceptor()
         }
         return OkHttpClientModule().getOkHttpClient(interceptor)
     }
 
     @Provides
     @Singleton
-    fun getLoggingInterceptor( @Named("apiKey") apiKey: String, @Named("apiSecret") apiSecret: String) : Interceptor {
-        return LoggingInterceptor(apiKey, apiSecret)
-    }
-
-    @Provides
-    @Singleton
     fun provideHouseholdGoodsApi(householdGoodsRetrofit : HouseholdGoodsRetrofit) : HouseholdGoodsServerApi{
         return (householdGoodsRetrofit.retrofit.create(HouseholdGoodsServerApi::class.java))
-
     }
 
 }

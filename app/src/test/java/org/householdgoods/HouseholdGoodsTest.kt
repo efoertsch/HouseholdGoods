@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
 import okhttp3.*
 import org.apache.commons.codec.binary.Base64OutputStream
@@ -16,7 +15,6 @@ import org.householdgoods.retrofit.HouseholdGoodsServerApi
 import org.householdgoods.retrofit.LoggingInterceptor
 import org.householdgoods.woocommerce.category.Category
 import org.householdgoods.woocommerce.photo.WcPhoto
-import org.householdgoods.woocommerce.photo.WcPhotoUpload
 import org.junit.*
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
@@ -214,7 +212,7 @@ class HouseholdGoodsTest {
     private fun uploadPhotoReturnResponseBody(wcPhoto : WcPhoto ) {
         runBlocking {
             val job: Job = launch(context = Dispatchers.IO) {
-                val addedPhoto = client?.addPhoto(wcPhoto , wcPhoto.title.rendered)
+                val addedPhoto = client?.addMedia(wcPhoto , wcPhoto.title.rendered)
                 System.out.println(addedPhoto?.toString())
             }
             job.join()
