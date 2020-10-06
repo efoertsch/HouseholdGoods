@@ -242,10 +242,10 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/product_length_layout"
-                android:layout_width="100dp"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:enabled="@{viewModel.productId == 0}"
-                android:hint="Len"
+                android:hint="1st-Len"
                 app:errorEnabled="true"
                 app:errorText="@{viewModel.productLengthErrorMsg}"
                 app:hintTextAppearance="@style/HintTextSizeExtraLarge"
@@ -267,11 +267,11 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/product_width_layout"
-                android:layout_width="100dp"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_standard"
                 android:enabled="@{viewModel.productId == 0}"
-                android:hint="Width"
+                android:hint="2nd-Wdth"
                 app:errorEnabled="true"
                 app:errorText="@{viewModel.productWidthErrorMsg}"
                 app:hintTextAppearance="@style/HintTextSizeExtraLarge"
@@ -295,11 +295,11 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/product_height_layout"
-                android:layout_width="100dp"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_standard"
                 android:enabled="@{viewModel.productId == 0}"
-                android:hint="Height"
+                android:hint="3rd-Ht"
                 app:errorEnabled="true"
                 app:errorText="@{viewModel.productHeightErrorMsg}"
                 app:hintTextAppearance="@style/HintTextSizeExtraLarge"
