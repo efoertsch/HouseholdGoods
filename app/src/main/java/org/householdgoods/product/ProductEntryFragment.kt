@@ -306,7 +306,15 @@ class ProductEntryFragment : Fragment() {
 
 
     private fun updatePhotoList(photoList: ArrayList<String>) {
+        // get current count
+        val numberPhotos = photoCollectionAdapter.itemCount
         photoCollectionAdapter.setPhotoFileList(photoList)
+        // To force recreation of photo fragments
+        viewPager.adapter = photoCollectionAdapter
+        val newNumberPhotos = photoCollectionAdapter.itemCount
+        if (numberPhotos < newNumberPhotos){
+            viewPager.setCurrentItem(newNumberPhotos - 1, true)
+        }
 
     }
 

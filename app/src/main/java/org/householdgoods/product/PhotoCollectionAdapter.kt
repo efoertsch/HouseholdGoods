@@ -7,15 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.householdgoods.R
+import org.householdgoods.app.Repository
 import org.householdgoods.databinding.PhotoImageView
+import timber.log.Timber
 import java.io.File
+import javax.inject.Inject
 
 
 class PhotoCollectionAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
@@ -25,6 +30,7 @@ class PhotoCollectionAdapter(fragment: Fragment) : FragmentStateAdapter(fragment
     override fun getItemCount(): Int {
         return photoFileList.size
     }
+
 
     override fun createFragment(position: Int): Fragment {
         // Return a NEW fragment instance in createFragment(int)
@@ -41,6 +47,7 @@ class PhotoCollectionAdapter(fragment: Fragment) : FragmentStateAdapter(fragment
     fun setPhotoFileList(photoList: ArrayList<String>) {
         photoFileList.clear()
         photoFileList.addAll(photoList)
+        // this does not force recreation of fragments. So reassigning adapter to viewpager elsewhere
         notifyDataSetChanged()
     }
 
@@ -54,9 +61,15 @@ private const val PHOTO_FILE_NAME = "photo_file_name"
 @AndroidEntryPoint
 class PhotoFragment : Fragment() {
 
-    private val viewModel: PhotoViewModel by viewModels()
+    @Inject
+    lateinit var repository : Repository
     private val productEntryViewModel: ProductEntryViewModel by activityViewModels()
     private var photoImageView: PhotoImageView? = null
+    private var errorMessage: MutableLiveData<Throwable> = MutableLiveData()
+    var photoFileName : String? = null
+    var photoPosition : Int = -1
+
+
 
     private lateinit var circularProgressDrawable: CircularProgressDrawable
     private val requestOptions = RequestOptions()
@@ -76,34 +89,22 @@ class PhotoFragment : Fragment() {
         requestOptions.skipMemoryCache(true)
         requestOptions.fitCenter()
 
+        photoFileName = requireArguments().getString(PHOTO_FILE_NAME)
+        photoPosition = requireArguments().getInt(POSITION)
+        Timber.d("Added photo : %d  %s", photoPosition,  photoFileName)
 
         return photoImageView!!.photoConstraintLayout.rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        photoImageView?.lifecycleOwner = viewLifecycleOwner
-        photoImageView?.viewModel = viewModel
-
-        viewModel.photoFile.observe(viewLifecycleOwner, {
-            it?.let {
-                loadPhoto(it)
-            }
-        })
-
-        arguments?.takeIf { it.containsKey(PHOTO_FILE_NAME) }?.apply {
-            viewModel.getPhotoFile(getString(PHOTO_FILE_NAME)!!)
-        }
 
         photoImageView?.photoDeleteButton?.setOnClickListener {
-            deletePhoto()
+            Timber.d("Deleting photo  %s", photoFileName)
+            productEntryViewModel.deletePhoto(photoFileName!!)
         }
+        loadPhoto()
     }
 
-    private fun deletePhoto() {
-        arguments?.takeIf { it.containsKey(PHOTO_FILE_NAME) }?.apply {
-            productEntryViewModel.deletePhoto(getString(PHOTO_FILE_NAME)!!)
-        }
-    }
 
     fun disableDeletePhotoButton(){
        // photoImageView?.photoDeleteButton?.visibility = View.GONE
@@ -112,7 +113,27 @@ class PhotoFragment : Fragment() {
 
     }
 
-    private fun loadPhoto(file: File) {
+    private fun loadPhoto()  {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val result = try {
+                Result.success(repository.getPhotoFile(photoFileName!!))
+
+            } catch (exception: Exception) {
+                Result.failure<Exception>(Exception("An error occurred retrieving photo", exception))
+            }
+
+            if (result.isSuccess) {
+                val file = result.getOrNull() as File?
+                if (file != null) {
+                    loadPhotoFile(file)
+                }
+            } else {
+                errorMessage.value = result.exceptionOrNull()
+            }
+        }
+    }
+
+    private fun loadPhotoFile(file: File) {
         val context = photoImageView?.photoItemView?.getContext()
         if (context != null) {
             Glide.with(context)
