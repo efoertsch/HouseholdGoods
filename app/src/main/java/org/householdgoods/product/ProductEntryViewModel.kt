@@ -57,7 +57,7 @@ class ProductEntryViewModel //super(application);
     val addedSku = MutableLiveData<String>().apply { value = "" }
     val productId = MutableLiveData<Int>().apply { value = 0 }
     val statusMessage = MutableLiveData<String>().apply { value = "" }
-    val clipboardLinkToProduct = MutableLiveData<String>().apply{value = ""}
+    val clipboardLinkToProduct = MutableLiveData<String>().apply { value = "" }
 
     // For system, api errors
     val errorMessage: MutableLiveData<Throwable> = MutableLiveData()
@@ -77,6 +77,7 @@ class ProductEntryViewModel //super(application);
         loadHHGCategoryFile(uri)
 
     }
+
     fun hasCategories(): Boolean {
         return (wcCategories.size > 0 && hhgCategories.value != null && hhgCategories.value!!.size > 0)
     }
@@ -220,20 +221,19 @@ class ProductEntryViewModel //super(application);
                 val wcPhotoSkuNames = createPhotoImageIds()
                 val wcPhotoList = repository.uploadPhotosToWc(wcPhotoSkuNames, yyyymmBaseUrl)
 
-                // 4. Update product with photo urls. Only
+                // 4. Update product with photo urls. WC will duplicate photos and reference the duplicate
                 val wcMediaList = createImagesForProduct(wcPhotoList)
-                 var productWithPhotos = ProductWithPhotos()
-                 productWithPhotos.id = product.id
+                var productWithPhotos = ProductWithPhotos()
+                productWithPhotos.id = product.id
                 // saved product now store photos
                 productWithPhotos.images = wcMediaList
-                productWithPhotos = repository.updateProduct(productWithPhotos)
+                repository.updateProduct(productWithPhotos)
 
-                // Plan B put photos in download directory
-//                //3. For now copy photos from app directory to download directory
-//                repository.copyPhotosToDownloadDirectory(product.sku)
-//                //4. Delete photos in app directory.
-//                repository.deleteAllPhotos()
+                // 5. Now delete original photos
+                repository.deleteOriginalPhotosFromWc(wcPhotoList)
 
+                // copy sku to clipboard
+                createClipboardUrl(product)
 
                 Result.success(product)
             } catch (exception: Exception) {
@@ -260,7 +260,7 @@ class ProductEntryViewModel //super(application);
     private fun createClipboardUrl(product: Product) {
         // force an update
         clipboardLinkToProduct.value = ""
-      //  clipboardLinkToProduct.value = repository.getWCProductUrl(product.id )
+        //  clipboardLinkToProduct.value = repository.getWCProductUrl(product.id )
         clipboardLinkToProduct.value = product.sku
     }
 
@@ -301,7 +301,9 @@ class ProductEntryViewModel //super(application);
         var image: Image
         for (wcPhoto in wcPhotoList) {
             image = Image()
-            image.src = wcPhoto.source_url.replace("https", "http")
+            // DO NOT assign product id, allow WC to duplicate photo. Delete extraneous photo later
+            // image.id = wcPhoto.id
+             image.src = wcPhoto.source_url.replace("https", "http")
             //image.title = image.src
             images.add(image)
         }

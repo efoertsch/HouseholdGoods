@@ -12,22 +12,22 @@ import java.io.File
 
 class PhotoViewModel @ViewModelInject constructor(@param:Assisted private val savedStateHandle: SavedStateHandle, private val repository: Repository) : ViewModel() {
 
-    //TODO should I create get function for photo for use in view xml?
     var photoFile: MutableLiveData<File> = MutableLiveData()
     var isLoading: MutableLiveData<Boolean> = MutableLiveData()
     var errorMessage: MutableLiveData<Throwable> = MutableLiveData()
+    var photoFileName : String? = null
+    var photoPosition: Int = -1
 
     init {
         isLoading.value = true
 
     }
 
-    fun getPhotoFile(filename: String)  {
+    fun loadPhotoFile()  {
         isLoading.value = true
-
         viewModelScope.launch {
             val result = try {
-                Result.success(repository.getPhotoFile(filename))
+                Result.success(repository.getPhotoFile(photoFileName!!))
 
             } catch (exception: Exception) {
                 Result.failure<Exception>(Exception("An error occurred retrieving photo",exception))
@@ -42,6 +42,11 @@ class PhotoViewModel @ViewModelInject constructor(@param:Assisted private val sa
         }
     }
 
+    fun setPhotoFileNameAndPostion( photoFileName: String?, position : Int) {
+        this.photoFileName =  photoFileName
+        this.photoPosition = position
+        loadPhotoFile()
+    }
 
 
 }

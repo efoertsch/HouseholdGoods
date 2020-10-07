@@ -6,11 +6,6 @@
 
     <data class="PhotoImageView">
 
-        <import type="android.view.View" />
-
-        <variable
-            name="viewModel"
-            type="org.householdgoods.product.PhotoViewModel" />
     </data>
 
 
