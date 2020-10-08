@@ -43,16 +43,12 @@ class Repository @Inject constructor(private val appContext: Context,
     private var sharedPreferences: SharedPreferences = appContext.getSharedPreferences("App", MODE_PRIVATE)
     private val LAST_SKU_PREF_KEY = "LAST_SKU_PREF_KEY"
     private var lastSkuHashMap: HashMap<String, String>
-    lateinit var wcBase64Authorization : String
-    lateinit var wpBase64Authorization : String
+    var wcBase64Authorization : String
 
     init {
         lastSkuHashMap = loadLastSkuHashMap()
         wcBase64Authorization = createBase64BaseAuthorizationValue(appContext.getString(R.string.apiKey),
         appContext.getString(R.string.apiSecret))
-
-        wpBase64Authorization = createBase64BaseAuthorizationValue(appContext.getString(R.string.wp_uid),
-                appContext.getString(R.string.wp_pwd))
 
     }
 
@@ -151,7 +147,7 @@ class Repository @Inject constructor(private val appContext: Context,
     suspend fun deleteOriginalPhotosFromWc( wcPhotos : ArrayList<WcPhoto>)  {
         return withContext(Dispatchers.IO) {
             for (wcPhoto in wcPhotos) {
-                 householdGoodsServerApi.deleteMedia(wpBase64Authorization, wcPhoto.id, true)
+                 householdGoodsServerApi.deleteMedia(wcBase64Authorization, wcPhoto.id, true)
             }
         }
 
@@ -259,13 +255,6 @@ class Repository @Inject constructor(private val appContext: Context,
             HHGCategories
         }
     }
-
-    fun getWcBaseMedialUrl(): String {
-        return appContext.getString(R.string.householdgoods_url)
-                .plus(appContext.getString(R.string.base_media_url))
-
-    }
-
 
     fun getStartingSkuSequence(categoryKey: String, skuMMDD: String): Int {
         var lastSeq: Int

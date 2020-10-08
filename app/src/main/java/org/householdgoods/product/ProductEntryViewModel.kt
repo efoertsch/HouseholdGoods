@@ -6,6 +6,7 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
+import org.householdgoods.BuildConfig
 import org.householdgoods.app.Repository
 import org.householdgoods.data.HHGCategory
 import org.householdgoods.woocommerce.category.Category
@@ -303,7 +304,11 @@ class ProductEntryViewModel //super(application);
             image = Image()
             // DO NOT assign product id, allow WC to duplicate photo. Delete extraneous photo later
             // image.id = wcPhoto.id
-             image.src = wcPhoto.source_url.replace("https", "http")
+           // if (BuildConfig.DEBUG) {
+                image.src = wcPhoto.source_url.replace("https", "http")
+            //} else {
+            //    image.src = wcPhoto.source_url
+            //}
             //image.title = image.src
             images.add(image)
         }

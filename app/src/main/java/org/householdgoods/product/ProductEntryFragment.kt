@@ -212,6 +212,7 @@ class ProductEntryFragment : Fragment() {
         viewModel.errorMessage.observe(viewLifecycleOwner, {
             it?.let {
                 viewModel.isWorking.value = false
+                disablePhotoDeleteButtons()
                 setWindowTouchability(false)
                 displayErrorMessage(it)
             }
@@ -222,8 +223,6 @@ class ProductEntryFragment : Fragment() {
                 productEntryView?.productAddUpdateButton?.isEnabled = it
                 productEntryView?.productAddUpdateButton?.isClickable = it
                 productEntryView?.productAddUpdateButton?.isFocusable = it
-
-
             }
         })
 
@@ -299,7 +298,7 @@ class ProductEntryFragment : Fragment() {
         productEntryView?.productAddUpdateButton?.isEnabled = false
         productEntryView?.productSkuConfirmation?.skuConfirmationCloseButton?.setOnClickListener {
             productEntryView?.productSkuConfirmation?.skuConfirmationDisplay?.visibility = View.GONE
-            productEntryView?.productAddUpdateButton?.visibility = View.VISIBLE
+           // productEntryView?.productAddUpdateButton?.visibility = View.VISIBLE
         }
 
     }
@@ -425,12 +424,12 @@ class ProductEntryFragment : Fragment() {
     private fun displayErrorMessage(throwable: Throwable) {
         val alertDialog = AlertDialog.Builder(context)
                 .setTitle("OOPS!")
-                .setMessage("Please show Mike or Leon the following error message before hitting the OK button \n\n"
+                .setMessage("Please take screen print (hold power and volume-down buttons simulatenously for a couple seconds before hitting the OK button \n\n"
                         + throwable.message
                         + "\n" + throwable.stackTraceToString())
                 .setPositiveButton(android.R.string.ok) { dialog, which ->
                     //   resetProduct()
-                    setWindowTouchability(false)
+                    //setWindowTouchability(false)
                 }
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .create()

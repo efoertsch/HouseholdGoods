@@ -80,9 +80,9 @@ public class WcPhoto {
     @Expose
     public String ping_status;
 
-    @SerializedName("meta")
-    @Expose
-    public Object[] meta;
+//    @SerializedName("meta")
+//    @Expose
+//    public Object[] meta;
 
     @SerializedName("template")
     @Expose
