@@ -1,7 +1,5 @@
 package org.householdgoods.hilt;
 
-import org.householdgoods.BuildConfig;
-
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
@@ -27,9 +25,9 @@ public class OkHttpClientModule {
                 .readTimeout(40, TimeUnit.SECONDS)
                 .writeTimeout(40, TimeUnit.SECONDS)
                 .addInterceptor(interceptor);
-        if (BuildConfig.DEBUG) {
-            overrideSslSocketFactory(httpClient);
-        }
+//        if (BuildConfig.DEBUG) {
+//            overrideSslSocketFactory(httpClient);
+//        }
         Dispatcher dispatcher = new Dispatcher();
         dispatcher.setMaxRequests(6);
         httpClient.dispatcher(dispatcher);

@@ -49,7 +49,7 @@ interface HouseholdGoodsServerApi {
     @POST("/wp-json/wc/v2/media")
     suspend fun uploadWcPhotoUsingBodyNetworkResponse(@Body wcPhoto: WcPhoto) : NetworkResponse<NetworkResponse.Success<WcPhoto>, WcError>
 
-    @DELETE("/wp-json/wp/v2/media/{mediaId}")
+    @DELETE("/wp-json/wc/v2/media/{mediaId}")
     suspend fun deleteMedia(@Header("Authorization") base64AuthorizationString : String,
                             @Path("mediaId") mediaId: Int,
                             @Query("force") force : Boolean
