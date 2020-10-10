@@ -37,7 +37,7 @@ interface HouseholdGoodsServerApi {
     @PUT("wp-json/wc/v3/products/{productId}")
     suspend fun updateProduct(@Header("Authorization") base64AuthorizationString : String,
                               @Path("productId") productId: Int
-                              , @Body productWithPhotos: ProductWithPhotos): ProductWithPhotos
+                              , @Body product: Product): Product
 
     //Upload photo
     @POST("/wp-json/wc/v2/media")

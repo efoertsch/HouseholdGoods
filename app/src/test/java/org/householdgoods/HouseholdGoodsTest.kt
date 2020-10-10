@@ -8,7 +8,7 @@ import kotlinx.coroutines.test.setMain
 import okhttp3.*
 import org.apache.commons.codec.binary.Base64OutputStream
 import org.apache.commons.io.FileUtils
-import org.householdgoods.hilt.OkHttpClientModule
+import org.householdgoods.retrofit.OkHttpClientModule
 import org.householdgoods.networkresponse.NetworkResponse
 import org.householdgoods.retrofit.HouseholdGoodsRetrofit
 import org.householdgoods.retrofit.HouseholdGoodsServerApi

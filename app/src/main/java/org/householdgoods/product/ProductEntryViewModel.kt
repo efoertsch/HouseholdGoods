@@ -6,7 +6,6 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
-import org.householdgoods.BuildConfig
 import org.householdgoods.app.Repository
 import org.householdgoods.data.HHGCategory
 import org.householdgoods.woocommerce.category.Category
@@ -14,7 +13,6 @@ import org.householdgoods.woocommerce.product.Dimensions
 import org.householdgoods.woocommerce.Image
 import org.householdgoods.woocommerce.photo.WcPhoto
 import org.householdgoods.woocommerce.product.Product
-import org.householdgoods.woocommerce.product.ProductWithPhotos
 import timber.log.Timber
 import timber.log.Timber.e
 import java.text.SimpleDateFormat
@@ -26,16 +24,15 @@ import kotlin.collections.HashMap
 class ProductEntryViewModel //super(application);
 @ViewModelInject constructor(@param:Assisted private val savedStateHandle: SavedStateHandle, private val repository: Repository) : ViewModel() {
 
+
     val questionMarks = "??"
     private val photoMediaPathFormat = SimpleDateFormat("yyyy/MM")
 
     //!!!! Remember to put in something like  viewBinding?.lifecycleOwner = viewLifecycleOwner
     //!!!! so Android will pick up changes to isLoading
     val photoList: MutableLiveData<ArrayList<String>> = MutableLiveData()
-    var savedWcCategories = ArrayList<Category>()
     val wcCategories = ArrayList<Category>()
     val hhgCategories: MutableLiveData<ArrayList<HHGCategory>> = MutableLiveData()
-    val savedHhgCategories = ArrayList<HHGCategory>()
     val lookupCategoryErrorMsg = MutableLiveData<String>()
     val isWorking = MutableLiveData<Boolean>().apply { value = false }
     val skuCategoryCode = MutableLiveData<String>().apply { value = questionMarks }
@@ -66,8 +63,9 @@ class ProductEntryViewModel //super(application);
     // used to strip leading zeros from dimensions
     val removeLeadingZerosPattern = "^0+(?!$)".toRegex()
 
-    var product: Product = Product()
+    var product: Product = Product.getProductForAdd()
     val categoryHashMap = HashMap<Int, Category>()
+    private var productStatusList: Array<String>? = null
 
 
     val mmddFormat: SimpleDateFormat = SimpleDateFormat("MMdd")
@@ -135,7 +133,32 @@ class ProductEntryViewModel //super(application);
 
     private fun checkForBothCategoriesLoaded() {
         isWorking.value = !(wcCategories.size > 0 && hhgCategories.value != null && hhgCategories.value!!.size > 0)
+    }
 
+    fun getProductStatusPosition(): Int {
+        if (productStatusList == null) {
+            getProductStatusList()
+        }
+        val defaultStatus = repository.getProductStatus()
+        return productStatusList!!.indexOf(defaultStatus)
+
+    }
+
+    fun setProductStatusPosition(position: Int) {
+        // can never be 0 as that is hint
+        var validPosition = position
+        if (validPosition == 0) {
+            validPosition = 1
+        }
+        val defaultStatus = productStatusList?.get(validPosition)
+        repository.setProductStatus(defaultStatus)
+        product.status = defaultStatus?.toLowerCase()
+
+    }
+
+    fun getProductStatusList(): Array<String> {
+        productStatusList = repository.getProductStatusList()
+        return productStatusList!!
     }
 
     fun savePhoto(bitmap: Bitmap) {
@@ -212,10 +235,8 @@ class ProductEntryViewModel //super(application);
                 Timber.d("Available sku :  $partialSku-$skuSequence")
                 assignProductSKu(skuSequence)
 
-                //2. save product, note that returned product has id assigned
+                //2. save product, note that returned product has id assigned plus a bunch of other field values
                 product = repository.createNewProduct(product)
-                // copy sku to clipboard
-                createClipboardUrl(product)
 
                 // 3. Save photos
                 // create paths for photos
@@ -224,16 +245,16 @@ class ProductEntryViewModel //super(application);
 
                 // 4. Update product with photo urls. WC will duplicate photos and reference the duplicate
                 val wcMediaList = createImagesForProduct(wcPhotoList)
-                var productWithPhotos = ProductWithPhotos()
-                productWithPhotos.id = product.id
+                var productForPhotoUpdate = Product.getProductForUpdate(product.id)
                 // saved product now store photos
-                productWithPhotos.images = wcMediaList
-                repository.updateProduct(productWithPhotos)
+                productForPhotoUpdate.images = wcMediaList
+                repository.updateProduct(productForPhotoUpdate)
 
                 // 5. Now delete original photos
                 repository.deleteOriginalPhotosFromWc(wcPhotoList)
 
-                // copy sku to clipboard
+                //Whew! Done
+                // copy product info to clipboard
                 createClipboardUrl(product)
 
                 Result.success(product)
@@ -261,8 +282,7 @@ class ProductEntryViewModel //super(application);
     private fun createClipboardUrl(product: Product) {
         // force an update
         clipboardLinkToProduct.value = ""
-        //  clipboardLinkToProduct.value = repository.getWCProductUrl(product.id )
-        clipboardLinkToProduct.value = product.sku
+        clipboardLinkToProduct.value = product.permalink
     }
 
 //    private fun updateItem() {
@@ -304,8 +324,8 @@ class ProductEntryViewModel //super(application);
             image = Image()
             // DO NOT assign product id, allow WC to duplicate photo. Delete extraneous photo later
             // image.id = wcPhoto.id
-           // if (BuildConfig.DEBUG) {
-                image.src = wcPhoto.source_url.replace("https", "http")
+            // if (BuildConfig.DEBUG) {
+            image.src = wcPhoto.source_url.replace("https", "http")
             //} else {
             //    image.src = wcPhoto.source_url
             //}
@@ -365,7 +385,8 @@ class ProductEntryViewModel //super(application);
                 && product.dimensions!!.length!!.isNotBlank()
                 && product.dimensions?.width!!.isNotBlank()
                 && product.dimensions?.height!!.isNotBlank()
-                && product.stock_quantity != 0)
+                && product.stock_quantity != 0
+                && getProductStatusPosition() != 0)
     }
 
     fun setCategory(selectedHHGCategory: HHGCategory) {
@@ -452,16 +473,6 @@ class ProductEntryViewModel //super(application);
                 errorMessage.value = result.exceptionOrNull()
             }
         }
-    }
-
-    fun getFirstPartOfSku(): String {
-        if (skuCategoryCode.value.isNullOrBlank()) {
-            throw Exception("Can't create SKU yet as category not selected")
-        }
-        if (skuDateCode.value.isNullOrEmpty()) {
-            throw Exception("Cant' create SKU yet as don't have MMDD part of SKU yet")
-        }
-        return skuCategoryCode.value?.substring(0, 2) + "-" + skuDateCode.value?.substring(0, 5)
     }
 
     fun validateCategory() {
@@ -588,12 +599,13 @@ class ProductEntryViewModel //super(application);
         dataEntryOK.value = false
         addedSku.value = ""
         errorMessage.value = null
-        product = Product()
+        product = Product.getProductForAdd()
         checkProductId()
     }
 
     private fun checkProductId() {
         productId.value = product.id
     }
+
 
 }

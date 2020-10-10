@@ -17,8 +17,8 @@ import org.householdgoods.R
 import org.householdgoods.data.HHGCategory
 import org.householdgoods.retrofit.HouseholdGoodsServerApi
 import org.householdgoods.woocommerce.category.Category
-import org.householdgoods.woocommerce.product.Product
 import org.householdgoods.woocommerce.photo.WcPhoto
+import org.householdgoods.woocommerce.product.Product
 import org.householdgoods.woocommerce.product.ProductWithPhotos
 import org.json.JSONObject
 import timber.log.Timber
@@ -26,6 +26,7 @@ import java.io.*
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
+import java.util.Arrays.asList
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.collections.ArrayList
@@ -45,10 +46,14 @@ class Repository @Inject constructor(private val appContext: Context,
     private var lastSkuHashMap: HashMap<String, String>
     var wcBase64Authorization : String
 
+
+    val appPreferences : SharedPreferences
+
     init {
         lastSkuHashMap = loadLastSkuHashMap()
         wcBase64Authorization = createBase64BaseAuthorizationValue(appContext.getString(R.string.apiKey),
-        appContext.getString(R.string.apiSecret))
+                appContext.getString(R.string.apiSecret))
+        appPreferences = appContext.getSharedPreferences("HHG", MODE_PRIVATE)
 
     }
 
@@ -59,7 +64,7 @@ class Repository @Inject constructor(private val appContext: Context,
             var categories: ArrayList<Category>?
             val allCategories = java.util.ArrayList<Category>()
             while (true) {
-                categories = householdGoodsServerApi.getAllCategories(wcBase64Authorization,perPage, offset)
+                categories = householdGoodsServerApi.getAllCategories(wcBase64Authorization, perPage, offset)
                 if (categories!!.isEmpty()) {
                     break
                 }
@@ -144,7 +149,7 @@ class Repository @Inject constructor(private val appContext: Context,
 
     }
 
-    suspend fun deleteOriginalPhotosFromWc( wcPhotos : ArrayList<WcPhoto>)  {
+    suspend fun deleteOriginalPhotosFromWc(wcPhotos: ArrayList<WcPhoto>)  {
         return withContext(Dispatchers.IO) {
             for (wcPhoto in wcPhotos) {
                  householdGoodsServerApi.deleteMedia(wcBase64Authorization, wcPhoto.id, true)
@@ -187,8 +192,8 @@ class Repository @Inject constructor(private val appContext: Context,
     }
 
 
-    suspend fun updateProduct(productWithPhotos: ProductWithPhotos): ProductWithPhotos {
-        return householdGoodsServerApi.updateProduct(wcBase64Authorization, productWithPhotos.id, productWithPhotos)
+    suspend fun updateProduct(product: Product): Product {
+        return householdGoodsServerApi.updateProduct(wcBase64Authorization, product.id, product)
     }
 
     suspend fun getPhotoFile(photoFile: String): File? {
@@ -318,6 +323,24 @@ class Repository @Inject constructor(private val appContext: Context,
         val encoded = Credentials.basic(key, secret)
         System.out.println("Encoded : $encoded")
         return encoded
+    }
+
+    fun getProductStatus() : String {
+        return appPreferences.getString(PRODUCT_STATUS, appContext.getString(R.string.publish))!!
+    }
+
+    fun setProductStatus(productStatus: String?)  {
+        val editor = sharedPreferences.edit()
+        editor.putString(PRODUCT_STATUS, productStatus)
+        editor.apply()
+    }
+
+    fun getProductStatusList():  Array<String> {
+        return   appContext.resources.getStringArray(R.array.product_status_list)
+    }
+
+    companion object {
+        const val PRODUCT_STATUS = "PRODUCT_STATUS"
     }
 }
 

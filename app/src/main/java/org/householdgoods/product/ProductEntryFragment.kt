@@ -7,12 +7,16 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
+import android.widget.ArrayAdapter
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import androidx.fragment.app.Fragment
@@ -79,6 +83,8 @@ class ProductEntryFragment : Fragment() {
 
         productEntryView?.productCameraButton?.setOnClickListener { v -> goToCameraApp() }
 
+        addProductStatusValuesToSpinner()
+
         photoCollectionAdapter = PhotoCollectionAdapter(this)
         viewPager = productEntryView?.productPhotoPager!!
         viewPager.adapter = photoCollectionAdapter
@@ -102,11 +108,55 @@ class ProductEntryFragment : Fragment() {
         }
     }
 
+    fun addProductStatusValuesToSpinner() {
+        val productStatusList = viewModel.getProductStatusList()
+        val spinner = productEntryView?.productStatusSpinner
+        val adapter = getHintSpinner(productStatusList)
+        spinner?.adapter = adapter
+        spinner?.setSelection(viewModel.getProductStatusPosition())
+        spinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                spinner?.requestFocus()
+                spinner?.setSelection(0)
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                spinner?.requestFocus()
+                viewModel.setProductStatusPosition(position)
+            }
+        }
+    }
+
+
+    fun getHintSpinner(spinnerList: Array<String>): ArrayAdapter<String?> {
+        val adapter: ArrayAdapter<String?> = object : ArrayAdapter<String?>(requireContext(), R.layout.spinner_cap_words, spinnerList) {
+            // First position is text hint
+            override fun isEnabled(position: Int): Boolean {
+                return position != 0
+            }
+
+            override fun getDropDownView(position: Int, convertView: View?,
+                                         parent: ViewGroup): View? {
+                val view = super.getDropDownView(position, convertView, parent)
+                val tv = view as TextView
+                if (position == 0) {
+                    // Set the hint text color gray
+                    tv.setTextColor(Color.GRAY)
+                } else {
+                    tv.setTextColor(Color.BLACK)
+                }
+                return view
+            }
+        }
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        return adapter
+    }
+
     // Depends on Android naming convention for viewpage fragment tags of f0, f1, ...
     private fun disablePhotoDeleteButtons() {
-        for (i in 0 until viewPager.adapter!!.itemCount ) {
+        for (i in 0 until viewPager.adapter!!.itemCount) {
             val photoFragment: Fragment? = childFragmentManager.findFragmentByTag("f" + i)
-            if ( photoFragment != null) {
+            if (photoFragment != null) {
                 (photoFragment as PhotoFragment).disableDeletePhotoButton()
             }
         }
@@ -189,7 +239,8 @@ class ProductEntryFragment : Fragment() {
         val imm: InputMethodManager = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(productEntryView?.root!!.windowToken, 0)
     }
-    private fun openKeyboard(){
+
+    private fun openKeyboard() {
         val imm = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
     }
@@ -240,6 +291,7 @@ class ProductEntryFragment : Fragment() {
             }
         })
 
+        // Hmmm - Also set enabled flag in xml. Consolidate logic
         viewModel.productId.observe(viewLifecycleOwner, {
             it?.let {
                 if (it == 0) {
@@ -298,7 +350,7 @@ class ProductEntryFragment : Fragment() {
         productEntryView?.productAddUpdateButton?.isEnabled = false
         productEntryView?.productSkuConfirmation?.skuConfirmationCloseButton?.setOnClickListener {
             productEntryView?.productSkuConfirmation?.skuConfirmationDisplay?.visibility = View.GONE
-           // productEntryView?.productAddUpdateButton?.visibility = View.VISIBLE
+            // productEntryView?.productAddUpdateButton?.visibility = View.VISIBLE
         }
 
     }
@@ -311,7 +363,7 @@ class ProductEntryFragment : Fragment() {
         // To force recreation of photo fragments
         viewPager.adapter = photoCollectionAdapter
         val newNumberPhotos = photoCollectionAdapter.itemCount
-        if (numberPhotos < newNumberPhotos){
+        if (numberPhotos < newNumberPhotos) {
             viewPager.setCurrentItem(newNumberPhotos - 1, true)
         }
 
@@ -345,8 +397,10 @@ class ProductEntryFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, resultData)
         // No idea why select photo or file comes back with resultCode -1
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
-            if ((resultCode == RESULT_OK || resultCode == -1) && resultData != null) {
-                    savePhoto(resultData.extras)
+            if ((resultCode == RESULT_OK || resultCode == -1)
+                    && resultData != null
+                    && resultData.extras != null) {
+                savePhoto(resultData.extras)
             } else {
                 Toast.makeText(context, getString(R.string.no_photo_taken), Toast.LENGTH_LONG).show()
             }
@@ -424,7 +478,7 @@ class ProductEntryFragment : Fragment() {
     private fun displayErrorMessage(throwable: Throwable) {
         val alertDialog = AlertDialog.Builder(context)
                 .setTitle("OOPS!")
-                .setMessage("Please take screen print (hold power and volume-down buttons simulatenously for a couple seconds before hitting the OK button \n\n"
+                .setMessage("Please take screen print (hold power and volume-down buttons simultaneously for a couple seconds before hitting the OK button \n\n"
                         + throwable.message
                         + "\n" + throwable.stackTraceToString())
                 .setPositiveButton(android.R.string.ok) { dialog, which ->
