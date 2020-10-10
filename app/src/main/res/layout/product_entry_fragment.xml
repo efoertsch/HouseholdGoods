@@ -321,23 +321,25 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_standard"
                 android:layout_marginTop="@dimen/margin_standard"
-                android:layout_marginEnd="@dimen/margin_standard"
                 android:text="Status"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/product_length_layout" />
 
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/product_status_spinner"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_standard"
                 android:focusable="true"
+                android:layout_marginStart="@dimen/margin_standard"
                 android:focusableInTouchMode="true"
+                android:enabled="@{viewModel.productId == 0}"
                 android:nextFocusForward="@id/product_category_autoCompleteTextView"
                 android:selectedItemPosition="@={viewModel.productStatusPosition}"
                 app:layout_constraintStart_toEndOf="@+id/product_status_label"
                 app:layout_constraintTop_toBottomOf="@+id/product_height_layout"
-                app:layout_constraintWidth_percent="0.25" />
+                app:layout_constraintBottom_toBottomOf="@+id/product_status_label"
+                 />
 
 
             <com.google.android.material.button.MaterialButton

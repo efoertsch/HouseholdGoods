@@ -47,11 +47,6 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="TextSizeExtraLargeBold.Spinner" parent="android:TextAppearance.Material.Widget.TextView.SpinnerItem" >
-        <item name="android:textSize">@dimen/text_size_large_24dp</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
 
     <style name="TextSizeSuperLargeBold" >
         <item name="android:textSize">@dimen/text_size_large_96sp</item>

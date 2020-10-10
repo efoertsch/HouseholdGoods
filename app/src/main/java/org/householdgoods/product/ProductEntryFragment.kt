@@ -291,6 +291,7 @@ class ProductEntryFragment : Fragment() {
             }
         })
 
+        // Hmmm - Also set enabled flag in xml. Consolidate logic
         viewModel.productId.observe(viewLifecycleOwner, {
             it?.let {
                 if (it == 0) {

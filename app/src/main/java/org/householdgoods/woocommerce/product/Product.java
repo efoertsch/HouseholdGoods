@@ -16,6 +16,8 @@ import java.util.List;
 // !!! Some fields assigned default values !!!!
 public class Product {
 
+    private Product(){}
+
     @SerializedName("id")
     @Expose
     public Integer id;

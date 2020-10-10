@@ -8,9 +8,9 @@
     <string name="update_item">Update Item</string>
 
     <string name="select_product_status">Select Product Status</string>
-    <string name="publish">publish</string>
-    <string name="draft">draft</string>
-    <string name="get_title_and_build_info">%1$s        Version: %2$s       Url: %3$s</string>
+    <string name="publish">Publish</string>
+    <string name="draft">Draft</string>
+    <string name="get_title_and_build_info">%1$s\u0020\u0020\u0020\u0020\u0020Version: %2$s\u0020\u0020\u0020\u0020\u0020Url: %3$s</string>
 
     <string-array name="product_status_list">
         <item>@string/select_product_status</item>

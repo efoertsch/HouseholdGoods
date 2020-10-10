@@ -65,7 +65,7 @@ class ProductEntryViewModel //super(application);
 
     var product: Product = Product.getProductForAdd()
     val categoryHashMap = HashMap<Int, Category>()
-    private var productStatusList : Array<String>? = null
+    private var productStatusList: Array<String>? = null
 
 
     val mmddFormat: SimpleDateFormat = SimpleDateFormat("MMdd")
@@ -135,8 +135,8 @@ class ProductEntryViewModel //super(application);
         isWorking.value = !(wcCategories.size > 0 && hhgCategories.value != null && hhgCategories.value!!.size > 0)
     }
 
-    fun getProductStatusPosition() : Int{
-        if (productStatusList == null){
+    fun getProductStatusPosition(): Int {
+        if (productStatusList == null) {
             getProductStatusList()
         }
         val defaultStatus = repository.getProductStatus()
@@ -144,19 +144,20 @@ class ProductEntryViewModel //super(application);
 
     }
 
-    fun setProductStatusPosition(position: Int){
+    fun setProductStatusPosition(position: Int) {
         // can never be 0 as that is hint
         var validPosition = position
         if (validPosition == 0) {
             validPosition = 1
         }
-       val defaultStatus = productStatusList?.get(validPosition)
+        val defaultStatus = productStatusList?.get(validPosition)
         repository.setProductStatus(defaultStatus)
+        product.status = defaultStatus?.toLowerCase()
 
     }
 
-    fun getProductStatusList() : Array<String> {
-         productStatusList = repository.getProductStatusList()
+    fun getProductStatusList(): Array<String> {
+        productStatusList = repository.getProductStatusList()
         return productStatusList!!
     }
 
@@ -323,8 +324,8 @@ class ProductEntryViewModel //super(application);
             image = Image()
             // DO NOT assign product id, allow WC to duplicate photo. Delete extraneous photo later
             // image.id = wcPhoto.id
-           // if (BuildConfig.DEBUG) {
-                image.src = wcPhoto.source_url.replace("https", "http")
+            // if (BuildConfig.DEBUG) {
+            image.src = wcPhoto.source_url.replace("https", "http")
             //} else {
             //    image.src = wcPhoto.source_url
             //}
@@ -384,7 +385,8 @@ class ProductEntryViewModel //super(application);
                 && product.dimensions!!.length!!.isNotBlank()
                 && product.dimensions?.width!!.isNotBlank()
                 && product.dimensions?.height!!.isNotBlank()
-                && product.stock_quantity != 0)
+                && product.stock_quantity != 0
+                && getProductStatusPosition() != 0)
     }
 
     fun setCategory(selectedHHGCategory: HHGCategory) {
@@ -471,16 +473,6 @@ class ProductEntryViewModel //super(application);
                 errorMessage.value = result.exceptionOrNull()
             }
         }
-    }
-
-    fun getFirstPartOfSku(): String {
-        if (skuCategoryCode.value.isNullOrBlank()) {
-            throw Exception("Can't create SKU yet as category not selected")
-        }
-        if (skuDateCode.value.isNullOrEmpty()) {
-            throw Exception("Cant' create SKU yet as don't have MMDD part of SKU yet")
-        }
-        return skuCategoryCode.value?.substring(0, 2) + "-" + skuDateCode.value?.substring(0, 5)
     }
 
     fun validateCategory() {
@@ -607,7 +599,7 @@ class ProductEntryViewModel //super(application);
         dataEntryOK.value = false
         addedSku.value = ""
         errorMessage.value = null
-        product = Product()
+        product = Product.getProductForAdd()
         checkProductId()
     }
 
