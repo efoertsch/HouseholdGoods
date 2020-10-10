@@ -1,8 +1,6 @@
 package org.householdgoods.hilt;
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.util.Config
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
@@ -13,10 +11,7 @@ import okhttp3.OkHttpClient
 import org.householdgoods.BuildConfig
 import org.householdgoods.R
 import org.householdgoods.app.Repository
-import org.householdgoods.retrofit.HeaderInterceptor
-import org.householdgoods.retrofit.HouseholdGoodsRetrofit
-import org.householdgoods.retrofit.HouseholdGoodsServerApi
-import org.householdgoods.retrofit.LoggingInterceptor
+import org.householdgoods.retrofit.*
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -25,9 +20,8 @@ import javax.inject.Singleton
 object AppModule {
 
     @Provides
-    fun provideRepository(@ApplicationContext appContext: Context
-                          , householdGoodsServerApi: HouseholdGoodsServerApi ): Repository {
-        return Repository(appContext , householdGoodsServerApi  )
+    fun provideRepository(@ApplicationContext appContext: Context, householdGoodsServerApi: HouseholdGoodsServerApi): Repository {
+        return Repository(appContext, householdGoodsServerApi)
     }
 
     @Provides
@@ -39,7 +33,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun getHouseHoldGoodRetrofit(okHttpClient: OkHttpClient,  @Named("householdGoodsUrl") householdGoodsUrl: String) : HouseholdGoodsRetrofit {
+    fun getHouseHoldGoodRetrofit(okHttpClient: OkHttpClient, @Named("householdGoodsUrl") householdGoodsUrl: String) : HouseholdGoodsRetrofit {
         return  HouseholdGoodsRetrofit(okHttpClient, householdGoodsUrl)
     }
 
@@ -57,7 +51,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideHouseholdGoodsApi(householdGoodsRetrofit : HouseholdGoodsRetrofit) : HouseholdGoodsServerApi{
+    fun provideHouseholdGoodsApi(householdGoodsRetrofit: HouseholdGoodsRetrofit) : HouseholdGoodsServerApi{
         return (householdGoodsRetrofit.retrofit.create(HouseholdGoodsServerApi::class.java))
     }
 

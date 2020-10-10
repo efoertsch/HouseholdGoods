@@ -7,5 +7,16 @@
     <string name="add_item">Add Item</string>
     <string name="update_item">Update Item</string>
 
+    <string name="select_product_status">Select Product Status</string>
+    <string name="publish">publish</string>
+    <string name="draft">draft</string>
+    <string name="get_title_and_build_info">%1$s        Version: %2$s       Url: %3$s</string>
+
+    <string-array name="product_status_list">
+        <item>@string/select_product_status</item>
+        <item>@string/publish</item>
+        <item>@string/draft</item>
+    </string-array>
+
 
 </resources>

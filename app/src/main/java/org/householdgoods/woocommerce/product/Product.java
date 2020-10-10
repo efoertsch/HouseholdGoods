@@ -18,67 +18,104 @@ public class Product {
 
     @SerializedName("id")
     @Expose
-    public Integer id = 0;
+    public Integer id;
+
     @SerializedName("name")
     @Expose
-    public String name = "";
+    public String name;
+
+    // read only value
+    @SerializedName("permalink")
+    @Expose
+    public String permalink;
 
     @SerializedName("type")
     @Expose
-    public String type = "simple";
+    public String type ;
+
+    @SerializedName("status")
+    @Expose
+    public String status ;
 
     @SerializedName("description")
     @Expose
     public String description;
+
     @SerializedName("short_description")
     @Expose
     public String short_description;
+
     @SerializedName("sku")
     @Expose
     public String sku;
 
     @SerializedName("regular_price")
     @Expose
-    public String regular_price = "0.00`";
+    public String regular_price;
 
     @SerializedName("manage_stock")
     @Expose
-    public Boolean manage_stock = true;
+    public Boolean manage_stock ;
+
     @SerializedName("stock_quantity")
     @Expose
-    public int stock_quantity = 0;
+    public Integer stock_quantity;
+
     @SerializedName("stock_status")
     @Expose
-    public String stock_status = "instock";
+    public String stock_status;
 
     @SerializedName("sold_individually")
     @Expose
-    public Boolean sold_individually = true;
+    public Boolean sold_individually;
 
     @SerializedName("dimensions")
     @Expose
-    public Dimensions dimensions = new Dimensions();
+    public Dimensions dimensions;
 
     @SerializedName("parent_id")
     @Expose
-    public Integer parent_id = 0;
+    public Integer parent_id ;
 
     @SerializedName("categories")
     @Expose
     public List<Category> categories;
+
     @SerializedName("tags")
     @Expose
-    public List<Tags> tags = null;
+    public List<Tags> tags;
+
     @SerializedName("images")
     @Expose
-    public List<Image> images = null;
+    public List<Image> images;
 
+    public static Product getProductForAdd(){
+        Product product = new Product();
+        // assign default values
+        product.id = 0;
+        product.type =  "simple";
+        product.regular_price =  "0.00";
+        product.manage_stock =  true;
+        product.stock_status = "instock";
+        product.sold_individually = true;
+        product.dimensions = new Dimensions();
+        product.parent_id = 0;
+        return product;
+    }
+
+    // Requires id of product you want to update
+    public static Product getProductForUpdate(int id){
+        Product product = new Product();
+        product.id = id;
+        return product;
+    }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("id", id)
                 .append("name", name)
                 .append("type", type)
+                .append("status", status)
                 .append("description", description)
                 .append("short_description", short_description)
                 .append("sku", sku)
