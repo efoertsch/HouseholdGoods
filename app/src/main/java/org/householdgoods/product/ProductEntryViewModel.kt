@@ -153,6 +153,7 @@ class ProductEntryViewModel //super(application);
         val defaultStatus = productStatusList?.get(validPosition)
         repository.setProductStatus(defaultStatus)
         product.status = defaultStatus?.toLowerCase()
+        validateProductEntry()
 
     }
 
@@ -573,6 +574,7 @@ class ProductEntryViewModel //super(application);
         }
         // Description allowed to be blank
         product.description = prodDescription
+        validateProductEntry()
 
     }
 

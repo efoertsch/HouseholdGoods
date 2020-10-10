@@ -218,11 +218,7 @@ class ProductEntryFragment : Fragment() {
                     productEntryView?.productWidth -> viewModel.validateProductWidth()
                     productEntryView?.productHeight -> viewModel.validateProductHeight()
                     productEntryView?.productQuantity -> viewModel.validateProductQuantity()
-                    productEntryView?.productDescription -> {
-                        viewModel.validateProductDescription()
-                        closeKeyboard()
-                    }
-
+                    productEntryView?.productDescription ->  viewModel.validateProductDescription()
                 }
             }
         }
