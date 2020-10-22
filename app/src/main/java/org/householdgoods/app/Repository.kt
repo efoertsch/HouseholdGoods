@@ -5,11 +5,13 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
 import android.util.Base64.DEFAULT
 import android.util.Base64.NO_WRAP
 import android.util.Base64OutputStream
+import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Credentials
@@ -19,14 +21,12 @@ import org.householdgoods.retrofit.HouseholdGoodsServerApi
 import org.householdgoods.woocommerce.category.Category
 import org.householdgoods.woocommerce.photo.WcPhoto
 import org.householdgoods.woocommerce.product.Product
-import org.householdgoods.woocommerce.product.ProductWithPhotos
 import org.json.JSONObject
 import timber.log.Timber
 import java.io.*
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
-import java.util.Arrays.asList
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.collections.ArrayList
@@ -103,10 +103,23 @@ class Repository @Inject constructor(private val appContext: Context,
         }
     }
 
+    fun getPhotoDirAndName() : Uri {
+        val dateTime = sdf.format(Calendar.getInstance().time)
+        val dir = appContext.filesDir
+        val dirAndName = "$dir/$dateTime.jpg"
+        val photoFile  =   File(dirAndName)
+        val apkURI: Uri = FileProvider.getUriForFile(appContext,
+                appContext.getPackageName().toString() + ".provider",
+                photoFile)
+        Timber.d("Photo uri: %s", apkURI.toString())
+        return apkURI
+    }
+
     suspend fun savePhotoToFile(bitmap: Bitmap): String {
         return withContext(Dispatchers.IO) {
             val dateTime = sdf.format(Calendar.getInstance().getTime())
             val filename = dateTime + ".jpg"
+            Timber.d("bitmap size  height : %d, bitmap width: %d", bitmap.height, bitmap.width)
             appContext.openFileOutput(filename, Context.MODE_PRIVATE).use {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
             }
@@ -122,9 +135,14 @@ class Repository @Inject constructor(private val appContext: Context,
 
     fun getListOfPhotoFiles(): ArrayList<String> {
         val photoFileList = ArrayList<String>()
-        photoFileList.addAll(appContext.fileList())
+        // make sure  photos in ascending order (makes first photo feature photo)
+        var fileList = appContext.fileList()
+        Arrays.sort(fileList)
+        photoFileList.addAll(fileList)
         return photoFileList
     }
+
+
 
     // Partial sku e.g. 'XC-0902'
     suspend fun uploadPhotosToWc(wcPhotoSkuNames: ArrayList<String>, mediaPath: String?): ArrayList<WcPhoto> {
@@ -136,6 +154,7 @@ class Repository @Inject constructor(private val appContext: Context,
 
             val wcPhotoList = ArrayList<WcPhoto>()
             for ((i, photoFileName) in photoFileList.withIndex()) {
+               // showJpgFileSize(photoFileName)
                 var wcPhoto = createWcPhoto(photoFileName, wcPhotoSkuNames[i], mediaPath)
                 if (wcPhoto == null) {
                     throw   Exception("Oh-oh!!! Error occurred create wcPhoto upload object!")
@@ -146,7 +165,15 @@ class Repository @Inject constructor(private val appContext: Context,
 
             wcPhotoList
         }
+    }
 
+    private fun showJpgFileSize(jpegFile: String){
+        val o: BitmapFactory.Options = BitmapFactory.Options()
+        o.inJustDecodeBounds = true
+        BitmapFactory.decodeFile(File(appContext.filesDir, jpegFile).absolutePath, o)
+        val imageHeight: Int = o.outHeight
+        val imageWidth: Int = o.outWidth
+        Timber.d("%s   height: %d  width: %d", jpegFile, imageHeight, imageWidth)
     }
 
     suspend fun deleteOriginalPhotosFromWc(wcPhotos: ArrayList<WcPhoto>)  {

@@ -102,6 +102,7 @@ public class Product {
         product.sold_individually = true;
         product.dimensions = new Dimensions();
         product.parent_id = 0;
+        product.stock_quantity = 0;
         return product;
     }
 

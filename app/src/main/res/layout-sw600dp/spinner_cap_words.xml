@@ -8,6 +8,6 @@
     android:ellipsize="marquee"
     android:singleLine="true"
     android:textAlignment="inherit"
-    android:textSize="@dimen/text_size_large"
+    android:textSize="@dimen/text_size_large_24dp"
     android:textStyle="bold"
     tools:text="publish"/>

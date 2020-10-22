@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- needed to allow camera app to store photos in app directory -->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <files-path name="photo_files" path="."/>
+</paths>

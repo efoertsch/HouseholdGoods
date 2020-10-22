@@ -21,14 +21,6 @@
     <style name="AppTheme.NoActionBar.AppBarOverlay"
         parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <style name="HintTextSizeLarge" parent="TextAppearance.Design.Hint">
-        <item name="android:textSize">@dimen/text_size_large</item>
-    </style>
-
-    <style name="TextSizeLargeBold" >
-        <item name="android:textSize">@dimen/text_size_large</item>
-        <item name="android:textStyle">bold</item>
-    </style>
 
     <style name="HHGButton" parent="Widget.MaterialComponents.Button">
         <item name="android:textColor">@android:color/white</item>
@@ -41,6 +33,15 @@
         <item name="android:textSize">@dimen/text_size_large_24dp</item>
     </style>
 
+    <style name="HintTextSizeLarge" parent="TextAppearance.Design.Hint">
+        <item name="android:textSize">@dimen/text_size_large</item>
+    </style>
+
+
+    <style name="TextSizeLargeBold" >
+        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
     <style name="TextSizeExtraLargeBold" >
         <item name="android:textSize">@dimen/text_size_large_24dp</item>
