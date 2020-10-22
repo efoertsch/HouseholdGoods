@@ -24,7 +24,6 @@ import kotlin.collections.HashMap
 class ProductEntryViewModel //super(application);
 @ViewModelInject constructor(@param:Assisted private val savedStateHandle: SavedStateHandle, private val repository: Repository) : ViewModel() {
 
-
     val questionMarks = "??"
     private val photoMediaPathFormat = SimpleDateFormat("yyyy/MM")
 
@@ -66,6 +65,7 @@ class ProductEntryViewModel //super(application);
     var product: Product = Product.getProductForAdd()
     val categoryHashMap = HashMap<Int, Category>()
     private var productStatusList: Array<String>? = null
+    private var sdf: SimpleDateFormat = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SS")
 
 
     val mmddFormat: SimpleDateFormat = SimpleDateFormat("MMdd")
@@ -107,9 +107,7 @@ class ProductEntryViewModel //super(application);
             }
             checkForBothCategoriesLoaded()
         }
-
     }
-
 
     private fun loadHHGCategoryFile(uri: Uri) {
         isWorking.value = true
@@ -160,6 +158,10 @@ class ProductEntryViewModel //super(application);
     fun getProductStatusList(): Array<String> {
         productStatusList = repository.getProductStatusList()
         return productStatusList!!
+    }
+
+    fun getPhotoFileName() : Uri {
+       return repository.getPhotoDirAndName()
     }
 
     fun savePhoto(bitmap: Bitmap) {
@@ -324,7 +326,7 @@ class ProductEntryViewModel //super(application);
         for (wcPhoto in wcPhotoList) {
             image = Image()
             // DO NOT assign product id, allow WC to duplicate photo. Delete extraneous photo later
-            // image.id = wcPhoto.id
+            //image.id = wcPhoto.id
             // if (BuildConfig.DEBUG) {
             image.src = wcPhoto.source_url.replace("https", "http")
             //} else {

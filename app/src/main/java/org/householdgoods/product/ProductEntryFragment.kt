@@ -384,8 +384,12 @@ class ProductEntryFragment : Fragment() {
     }
 
 
+    //https://medium.com/@ali.muzaffar/what-is-android-os-fileuriexposedexception-and-what-you-can-do-about-it-70b9eb17c6d0
     fun goToCameraApp() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val photoUri = viewModel.getPhotoFileName();
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
     }
 
@@ -396,7 +400,8 @@ class ProductEntryFragment : Fragment() {
             if ((resultCode == RESULT_OK || resultCode == -1)
                     && resultData != null
                     && resultData.extras != null) {
-                savePhoto(resultData.extras)
+                // the result returns a 'thumbnail" bitmap but the photo has been stored full size
+                viewModel.getListOfPhotos()
             } else {
                 Toast.makeText(context, getString(R.string.no_photo_taken), Toast.LENGTH_LONG).show()
             }

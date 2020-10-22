@@ -1,11 +1,9 @@
 package org.householdgoods.retrofit
 
 import android.annotation.SuppressLint
-import android.util.Base64
 import okhttp3.*
 import okio.Buffer
 import org.householdgoods.BuildConfig
-import timber.log.Timber
 import java.io.IOException
 
 //http://stackoverflow.com/questions/32965790/retrofit-2-0-how-to-print-the-full-json-response
@@ -42,13 +40,32 @@ class LoggingInterceptor : Interceptor {
             }
             if (BuildConfig.DEBUG) {
                 //    System.out.println("response only" + "\n" + bodyString);
-                System.out.println("response\n" + responseLog + "\n" +bodyString)
+                System.out.println("response\n" + responseLog)
+                System.out.println("body")
+                printAllBody(bodyString)
             }
             response.newBuilder()
                     .body(ResponseBody.create(response.body()!!.contentType(), bodyString))
                     .build()
         } else {
             chain.proceed(request)
+        }
+    }
+
+    private fun printAllBody(bodyString: String){
+        if (bodyString.length > 4000) {
+            System.out.println( "bodyString.length = " + bodyString.length)
+            val chunkCount: Int = bodyString.length / 4000 // integer division
+            for (i in 0..chunkCount) {
+                val max = 4000 * (i + 1)
+                if (max >= bodyString.length) {
+                    System.out.println( "chunk " + i + " of " + chunkCount + ":" + bodyString.substring(4000 * i))
+                } else {
+                    System.out.println( "chunk " + i + " of " + chunkCount + ":" + bodyString.substring(4000 * i, max))
+                }
+            }
+        } else {
+            System.out.println(bodyString)
         }
     }
 
