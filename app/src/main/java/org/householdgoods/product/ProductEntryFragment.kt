@@ -398,8 +398,10 @@ class ProductEntryFragment : Fragment() {
         // No idea why select photo or file comes back with resultCode -1
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
             if ((resultCode == RESULT_OK || resultCode == -1)
-                    && resultData != null
-                    && resultData.extras != null) {
+                    // resultData comes back empty on Fire Tablet
+//                    && resultData != null
+//                    && resultData.extras != null
+                     ) {
                 // the result returns a 'thumbnail" bitmap but the photo has been stored full size
                 viewModel.getListOfPhotos()
             } else {
