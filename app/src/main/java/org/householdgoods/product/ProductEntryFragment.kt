@@ -207,18 +207,26 @@ class ProductEntryFragment : Fragment() {
                     productEntryView?.productHeight -> productEntryView?.productHeight?.selectAll()
                     productEntryView?.productQuantity -> productEntryView?.productQuantity?.selectAll()
                     // put cursor at end of any text
-                    productEntryView?.productDescription -> productEntryView?.productDescription?.append("")
+                    productEntryView?.productShortDescription -> productEntryView?.productShortDescription?.append("")
+                    productEntryView?.productLongDescription -> productEntryView?.productLongDescription?.append("")
                 }
             } else {
                 // focus lost validate input
                 when (view) {
+                    // validations also being fired  in layout xml using android:afterTextChanged attribute to call validations
+                    // e.g. android:afterTextChanged="@{(editable) ->viewModel.validateProductName()}"
+                    // BUT if value doesn't change (say user tabs through dimension fields there is no text change
+                    // so validation does not fire and although everything OK, the Add Item button may never get enabled.
+                    // So using belts and suspenders here
                     productEntryView?.productCategoryAutoCompleteTextView -> viewModel.validateCategory()
                     productEntryView?.productName -> viewModel.validateProductName()
                     productEntryView?.productLength -> viewModel.validateProductLength()
                     productEntryView?.productWidth -> viewModel.validateProductWidth()
                     productEntryView?.productHeight -> viewModel.validateProductHeight()
                     productEntryView?.productQuantity -> viewModel.validateProductQuantity()
-                    productEntryView?.productDescription ->  viewModel.validateProductDescription()
+                    productEntryView?.productShortDescription ->  viewModel.validateProductShortDescription()
+                    productEntryView?.productLongDescription ->  viewModel.validateProductLongDescription()
+
                 }
             }
         }
@@ -227,7 +235,8 @@ class ProductEntryFragment : Fragment() {
         productEntryView?.productWidth?.setOnFocusChangeListener(onFocusChangeListener)
         productEntryView?.productHeight?.setOnFocusChangeListener(onFocusChangeListener)
         productEntryView?.productQuantity?.setOnFocusChangeListener(onFocusChangeListener)
-        productEntryView?.productDescription?.setOnFocusChangeListener(onFocusChangeListener)
+        productEntryView?.productShortDescription?.setOnFocusChangeListener(onFocusChangeListener)
+        productEntryView?.productLongDescription?.setOnFocusChangeListener(onFocusChangeListener)
 
     }
 
@@ -324,8 +333,8 @@ class ProductEntryFragment : Fragment() {
 
     private fun setWindowTouchability(working: Boolean) {
         if (working) {
-            productEntryView?.productDataProgressBar?.visibility = View.VISIBLE
-            // For some reason setting progress bar to visible (and therefor holding frame visible)
+            productEntryView?.progressBarContainer?.visibility = View.VISIBLE
+            // For some reason setting progress bar frame to visible
             // does not stop user from being able to edit text fields or press buttons so using this
             activity?.getWindow()?.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
@@ -333,7 +342,7 @@ class ProductEntryFragment : Fragment() {
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
 
         } else {
-            productEntryView?.productDataProgressBar?.visibility = View.GONE
+            productEntryView?.progressBarContainer?.visibility = View.GONE
             activity?.getWindow()?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
             activity?.getWindow()?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
 

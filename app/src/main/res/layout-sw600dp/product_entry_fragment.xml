@@ -152,38 +152,68 @@
                     style="@style/HintTextSizeExtraLarge"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:afterTextChanged="@{(editable) ->viewModel.validateProductName()}"
                     android:focusableInTouchMode="true"
                     android:inputType="textCapWords"
-                    android:nextFocusForward="@+id/product_description"
+                    android:nextFocusForward="@+id/product_short_description"
                     android:text="@={viewModel.productName}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/product_description_layout"
+                android:id="@+id/product_short_description_layout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_standard"
                 android:enabled="@{viewModel.productId == 0}"
                 app:errorEnabled="true"
-                app:errorText="@{viewModel.productDescriptionErrorMsg}"
+                app:errorText="@{viewModel.productShortDescriptionErrorMsg}"
                 app:hintTextAppearance="@style/HintTextSizeExtraLarge"
-                app:layout_constraintEnd_toStartOf="@id/vertical_guideline_50pct"
+                app:layout_constraintEnd_toStartOf="@id/vertical_guideline_25pct"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/product_name_layout">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/product_description"
+                    android:id="@+id/product_short_description"
+                    style="@style/TextSizeExtraLargeBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:afterTextChanged="@{(editable) ->viewModel.validateProductShortDescription()}"
+                    android:focusableInTouchMode="true"
+                    android:hint="Short Description(Optional)"
+                    android:imeOptions="actionNext"
+                    android:inputType="textAutoCorrect|textMultiLine|textCapSentences|textAutoComplete"
+                    android:maxLines="2"
+                    android:nextFocusForward="@+id/product_long_description"
+                    android:text="@={viewModel.productShortDescription}" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/product_long_description_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_half"
+                android:enabled="@{viewModel.productId == 0}"
+                app:errorEnabled="true"
+                app:errorText="@{viewModel.productLongDescriptionErrorMsg}"
+                app:hintTextAppearance="@style/HintTextSizeExtraLarge"
+                app:layout_constraintEnd_toStartOf="@id/vertical_guideline_50pct"
+                app:layout_constraintStart_toStartOf="@id/vertical_guideline_25pct"
+                app:layout_constraintTop_toTopOf="@+id/product_short_description_layout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/product_long_description"
                     style="@style/TextSizeExtraLargeBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusableInTouchMode="true"
-                    android:hint="Description"
+                    android:hint="Long Description(Optional)"
                     android:imeOptions="actionNext"
+                    android:afterTextChanged="@{(editable) ->viewModel.validateProductLongDescription()}"
                     android:inputType="textAutoCorrect|textMultiLine|textCapSentences|textAutoComplete"
-                    android:maxLines="3"
+                    android:maxLines="6"
                     android:nextFocusForward="@+id/product_quantity"
-                    android:text="@={viewModel.productDescription}" />
+                    android:text="@={viewModel.productLongDescription}" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -197,7 +227,7 @@
                 app:errorText="@{viewModel.productQuantityErrorMsg}"
                 app:hintTextAppearance="@style/HintTextSizeExtraLarge"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/product_description_layout">
+                app:layout_constraintTop_toBottomOf="@+id/product_short_description_layout">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/product_quantity"
@@ -208,6 +238,7 @@
                     android:imeOptions="actionNext"
                     android:inputType="number"
                     android:nextFocusForward="@+id/product_length"
+                    android:afterTextChanged="@{(editable) ->viewModel.validateProductQuantity()}"
                     android:text="@={viewModel.productQuantity}" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -255,6 +286,7 @@
                     android:focusableInTouchMode="true"
                     android:imeOptions="actionNext"
                     android:inputType="number"
+                    android:afterTextChanged="@{(editable) ->viewModel.validateProductLength()}"
                     android:nextFocusForward="@+id/product_width"
                     android:text="@={viewModel.productLength}" />
 
@@ -283,6 +315,7 @@
                     android:focusableInTouchMode="true"
                     android:imeOptions="actionNext"
                     android:inputType="number"
+                    android:afterTextChanged="@{(editable) ->viewModel.validateProductWidth()}"
                     android:nextFocusForward="@+id/product_height"
                     android:text="@={viewModel.productWidth}" />
 
@@ -309,6 +342,7 @@
                     android:focusableInTouchMode="true"
                     android:imeOptions="actionNext"
                     android:inputType="number"
+                    android:afterTextChanged="@{(editable) ->viewModel.validateProductHeight()}"
                     android:nextFocusForward="@+id/product_status_spinner"
                     android:text="@={viewModel.productHeight}" />
 
@@ -329,17 +363,16 @@
                 android:id="@+id/product_status_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_standard"
-                android:focusable="true"
                 android:layout_marginStart="@dimen/margin_standard"
-                android:focusableInTouchMode="true"
+                android:layout_marginTop="@dimen/margin_standard"
                 android:enabled="@{viewModel.productId == 0}"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:nextFocusForward="@id/product_category_autoCompleteTextView"
                 android:selectedItemPosition="@={viewModel.productStatusPosition}"
-                app:layout_constraintStart_toEndOf="@+id/product_status_label"
-                app:layout_constraintTop_toBottomOf="@+id/product_height_layout"
                 app:layout_constraintBottom_toBottomOf="@+id/product_status_label"
-                 />
+                app:layout_constraintStart_toEndOf="@+id/product_status_label"
+                app:layout_constraintTop_toBottomOf="@+id/product_height_layout" />
 
 
             <com.google.android.material.button.MaterialButton

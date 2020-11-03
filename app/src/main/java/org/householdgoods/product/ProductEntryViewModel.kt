@@ -48,8 +48,10 @@ class ProductEntryViewModel //super(application);
     val productHeightErrorMsg = MutableLiveData<String>()
     val productQuantity = MutableLiveData<String>().apply { value = "0" }
     val productQuantityErrorMsg = MutableLiveData<String>()
-    val productDescription = MutableLiveData<String>().apply { value = "" }
-    val productDescriptionErrorMsg = MutableLiveData<String>()
+    val productShortDescription = MutableLiveData<String>().apply { value = "" }
+    val productShortDescriptionErrorMsg = MutableLiveData<String>()
+    val productLongDescription = MutableLiveData<String>().apply { value = "" }
+    val productLongDescriptionErrorMsg = MutableLiveData<String>()
     val dataEntryOK = MutableLiveData<Boolean>().apply { value = false }
     val addedSku = MutableLiveData<String>().apply { value = "" }
     val productId = MutableLiveData<Int>().apply { value = 0 }
@@ -381,7 +383,7 @@ class ProductEntryViewModel //super(application);
      * photos taken?
      */
     fun validateProductEntry() {
-        dataEntryOK.value = (!skuCategoryCode.value.equals(questionMarks)
+            dataEntryOK.value = (!skuCategoryCode.value.equals(questionMarks)
                 && (product.name != null && product.name.isNotEmpty())
                 //  || product.sku.isEmpty()  create later
                 && (product.dimensions != null)
@@ -489,9 +491,8 @@ class ProductEntryViewModel //super(application);
     fun validateProductName() {
         val prodName = productName.value
         product.name = prodName
-        product.short_description = prodName
         if (prodName == null || prodName.isBlank() || prodName.length < 3) {
-            productNameErrorMsg.value = "Product name missing or too short."
+            productNameErrorMsg.value = "Name must be at least 3 characters."
         } else {
             productNameErrorMsg.value = null
         }
@@ -567,17 +568,26 @@ class ProductEntryViewModel //super(application);
         validateProductEntry()
     }
 
-    fun validateProductDescription() {
-        val prodDescription = productDescription.value
-        if (prodDescription == null || prodDescription.isBlank()) {
-            productDescriptionErrorMsg.value = "Product description missing. Do you need to add one?"
+    //Optional
+    fun validateProductShortDescription() {
+       // Timber.d("Short description: %s", productShortDescription.value )
+        val productShortDescription = productShortDescription.value
+        if (productShortDescription == null || productShortDescription.isBlank()) {
+            productShortDescriptionErrorMsg.value = "Short description missing. Do you need to add one?"
         } else {
-            productDescriptionErrorMsg.value = null
+            productShortDescriptionErrorMsg.value = null
         }
         // Description allowed to be blank
-        product.description = prodDescription
+        product.short_description = productShortDescription
         validateProductEntry()
 
+    }
+
+    // Optional
+    fun validateProductLongDescription() {
+        val productLongDescription = productLongDescription.value
+        product.description = productLongDescription
+        validateProductEntry()
     }
 
     fun resetProduct() {
@@ -598,8 +608,10 @@ class ProductEntryViewModel //super(application);
         productHeightErrorMsg.value = null
         productQuantity.value = "0"
         productQuantityErrorMsg.value = null
-        productDescription.value = ""
-        productDescriptionErrorMsg.value = null
+        productShortDescription.value = ""
+        productShortDescriptionErrorMsg.value = null
+        productLongDescription.value = ""
+        productLongDescriptionErrorMsg.value = null
         dataEntryOK.value = false
         addedSku.value = ""
         errorMessage.value = null
