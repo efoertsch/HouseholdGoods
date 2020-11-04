@@ -78,7 +78,6 @@
                             android:maxLines="1"
                             android:nextFocusForward="@id/product_name"
                             tools:text="Twin Mattress"
-
                             />
 
                     </com.google.android.material.textfield.TextInputLayout>
@@ -162,7 +161,6 @@
                             android:layout_height="wrap_content"
                             android:focusableInTouchMode="true"
                             android:inputType="textCapWords"
-                            android:afterTextChanged="@{(editable) ->viewModel.validateProductName()}"
                             android:nextFocusForward="@+id/product_short_description"
                             android:text="@={viewModel.productName}" />
 
@@ -192,7 +190,6 @@
                             android:inputType="textAutoCorrect|textMultiLine|textCapSentences|textAutoComplete"
                             android:maxLines="3"
                             android:nextFocusForward="@+id/product_long_description"
-                            android:afterTextChanged="@{(editable) ->viewModel.validateProductShortDescription()}"
                             android:text="@={viewModel.productShortDescription}" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -217,7 +214,6 @@
                             android:focusableInTouchMode="true"
                             android:hint="Long Description(Optional)"
                             android:imeOptions="actionNext"
-                            android:afterTextChanged="@{(editable) ->viewModel.validateProductLongDescription()}"
                             android:inputType="textAutoCorrect|textMultiLine|textCapSentences|textAutoComplete"
                             android:maxLines="6"
                             android:nextFocusForward="@+id/product_quantity"
@@ -245,7 +241,6 @@
                             android:focusableInTouchMode="true"
                             android:imeOptions="actionNext"
                             android:inputType="number"
-                            android:afterTextChanged="@{(editable) ->viewModel.validateProductQuantity()}"
                             android:nextFocusForward="@+id/product_length"
                             android:text="@={viewModel.productQuantity}" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -294,7 +289,7 @@
                             android:focusableInTouchMode="true"
                             android:imeOptions="actionNext"
                             android:inputType="number"
-                            android:afterTextChanged="@{(editable) ->viewModel.validateProductLength()}"
+
                             android:nextFocusForward="@+id/product_width"
                             android:text="@={viewModel.productLength}" />
 
@@ -322,7 +317,6 @@
                             android:focusableInTouchMode="true"
                             android:imeOptions="actionNext"
                             android:inputType="number"
-                            android:afterTextChanged="@{(editable) ->viewModel.validateProductWidth()}"
                             android:nextFocusForward="@+id/product_height"
                             android:text="@={viewModel.productWidth}" />
 
@@ -348,7 +342,6 @@
                             android:focusableInTouchMode="true"
                             android:imeOptions="actionNext"
                             android:inputType="number"
-                            android:afterTextChanged="@{(editable) ->viewModel.validateProductHeight()}"
                             android:nextFocusForward="@+id/product_status_spinner"
                             android:text="@={viewModel.productHeight}" />
 

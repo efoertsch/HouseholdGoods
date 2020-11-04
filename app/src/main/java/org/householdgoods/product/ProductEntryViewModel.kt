@@ -212,11 +212,32 @@ class ProductEntryViewModel //super(application);
 
     fun addOrUpdateItem() {
         if (product.id == 0) {
-            addItem()
+            checkOneLastTime()
+            if (dataEntryOK.value!!) {
+                addItem()
+            } else {
+                // Some last minute error don't add
+            }
         }
 //        else {
 //            updateItem()
 //        }
+    }
+
+    /**
+     * With touch screen after all fields validated and ok to add, the user may go back to field
+     * change it's value but not tab out so validation may not fire. So to double check, do all validations
+     * again and see if all entries still valid
+     */
+    private fun checkOneLastTime() {
+        validateCategory()
+        validateProductName()
+        validateProductShortDescription()
+        validateProductLongDescription()
+        validateProductQuantity()
+        validateProductLength()
+        validateProductWidth()
+        validateProductHeight()
     }
 
 
@@ -486,6 +507,7 @@ class ProductEntryViewModel //super(application);
         } else {
             productCategoryErrorMsg.value = null
         }
+        validateProductEntry()
     }
 
     fun validateProductName() {
